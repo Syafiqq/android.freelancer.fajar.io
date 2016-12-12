@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Status Hukum</string>
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="title_activity_debog">Debog</string>
+    <string name="activity_dashboard_toolbar_logo_title">Status Hukum</string>
+    <string name="activity_dashboard_toolbar_logo_desc">Logo Desc</string>
+</resources>
