@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Status Hukum</string>
+    <string name="title_application_name">Status Hukum</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
-    <string name="title_activity_debog">Debog</string>
     <string name="activity_dashboard_toolbar_logo_title">Status Hukum</string>
     <string name="activity_dashboard_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_dashboard_menu_sync">Sync</string>
     <string name="activity_dashboard_menu_setting">Setting</string>
     <string name="title_activity_setting">Setting</string>
+    <string name="content_dashboard_spinner_century_chooser">Abad</string>
 </resources>
