@@ -4,4 +4,7 @@
     <string name="title_activity_debog">Debog</string>
     <string name="activity_dashboard_toolbar_logo_title">Status Hukum</string>
     <string name="activity_dashboard_toolbar_logo_desc">Logo Desc</string>
+    <string name="activity_dashboard_menu_sync">Sync</string>
+    <string name="activity_dashboard_menu_setting">Setting</string>
+    <string name="title_activity_setting">Setting</string>
 </resources>

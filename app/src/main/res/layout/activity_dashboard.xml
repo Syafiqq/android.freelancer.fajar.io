@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/activity_main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -28,8 +29,8 @@
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginRight="4dp"
                     android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
                     android:contentDescription="@string/activity_dashboard_toolbar_logo_desc"
                     android:padding="2dp"
                     android:src="@drawable/activity_dashboard_toolbar_logo"/>
