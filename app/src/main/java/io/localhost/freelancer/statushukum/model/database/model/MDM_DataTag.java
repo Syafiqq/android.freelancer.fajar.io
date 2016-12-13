@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.util.Locale;
+
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 
@@ -50,7 +52,7 @@ public class MDM_DataTag extends DatabaseModel
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
         database.execSQL(
-                String.format("INSERT INTO %s(`data`, `tag`, `timestamp`) VALUES (?, ?, ?)", DataTag.TABLE_NAME),
+                String.format(Locale.getDefault(), "INSERT INTO %s(`data`, `tag`, `timestamp`) VALUES (?, ?, ?)", DataTag.TABLE_NAME),
                 new Object[] {data, tag, timestamp});
     }
 
