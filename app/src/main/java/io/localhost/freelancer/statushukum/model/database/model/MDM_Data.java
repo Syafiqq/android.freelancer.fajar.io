@@ -1,8 +1,14 @@
 package io.localhost.freelancer.statushukum.model.database.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 
@@ -51,7 +57,14 @@ public class MDM_Data extends DatabaseModel
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
         database.execSQL(
-                String.format("INSERT INTO %s(`id`, `year`, `no`, `description`, `status`, `timestamp`) VALUES (?, ?, ?, ?, ?, ?)", Data.TABLE_NAME),
+                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?, ?)",
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_ID,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_NO,
+                        Data.COLUMN_NAME_DESCRIPTION,
+                        Data.COLUMN_NAME_STATUS,
+                        Data.COLUMN_NAME_TIMESTAMP),
                 new Object[] {id, year, no, description, status, timestamp});
     }
 
@@ -60,5 +73,110 @@ public class MDM_Data extends DatabaseModel
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
 
         MDM_Data.insert(super.database, id, year, no, description, status, timestamp);
+    }
+
+    public List<CountPerYear> getCountPerYear(final int from, final int to)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` WHERE `%s` >= ? AND `%s` <= ? GROUP BY `%s` ORDER BY `%s` ASC",
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_YEAR
+                ),
+                new String[] {String.valueOf(from), String.valueOf(to)});
+
+        List<CountPerYear> records = new LinkedList<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.add(new CountPerYear(cursor.getInt(0), cursor.getInt(1)));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
+    }
+
+    public int getYearCount(int year)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearCount");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT count(`%s`) AS 'count' FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_YEAR
+                ),
+                new String[] {String.valueOf(year)});
+
+        int total = -1;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                total = cursor.getInt(0);
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return total;
+    }
+
+    public static class CountPerYear
+    {
+        private final int year;
+        private final int count;
+
+        public CountPerYear(int year, int count)
+        {
+            this.year = year;
+            this.count = count;
+        }
+
+        public int getYear()
+        {
+            return year;
+        }
+
+        public int getCount()
+        {
+            return count;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "CountPerYear{" +
+                    "year=" + year +
+                    ", count=" + count +
+                    '}';
+        }
     }
 }
