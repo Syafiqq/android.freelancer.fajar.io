@@ -2,6 +2,7 @@ package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+
+import com.jaredrummler.materialspinner.MaterialSpinner;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -38,6 +42,7 @@ public class Dashboard extends AppCompatActivity
         setContentView(R.layout.activity_dashboard);
 
         this.setToolbar();
+        this.setCenturyList();
 
         final MDM_Data model_data = MDM_Data.getInstance(this);
         try
@@ -50,6 +55,37 @@ public class Dashboard extends AppCompatActivity
         {
             Log.i(CLASS_NAME, CLASS_PATH + ".SQLException");
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void setCenturyList()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".setCenturyList");
+
+        final MaterialSpinner            spinner     = (MaterialSpinner) findViewById(R.id.content_dashboard_spinner_century_chooser);
+        final ArrayAdapter<CharSequence> adapter     = ArrayAdapter.createFromResource(this, R.array.content_dashboard_spinner_observable_century, android.R.layout.simple_spinner_item);
+        final String[]                   spinnerItem = new String[adapter.getCount()];
+        for(int i = -1, is = spinnerItem.length; ++i < is; )
+        {
+            try
+            {
+                spinnerItem[i] = adapter.getItem(i).toString();
+            }
+            catch(NullPointerException ignored)
+            {
+
+            }
+        }
+        spinner.setItems(spinnerItem);
+        spinner.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener<CharSequence>()
+        {
+
+            @Override
+            public void onItemSelected(MaterialSpinner view, int position, long id, CharSequence item)
+            {
+                Snackbar.make(view, "Clicked " + item, Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void setToolbar()
@@ -80,6 +116,8 @@ public class Dashboard extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
+
         getMenuInflater().inflate(R.menu.activity_dashboard_menu, menu);
         return true;
     }
@@ -87,6 +125,8 @@ public class Dashboard extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
+
         switch(item.getItemId())
         {
             case R.id.activity_dashboard_menu_setting:
@@ -109,12 +149,16 @@ public class Dashboard extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
         this.onBackPressed();
     }
 
     @Override
     public void onBackPressed()
     {
-        finish();
+        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
+        super.finish();
     }
 }
