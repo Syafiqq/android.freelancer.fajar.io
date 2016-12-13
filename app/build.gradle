@@ -39,5 +39,8 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'net.danlew:android.joda:2.9.5.1'
     compile 'com.jaredrummler:material-spinner:1.1.0'
+    compile 'org.sufficientlysecure:html-textview:3.0'
+    compile "com.mikepenz:iconics-core:2.8.1@aar"
+    compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     testCompile 'junit:junit:4.12'
 }
