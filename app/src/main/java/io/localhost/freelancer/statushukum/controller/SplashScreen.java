@@ -13,6 +13,7 @@ import java.sql.SQLException;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
+import io.localhost.freelancer.statushukum.model.util.Setting;
 
 public class SplashScreen extends AppCompatActivity
 {
@@ -27,6 +28,7 @@ public class SplashScreen extends AppCompatActivity
 
         setContentView(R.layout.activity_splash_screen);
         JodaTimeAndroid.init(this);
+        Setting.getInstance(this);
 
         new AsyncTask<Void, Void, Void>()
         {

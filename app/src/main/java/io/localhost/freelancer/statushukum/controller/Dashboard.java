@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,10 +31,29 @@ public class Dashboard extends AppCompatActivity
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
     private CountPerYearAdapter recycleViewAdapter;
+    private boolean isSyncOperated = false;
 
-    private static void doSync()
+    private void doSync()
     {
+        if(!this.isSyncOperated)
+        {
+            this.isSyncOperated = true;
+            new AsyncTask<Void, Void, Void>()
+            {
+                @Override
+                protected Void doInBackground(Void... voids)
+                {
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Dashboard.this).doSync();
+                    return null;
+                }
 
+                @Override
+                protected void onPostExecute(Void aVoid)
+                {
+                    Dashboard.this.isSyncOperated = false;
+                }
+            }.execute();
+        }
     }
 
     @Override
@@ -85,25 +105,32 @@ public class Dashboard extends AppCompatActivity
             {
                 try
                 {
-                    final MDM_Data                    modelData = MDM_Data.getInstance(Dashboard.this);
-                    final int                         yearStart = NumberFormat.getInstance(Locale.getDefault()).parse(item.toString()).intValue() * 100;
-                    final int                         yearEnd   = yearStart + 99;
-                    final List<MDM_Data.CountPerYear> dbResult  = modelData.getCountPerYear(yearStart, yearEnd);
-                    final List<MDM_Data.CountPerYear> result    = new ArrayList<>(yearEnd - yearStart + 1);
-                    int                               iYear     = yearStart - 1;
+                    final boolean                     isShownOnly = io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Dashboard.this).isAllShowed();
+                    final MDM_Data                    modelData   = MDM_Data.getInstance(Dashboard.this);
+                    final int                         yearStart   = NumberFormat.getInstance(Locale.getDefault()).parse(item.toString()).intValue() * 100;
+                    final int                         yearEnd     = yearStart + 99;
+                    final List<MDM_Data.CountPerYear> dbResult    = modelData.getCountPerYear(yearStart, yearEnd);
+                    final List<MDM_Data.CountPerYear> result      = new ArrayList<>(yearEnd - yearStart + 1);
+                    int                               iYear       = yearStart - 1;
                     while(!dbResult.isEmpty())
                     {
                         final MDM_Data.CountPerYear tmpCPY = dbResult.remove(0);
-                        for(int isYear = tmpCPY.getYear(); ++iYear < isYear; )
+                        if(!isShownOnly)
                         {
-                            result.add(new MDM_Data.CountPerYear(iYear, 0));
+                            for(int isYear = tmpCPY.getYear(); ++iYear < isYear; )
+                            {
+                                result.add(new MDM_Data.CountPerYear(iYear, 0));
+                            }
                         }
 
                         result.add(tmpCPY);
                     }
-                    for(int isYear = yearEnd + 1; ++iYear < isYear; )
+                    if(!isShownOnly)
                     {
-                        result.add(new MDM_Data.CountPerYear(iYear, 0));
+                        for(int isYear = yearEnd + 1; ++iYear < isYear; )
+                        {
+                            result.add(new MDM_Data.CountPerYear(iYear, 0));
+                        }
                     }
                     Dashboard.this.recycleViewAdapter.update(result);
                 }
@@ -152,7 +179,7 @@ public class Dashboard extends AppCompatActivity
             }
             case R.id.activity_dashboard_menu_sync:
             {
-                Dashboard.doSync();
+                this.doSync();
                 return true;
             }
             case android.R.id.home:

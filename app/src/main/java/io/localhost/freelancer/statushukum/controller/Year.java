@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -34,10 +35,30 @@ public class Year extends AppCompatActivity
     private int             year;
     private int             yearSize;
     private YearListAdapter yearList;
+    private boolean isSyncOperated = false;
 
-    private static void doSync()
+    private void doSync()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+        if(!this.isSyncOperated)
+        {
+            this.isSyncOperated = true;
+            new AsyncTask<Void, Void, Void>()
+            {
+                @Override
+                protected Void doInBackground(Void... voids)
+                {
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Year.this).doSync();
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid)
+                {
+                    Year.this.isSyncOperated = false;
+                }
+            }.execute();
+        }
     }
 
     @Override
@@ -105,7 +126,7 @@ public class Year extends AppCompatActivity
             }
             case R.id.activity_year_menu_sync:
             {
-                Year.doSync();
+                this.doSync();
                 return true;
             }
             case android.R.id.home:

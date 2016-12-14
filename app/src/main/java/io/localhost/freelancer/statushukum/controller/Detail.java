@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -34,10 +35,32 @@ public class Detail extends AppCompatActivity
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Detail";
     public static final String EXTRA_ID   = "id";
     private int id;
+    private boolean isSyncOperated = false;
 
-    private static void doSync()
+
+    private void doSync()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+
+        if(!this.isSyncOperated)
+        {
+            this.isSyncOperated = true;
+            new AsyncTask<Void, Void, Void>()
+            {
+                @Override
+                protected Void doInBackground(Void... voids)
+                {
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync();
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid)
+                {
+                    Detail.this.isSyncOperated = false;
+                }
+            }.execute();
+        }
     }
 
     @Override
@@ -102,7 +125,7 @@ public class Detail extends AppCompatActivity
             }
             case R.id.activity_detail_menu_sync:
             {
-                Detail.doSync();
+                this.doSync();
                 return true;
             }
             case android.R.id.home:
