@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,8 +18,10 @@ import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic
 import java.util.List;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.controller.Detail;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.localhost.freelancer.statushukum.model.util.ME_TagAdapter;
 import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
@@ -84,7 +87,7 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
                 .sizeDp(24));
         for(final ME_Tag tag : tmpMetadata.getTags())
         {
-            holder.tag.addTag(new ME_TagAdapter(tag));
+            holder.tag.addTag(new ME_TagAdapter(tag, 10f));
         }
         holder.tag.setOnTagClickListener(null);
         holder.tag.setOnTagClickListener(new OnTagClickListener()
@@ -107,6 +110,9 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
 
                 final Context context = YearListAdapter.this.context;
                 final int     id      = tmpMetadata.getId();
+                final Intent  intent  = new Intent(context, Detail.class);
+                intent.putExtra(Detail.EXTRA_ID, id);
+                context.startActivity(intent);
             }
         };
     }
@@ -117,31 +123,17 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
         return this.yearList.size();
     }
 
-    public static class ME_TagAdapter extends Tag
-    {
-        public String description;
-
-        public ME_TagAdapter(final ME_Tag tag)
-        {
-            super(tag.getName());
-            super.layoutColor = tag.getColor();
-            super.tagTextColor = tag.getColorText();
-            super.tagTextSize = 10;
-            this.description = tag.getDesc();
-        }
-    }
-
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter.ViewHolder";
 
         public final TextView no, year;
-        public final ImageView            search;
-        public final TagView              tag;
-        public       View.OnClickListener listener;
+        final ImageView search;
+        final TagView   tag;
+        View.OnClickListener listener;
 
-        public ViewHolder(final View view)
+        ViewHolder(final View view)
         {
             super(view);
 
