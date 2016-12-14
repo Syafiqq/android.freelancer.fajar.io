@@ -1,9 +1,13 @@
 package io.localhost.freelancer.statushukum.model.database.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
@@ -63,4 +67,39 @@ public class MDM_DataTag extends DatabaseModel
         MDM_DataTag.insert(super.database, data, tag, timestamp);
     }
 
+    public List<Integer> getTagFromDataID(int data)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getTagFromDataID");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` WHERE `%s` = ? ORDER BY `%s` ASC",
+                        DataTag.COLUMN_NAME_TAG,
+                        DataTag.TABLE_NAME,
+                        DataTag.COLUMN_NAME_DATA,
+                        DataTag.COLUMN_NAME_TAG
+                ),
+                new String[] {String.valueOf(data)});
+
+        final List<Integer> records = new LinkedList<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.add(cursor.getInt(0));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
+    }
 }

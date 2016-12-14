@@ -1,9 +1,6 @@
 package io.localhost.freelancer.statushukum.model.entity;
 
-import android.graphics.Color;
 import android.util.Log;
-
-import org.joda.time.DateTime;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.entity> created by :
@@ -18,14 +15,13 @@ public class ME_Tag
     public static final String CLASS_NAME = "ME_Tag";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.entity.ME_Tag";
 
-    private final int      id;
-    private final String   name;
-    private final String   desc;
-    private final Color    color;
-    private final Color    colorText;
-    private final DateTime timestamp;
+    private final int    id;
+    private final String name;
+    private final String desc;
+    private final int    color;
+    private final int    colorText;
 
-    public ME_Tag(int id, String name, String desc, Color color, Color colorText, DateTime timestamp)
+    public ME_Tag(int id, String name, String desc, int color, int colorText)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
@@ -34,7 +30,6 @@ public class ME_Tag
         this.desc = desc;
         this.color = color;
         this.colorText = colorText;
-        this.timestamp = timestamp;
     }
 
     public int getId()
@@ -58,24 +53,29 @@ public class ME_Tag
         return this.desc;
     }
 
-    public Color getColor()
+    public int getColor()
     {
         Log.i(CLASS_NAME, CLASS_PATH + "getColor");
 
         return this.color;
     }
 
-    public Color getColorText()
+    public int getColorText()
     {
         Log.i(CLASS_NAME, CLASS_PATH + "getColorText");
 
         return this.colorText;
     }
 
-    public DateTime getTimestamp()
+    @Override
+    public String toString()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getTimestamp");
-
-        return this.timestamp;
+        return "ME_Tag{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", desc='" + desc + '\'' +
+                ", color=" + color +
+                ", colorText=" + colorText +
+                '}';
     }
 }

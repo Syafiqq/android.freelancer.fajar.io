@@ -9,4 +9,9 @@
     <string name="content_dashboard_spinner_century_chooser">Abad</string>
     <string name="content_dashboard_recycler_view_item_count" formatted="true">Status Hukum : %3d</string>
     <string name="title_activity_year">Year</string>
+    <string name="activity_year_menu_sync">Sync</string>
+    <string name="activity_year_menu_setting">Setting</string>
+    <string name="content_dashboard_recycler_view_item_no_entry_message" formatted="true">Tidak ada status hukum pada tahun %d</string>
+    <string name="activity_year_toolbar_logo_title">Status Hukum</string>
+    <string name="activity_year_toolbar_logo_desc">Logo Desc</string>
 </resources>
