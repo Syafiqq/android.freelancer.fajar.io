@@ -1,12 +1,18 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
+import java.sql.SQLException;
+
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 
 public class SplashScreen extends AppCompatActivity
 {
@@ -20,16 +26,41 @@ public class SplashScreen extends AppCompatActivity
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
         setContentView(R.layout.activity_splash_screen);
+        JodaTimeAndroid.init(this);
 
-        int secondsDelayed = 5;
-        new Handler().postDelayed(new Runnable()
+        new AsyncTask<Void, Void, Void>()
         {
-            public void run()
+            @Override
+            protected Void doInBackground(Void... voids)
             {
-                startActivity(new Intent(SplashScreen.this, Dashboard.class));
-                finish();
+                final MDM_Data model_data = MDM_Data.getInstance(SplashScreen.this);
+                try
+                {
+                    model_data.openWrite();
+                    model_data.close();
+                }
+                catch(SQLException e)
+                {
+                    Log.i(CLASS_NAME, CLASS_PATH + ".SQLException");
+                }
+
+                return null;
             }
-        }, secondsDelayed * 1000);
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+                int secondsDelayed = 2;
+                new Handler().postDelayed(new Runnable()
+                {
+                    public void run()
+                    {
+                        startActivity(new Intent(SplashScreen.this, Dashboard.class));
+                        finish();
+                    }
+                }, secondsDelayed * 1000);
+            }
+        }.execute();
     }
 
 }

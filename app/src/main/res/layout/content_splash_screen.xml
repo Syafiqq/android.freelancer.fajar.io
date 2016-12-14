@@ -28,6 +28,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:text="@string/title_application_name"
-        android:textSize="36sp"
-        tools:textColor="@android:color/white"/>
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"/>
 </RelativeLayout>
