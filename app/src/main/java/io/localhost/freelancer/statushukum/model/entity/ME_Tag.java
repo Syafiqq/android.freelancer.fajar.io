@@ -34,36 +34,26 @@ public class ME_Tag
 
     public int getId()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getId");
-
         return this.id;
     }
 
     public String getName()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getName");
-
         return this.name;
     }
 
     public String getDesc()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getDesc");
-
         return this.desc;
     }
 
     public int getColor()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getColor");
-
         return this.color;
     }
 
     public int getColorText()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + "getColorText");
-
         return this.colorText;
     }
 

@@ -2,8 +2,6 @@ package io.localhost.freelancer.statushukum.model.entity;
 
 import android.util.Log;
 
-import org.joda.time.DateTime;
-
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.entity> created by :
  * Name         : syafiq
@@ -22,9 +20,8 @@ public class ME_Data
     private final String   no;
     private final String   description;
     private final String   status;
-    private final DateTime timestamp;
 
-    public ME_Data(int id, int year, String no, String description, String status, DateTime timestamp)
+    public ME_Data(int id, int year, String no, String description, String status)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
@@ -33,48 +30,42 @@ public class ME_Data
         this.no = no;
         this.description = description;
         this.status = status;
-        this.timestamp = timestamp;
     }
 
     public int getId()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getId");
-
         return this.id;
     }
 
     public int getYear()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYear");
-
         return this.year;
     }
 
     public String getNo()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getNo");
-
         return this.no;
     }
 
     public String getDescription()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getDescription");
-
         return this.description;
     }
 
     public String getStatus()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getStatus");
-
         return this.status;
     }
 
-    public DateTime getTimestamp()
+    @Override
+    public String toString()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getTimestamp");
-
-        return this.timestamp;
+        return "ME_Data{" +
+                "id=" + id +
+                ", year=" + year +
+                ", no='" + no + '\'' +
+                ", description='" + description + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }
