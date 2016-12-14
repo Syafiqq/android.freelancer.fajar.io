@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
+import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Data;
@@ -188,6 +189,45 @@ public class MDM_Data extends DatabaseModel
             do
             {
                 total = cursor.getInt(0);
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return total;
+    }
+
+    public ME_Data getFromID(int id)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getFromID");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        Data.COLUMN_NAME_ID,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_NO,
+                        Data.COLUMN_NAME_DESCRIPTION,
+                        Data.COLUMN_NAME_STATUS,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf(id)});
+
+        ME_Data total = null;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                total = new ME_Data(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
             }
             while(cursor.moveToNext());
         }
