@@ -164,7 +164,6 @@ public class Year extends AppCompatActivity
                 }
             }
         }
-        Log.i(CLASS_NAME, dbResultData.toString());
         this.yearList.update(dbResultData);
     }
 }
