@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:label">
-        <activity android:name=".controller.Dashboard">
+        <activity android:name=".controller.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.SplashScreen"
+            android:name=".controller.Dashboard"
             android:label="@string/title_activity_splash_screen"
             android:theme="@style/AppTheme.NoActionBar">
 

@@ -15,9 +15,6 @@ import android.widget.ArrayAdapter;
 
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
-import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -45,24 +42,10 @@ public class Dashboard extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        JodaTimeAndroid.init(this);
         setContentView(R.layout.activity_dashboard);
-
         this.setToolbar();
         this.setYearList();
         this.setCenturyList();
-
-        final MDM_Data model_data = MDM_Data.getInstance(this);
-        try
-        {
-            /*model_data.openWrite();
-            model_data.close();*/
-            model_data.openRead();
-        }
-        catch(SQLException e)
-        {
-            Log.i(CLASS_NAME, CLASS_PATH + ".SQLException");
-        }
     }
 
     private void setYearList()
