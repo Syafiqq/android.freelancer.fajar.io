@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.controller.Year;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 
 /**
@@ -122,16 +125,19 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
             try
             {
-                final int      year       = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
-                final MDM_Data model_data = MDM_Data.getInstance(CountPerYearAdapter.this.context);
-                final int      count      = model_data.getYearCount(year);
+                final Context context = CountPerYearAdapter.this.context;
+                final int     year    = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
+                final int     count   = NumberFormat.getInstance(Locale.getDefault()).parse(this.count.getText().toString().substring(14).trim()).intValue();
                 if(count > 0)
                 {
-                    Log.i(CLASS_NAME, year + " Pass");
+                    final Intent intent = new Intent(context, Year.class);
+                    intent.putExtra(Year.EXTRA_YEAR, year);
+                    intent.putExtra(Year.EXTRA_YEAR_SIZE, count);
+                    context.startActivity(intent);
                 }
                 else
                 {
-                    Log.i(CLASS_NAME, year + " No Pass");
+                    Toast.makeText(context, String.format(Locale.getDefault(), context.getResources().getString(R.string.content_dashboard_recycler_view_item_no_entry_message), year), Toast.LENGTH_SHORT).show();
                 }
             }
             catch(ParseException ignored)
