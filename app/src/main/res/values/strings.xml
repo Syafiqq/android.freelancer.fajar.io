@@ -24,4 +24,11 @@
     <string name="content_detail_tv_description_label">Deskripsi</string>
     <string name="content_detail_tv_tag_label">Tag</string>
     <string name="content_detail_tv_status_label">Status</string>
+    <string name="content_setting_s_show_label_desc">Hanya menampilkan tahun yang memiliki data status hukum saja</string>
+    <string name="content_setting_s_show_label">Tampilkan Yang Ada</string>
+    <string name="content_setting_s_sync_label_desc">Menyinkronkan data dari server</string>
+    <string name="content_setting_s_sync_label">Sinkron</string>
+    <string name="content_setting_s_deep_sync_label_desc_1">Membutuhkan paket data yang besar</string>
+    <string name="content_setting_s_deep_sync_label_desc_0">Menghapus semua data dan menyinkronkan secara total data dari server</string>
+    <string name="content_setting_s_deep_sync_label">Total Sinkron</string>
 </resources>
