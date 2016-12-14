@@ -1,13 +1,19 @@
 package io.localhost.freelancer.statushukum.model.database.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.util.Log;
 
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.Tag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
+import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database.model> created by :
@@ -61,5 +67,43 @@ public class MDM_Tag extends DatabaseModel
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
 
         MDM_Tag.insert(super.database, id, name, description, color, colorText, timestamp);
+    }
+
+    public Map<Integer, ME_Tag> getAll()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getAll");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` ORDER BY `%s` ASC",
+                        Tag.COLUMN_NAME_ID,
+                        Tag.COLUMN_NAME_NAME,
+                        Tag.COLUMN_NAME_DESCRIPTION,
+                        Tag.COLUMN_NAME_COLOR,
+                        Tag.COLUMN_NAME_COLORTEXT,
+                        Tag.TABLE_NAME,
+                        Tag.COLUMN_NAME_ID
+                ), new String[] {});
+
+        final Map<Integer, ME_Tag> records = new LinkedHashMap<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.put(cursor.getInt(0), new ME_Tag(cursor.getInt(0), cursor.getString(1), cursor.getString(2), Color.parseColor("#" + cursor.getString(3)), Color.parseColor("#" + cursor.getString(4))));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
     }
 }
