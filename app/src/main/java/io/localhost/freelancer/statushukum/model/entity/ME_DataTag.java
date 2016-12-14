@@ -32,22 +32,16 @@ public class ME_DataTag
 
     public int getData()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getData");
-
         return this.data;
     }
 
     public int getTag()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getTag");
-
         return this.tag;
     }
 
     public DateTime getTimestamp()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getTimestamp");
-
         return this.timestamp;
     }
 }
