@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,15 +34,14 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
  * Github       : syafiqq
  */
 
-public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapter.ViewHolder>
+public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapter.ViewHolder> implements Filterable
 {
     public static final String CLASS_NAME = "CountPerYearAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter";
 
-    private static final int AVAILABLE_ENTRY_COLOR   = 255;
-    private static final int UNAVAILABLE_ENTRY_COLOR = 92;
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context                     context;
+    private       Filter                      filter;
 
     public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context)
     {
@@ -49,6 +50,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
         this.countPerYear = countPerYear;
         this.context = context;
+        this.filter = null;
     }
 
     public void update(final List<MDM_Data.CountPerYear> countPerYear)
@@ -57,7 +59,6 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
         this.countPerYear.clear();
         this.countPerYear.addAll(countPerYear);
-        super.notifyDataSetChanged();
     }
 
     @Override
@@ -74,25 +75,11 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     {
         final MDM_Data.CountPerYear tmpCPY = this.countPerYear.get(position);
         holder.year.setText(String.valueOf(tmpCPY.getYear()));
-        holder.count.setText(String.format(context.getResources().getString(R.string.content_dashboard_recycler_view_item_count), tmpCPY.getCount()));
-        if(tmpCPY.getCount() > 0)
-        {
-            holder.year.setTextColor(holder.year.getTextColors().withAlpha(AVAILABLE_ENTRY_COLOR));
-            holder.count.setTextColor(holder.year.getTextColors().withAlpha(AVAILABLE_ENTRY_COLOR));
-            holder.status.setImageDrawable(new IconicsDrawable(this.context)
-                    .icon(MaterialDesignIconic.Icon.gmi_check_circle)
-                    .color(ContextCompat.getColor(this.context, R.color.green_a700))
-                    .sizeDp(24));
-        }
-        else
-        {
-            holder.year.setTextColor(holder.year.getTextColors().withAlpha(UNAVAILABLE_ENTRY_COLOR));
-            holder.count.setTextColor(holder.year.getTextColors().withAlpha(UNAVAILABLE_ENTRY_COLOR));
-            holder.status.setImageDrawable(new IconicsDrawable(this.context)
-                    .icon(MaterialDesignIconic.Icon.gmi_minus_square)
-                    .color(ContextCompat.getColor(this.context, R.color.red_a700))
-                    .sizeDp(24));
-        }
+        holder.count = tmpCPY.getCount();
+        holder.status.setImageDrawable(new IconicsDrawable(this.context)
+                .icon(MaterialDesignIconic.Icon.gmi_calendar)
+                .color(ContextCompat.getColor(this.context, R.color.grey_700))
+                .sizeDp(24));
     }
 
     @Override
@@ -101,20 +88,32 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         return this.countPerYear.size();
     }
 
+    @Override
+    public Filter getFilter()
+    {
+        return this.filter;
+    }
+
+    public void setFilter(Filter filter)
+    {
+        this.filter = filter;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter.ViewHolder";
 
-        public final TextView year, count;
+        public final TextView  year;
         public final ImageView status;
+        Integer count;
 
         public ViewHolder(final View view)
         {
             super(view);
 
             this.year = (TextView) view.findViewById(R.id.content_dashboard_recycler_view_item_year);
-            this.count = (TextView) view.findViewById(R.id.content_dashboard_recycler_view_item_count);
+            this.count = 0;
             this.status = (ImageView) view.findViewById(R.id.content_dashboard_recycler_view_item_status);
         }
 
@@ -127,7 +126,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
             {
                 final Context context = CountPerYearAdapter.this.context;
                 final int     year    = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
-                final int     count   = NumberFormat.getInstance(Locale.getDefault()).parse(this.count.getText().toString().substring(14).trim()).intValue();
+                final int     count   = this.count;
                 if(count > 0)
                 {
                     final Intent intent = new Intent(context, Year.class);
