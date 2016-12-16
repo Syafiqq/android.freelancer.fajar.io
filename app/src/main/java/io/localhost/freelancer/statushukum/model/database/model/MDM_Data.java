@@ -114,7 +114,7 @@ public class MDM_Data extends DatabaseModel
         MDM_Data.insert(super.database, id, year, no, description, status, timestamp);
     }
 
-    public List<CountPerYear> getCountPerYear(final int from, final int to)
+    public List<CountPerYear> getCountPerYear()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
         try
@@ -129,16 +129,14 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` WHERE `%s` >= ? AND `%s` <= ? GROUP BY `%s` ORDER BY `%s` ASC",
+                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` GROUP BY `%s` ORDER BY `%s` ASC",
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_YEAR,
-                        Data.COLUMN_NAME_YEAR,
-                        Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_YEAR
                 ),
-                new String[] {String.valueOf(from), String.valueOf(to)});
+                new String[] {});
 
         List<CountPerYear> records = new LinkedList<>();
         if(cursor.moveToFirst())
