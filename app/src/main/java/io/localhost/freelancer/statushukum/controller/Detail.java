@@ -50,7 +50,7 @@ public class Detail extends AppCompatActivity
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync();
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync(null);
                     return null;
                 }
 
