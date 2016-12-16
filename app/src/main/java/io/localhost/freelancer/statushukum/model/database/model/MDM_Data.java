@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.joda.time.LocalDateTime;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import java.util.Locale;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.localhost.freelancer.statushukum.model.util.Setting;
 
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Data;
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
@@ -72,9 +75,41 @@ public class MDM_Data extends DatabaseModel
                 new Object[] {id, year, no, description, status, timestamp});
     }
 
+    public static void deleteAll(final SQLiteDatabase database)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
+        database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Data.TABLE_NAME), new Object[] {});
+    }
+
+    public void deleteAll()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_Data.deleteAll(super.database);
+    }
+
     public void insert(int id, int year, String no, String description, String status, String timestamp)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
 
         MDM_Data.insert(super.database, id, year, no, description, status, timestamp);
     }
@@ -233,6 +268,117 @@ public class MDM_Data extends DatabaseModel
         }
         cursor.close();
         return total;
+    }
+
+    public LocalDateTime getLatestTimestamp()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
+                        Data.COLUMN_NAME_TIMESTAMP,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_TIMESTAMP
+                ),
+                new String[] {});
+
+        LocalDateTime total = null;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return total;
+    }
+
+    public void insertOrUpdate(int id, int year, String no, String description, String status, String timestamp)
+    {
+        boolean exists = this.isExists(id);
+        if(exists)
+        {
+            this.update(id, year, no, description, status, timestamp);
+        }
+        else
+        {
+            this.insert(id, year, no, description, status, timestamp);
+        }
+    }
+
+    private void update(int id, int year, String no, String description, String status, String timestamp)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".update");
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        super.database.execSQL(
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_NO,
+                        Data.COLUMN_NAME_DESCRIPTION,
+                        Data.COLUMN_NAME_STATUS,
+                        Data.COLUMN_NAME_TIMESTAMP,
+                        Data.COLUMN_NAME_ID
+                ),
+                new Object[] {year, no, description, status, timestamp, id});
+    }
+
+    private boolean isExists(int id)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".isExists");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf(id)});
+
+        boolean exist = false;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                if(!cursor.isNull(0))
+                {
+                    exist = true;
+                }
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return exist;
     }
 
     public static class CountPerYear
