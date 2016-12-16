@@ -14,25 +14,30 @@
     tools:context="io.localhost.freelancer.statushukum.controller.Dashboard"
     tools:showIn="@layout/activity_dashboard">
 
-    <LinearLayout
+    <!--    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/content_dashboard_spinner_century_chooser"/>
+
+            <com.jaredrummler.materialspinner.MaterialSpinner
+                android:id="@+id/content_dashboard_spinner_century_chooser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:ms_text_color="@color/black"/>
+
+        </LinearLayout>-->
+
+    <android.support.v7.widget.SearchView
+        android:id="@+id/content_dashboard_search_filter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/content_dashboard_spinner_century_chooser"/>
-
-        <com.jaredrummler.materialspinner.MaterialSpinner
-            android:id="@+id/content_dashboard_spinner_century_chooser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            app:ms_text_color="@color/black"/>
-
-    </LinearLayout>
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:layout_width="match_parent"
