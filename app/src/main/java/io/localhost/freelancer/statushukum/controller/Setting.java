@@ -57,7 +57,7 @@ public class Setting extends AppCompatActivity
                         @Override
                         protected Void doInBackground(Void... voids)
                         {
-                            Setting.this.setting.doSync();
+                            Setting.this.setting.doSync(null);
                             return null;
                         }
 
