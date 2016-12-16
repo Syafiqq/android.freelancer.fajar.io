@@ -45,6 +45,7 @@
             android:layout_weight="1"
             android:gravity="top"
             android:text=""
+            android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="20sp"/>
 
         <me.kaede.tagview.TagView
