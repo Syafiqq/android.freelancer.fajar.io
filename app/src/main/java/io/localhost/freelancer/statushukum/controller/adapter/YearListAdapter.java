@@ -39,7 +39,6 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     public static final String CLASS_NAME = "YearListAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter";
 
-    private static final int AVAILABLE_ENTRY_COLOR = 192;
     private final List<MDM_Data.YearMetadata> yearList;
     private final Context                     context;
 
@@ -79,8 +78,6 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
 
         holder.no.setText(tmpMetadata.getNo());
         holder.year.setText(String.valueOf(tmpMetadata.getYear()));
-        holder.no.setTextColor(holder.year.getTextColors().withAlpha(AVAILABLE_ENTRY_COLOR));
-        holder.year.setTextColor(holder.year.getTextColors().withAlpha(AVAILABLE_ENTRY_COLOR));
         holder.search.setImageDrawable(new IconicsDrawable(this.context)
                 .icon(MaterialDesignIconic.Icon.gmi_search)
                 .color(ContextCompat.getColor(this.context, R.color.green_a700))

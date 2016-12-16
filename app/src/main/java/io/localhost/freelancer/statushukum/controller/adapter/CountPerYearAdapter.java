@@ -37,8 +37,8 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public static final String CLASS_NAME = "CountPerYearAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter";
 
-    private static final int AVAILABLE_ENTRY_COLOR   = 192;
-    private static final int UNAVAILABLE_ENTRY_COLOR = 56;
+    private static final int AVAILABLE_ENTRY_COLOR   = 255;
+    private static final int UNAVAILABLE_ENTRY_COLOR = 92;
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context                     context;
 

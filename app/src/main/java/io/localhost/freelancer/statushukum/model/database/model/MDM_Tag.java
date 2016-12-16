@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
 
+import org.joda.time.LocalDateTime;
+
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -14,6 +16,7 @@ import java.util.Map;
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.Tag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.localhost.freelancer.statushukum.model.util.Setting;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database.model> created by :
@@ -62,6 +65,13 @@ public class MDM_Tag extends DatabaseModel
                 new Object[] {id, name, description, color, colorText, timestamp});
     }
 
+    public static void deleteAll(final SQLiteDatabase database)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
+        database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Tag.TABLE_NAME), new Object[] {});
+    }
+
     public void insert(int id, String name, String description, String color, String colorText, String timestamp)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
@@ -105,5 +115,117 @@ public class MDM_Tag extends DatabaseModel
         }
         cursor.close();
         return records;
+    }
+
+    public LocalDateTime getLatestTimestamp()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
+                        Tag.COLUMN_NAME_TIMESTAMP,
+                        Tag.TABLE_NAME,
+                        Tag.COLUMN_NAME_TIMESTAMP
+                ),
+                new String[] {});
+
+        LocalDateTime total = null;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return total;
+
+    }
+
+    public void insertOrUpdate(int id, String name, String description, String color, String colortext, String timestamp)
+    {
+        boolean exists = this.isExists(id);
+        if(exists)
+        {
+            this.update(id, name, description, color, colortext, timestamp);
+        }
+        else
+        {
+            this.insert(id, name, description, color, colortext, timestamp);
+        }
+    }
+
+    private void update(int id, String name, String description, String color, String colortext, String timestamp)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".update");
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        super.database.execSQL(
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
+                        Tag.TABLE_NAME,
+                        Tag.COLUMN_NAME_NAME,
+                        Tag.COLUMN_NAME_DESCRIPTION,
+                        Tag.COLUMN_NAME_COLOR,
+                        Tag.COLUMN_NAME_COLORTEXT,
+                        Tag.COLUMN_NAME_TIMESTAMP,
+                        Tag.COLUMN_NAME_ID
+                ),
+                new Object[] {name, description, color, colortext, timestamp, id});
+    }
+
+    private boolean isExists(int id)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".isExists");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        Tag.COLUMN_NAME_ID,
+                        Tag.TABLE_NAME,
+                        Tag.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf(id)});
+
+        boolean exist = false;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                if(!cursor.isNull(0))
+                {
+                    exist = true;
+                }
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return exist;
     }
 }

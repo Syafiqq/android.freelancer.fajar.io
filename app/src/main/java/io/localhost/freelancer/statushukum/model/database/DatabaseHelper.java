@@ -173,6 +173,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTable");
 
+        MDM_Data.deleteAll(sqLiteDatabase);
         for(int i = -1, is = data.length(); ++i < is; )
         {
             try
@@ -199,6 +200,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".populateTagTable");
 
+        MDM_Tag.deleteAll(sqLiteDatabase);
         for(int i = -1, is = tag.length(); ++i < is; )
         {
             try
@@ -225,6 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
 
+        MDM_DataTag.deleteAll(sqLiteDatabase);
         for(int i = -1, is = datatag.length(); ++i < is; )
         {
             try

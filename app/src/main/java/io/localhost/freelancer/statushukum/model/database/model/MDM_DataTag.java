@@ -60,9 +60,25 @@ public class MDM_DataTag extends DatabaseModel
                 new Object[] {data, tag, timestamp});
     }
 
+    public static void deleteAll(SQLiteDatabase database)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
+        database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", DataTag.TABLE_NAME), new Object[] {});
+    }
+
     public void insert(int data, int tag, String timestamp)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
 
         MDM_DataTag.insert(super.database, data, tag, timestamp);
     }
@@ -101,5 +117,19 @@ public class MDM_DataTag extends DatabaseModel
         }
         cursor.close();
         return records;
+    }
+
+    public void deleteAll()
+    {
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_DataTag.deleteAll(super.database);
     }
 }

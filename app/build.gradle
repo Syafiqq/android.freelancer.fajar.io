@@ -43,5 +43,6 @@ dependencies {
     compile "com.mikepenz:iconics-core:2.8.1@aar"
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.github.kaedea:Android-Cloud-TagView-Plus:b546a5f073'
+    compile 'org.jetbrains:annotations-java5:15.0'
     testCompile 'junit:junit:4.12'
 }

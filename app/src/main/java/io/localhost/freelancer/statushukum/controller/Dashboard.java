@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.jaredrummler.materialspinner.MaterialSpinner;
 
@@ -21,6 +22,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Observable;
+import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter;
@@ -35,15 +38,50 @@ public class Dashboard extends AppCompatActivity
 
     private void doSync()
     {
+        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
         if(!this.isSyncOperated)
         {
             this.isSyncOperated = true;
             new AsyncTask<Void, Void, Void>()
             {
+                private Observer callback;
+
+                @Override
+                protected void onPreExecute()
+                {
+                    callback = new Observer()
+                    {
+                        @Override
+                        public void update(final Observable observable, final Object o)
+                        {
+                            Dashboard.super.runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    switch((Integer) o)
+                                    {
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
+                                        {
+                                            Toast.makeText(Dashboard.this, Dashboard.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
+                                        {
+                                            Toast.makeText(Dashboard.this, Dashboard.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    super.onPreExecute();
+                }
+
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Dashboard.this).doSync();
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Dashboard.this).doSync(this.callback);
                     return null;
                 }
 

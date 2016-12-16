@@ -48,7 +48,7 @@ public class Year extends AppCompatActivity
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Year.this).doSync();
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Year.this).doSync(null);
                     return null;
                 }
 

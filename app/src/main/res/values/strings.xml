@@ -31,4 +31,6 @@
     <string name="content_setting_s_deep_sync_label_desc_1">Membutuhkan paket data yang besar</string>
     <string name="content_setting_s_deep_sync_label_desc_0">Menghapus semua data dan menyinkronkan secara total data dari server</string>
     <string name="content_setting_s_deep_sync_label">Total Sinkron</string>
+    <string name="system_setting_server_version_error">Tidak dapat mengambil data dari server</string>
+    <string name="system_setting_server_version_success">Update Berhasil</string>
 </resources>
