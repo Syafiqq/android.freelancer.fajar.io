@@ -18,8 +18,8 @@ public class NetworkConstants
 
     static
     {
-        NetworkConstants.API_BASE_URL = "http://freelancer.fajar.io";
-        NetworkConstants.API_SITE_URL = "http://freelancer.fajar.io";
+        NetworkConstants.API_BASE_URL = "http://freelancer-fajar.esy.es/";
+        NetworkConstants.API_SITE_URL = "http://freelancer-fajar.esy.es/";
     }
 
     @org.jetbrains.annotations.Contract(pure = true)
