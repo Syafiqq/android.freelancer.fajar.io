@@ -17,6 +17,8 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
@@ -36,21 +38,65 @@ public class Detail extends AppCompatActivity
     public static final String EXTRA_ID   = "id";
     private int id;
     private boolean isSyncOperated = false;
+    private HtmlTextView no;
+    private HtmlTextView description;
+    private HtmlTextView status;
+    private TagView      tag;
 
 
     private void doSync()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-
         if(!this.isSyncOperated)
         {
             this.isSyncOperated = true;
             new AsyncTask<Void, Void, Void>()
             {
+                private Observer callback;
+
+                @Override
+                protected void onPreExecute()
+                {
+                    callback = new Observer()
+                    {
+                        @Override
+                        public void update(final Observable observable, final Object o)
+                        {
+                            Detail.super.runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    switch((Integer) o)
+                                    {
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
+                                        {
+                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
+                                        {
+                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                            Detail.this.setDetail();
+                                        }
+                                        break;
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
+                                        {
+                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+                                    }
+                                }
+                            });
+                        }
+                    };
+                    super.onPreExecute();
+                }
+
                 @Override
                 protected Void doInBackground(Void... voids)
                 {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync(null);
+                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync(this.callback);
                     return null;
                 }
 
@@ -74,7 +120,28 @@ public class Detail extends AppCompatActivity
         this.id = intent.getIntExtra(Detail.EXTRA_ID, -1);
 
         this.setToolbar();
+        this.setProperty();
         this.setDetail();
+    }
+
+    private void setProperty()
+    {
+        this.no = (HtmlTextView) super.findViewById(R.id.content_detail_htv_no);
+        //final HtmlTextView year        = (HtmlTextView) super.findViewById(R.id.content_detail_htv_year);
+        this.description = (HtmlTextView) super.findViewById(R.id.content_detail_htv_description);
+        this.status = (HtmlTextView) super.findViewById(R.id.content_detail_htv_status);
+        this.tag = (TagView) super.findViewById(R.id.content_detail_tv_tag);
+        tag.setOnTagClickListener(new OnTagClickListener()
+        {
+            @Override
+            public void onTagClick(int i, Tag tag)
+            {
+                if(tag instanceof ME_TagAdapter)
+                {
+                    Toast.makeText(Detail.this, ((ME_TagAdapter) tag).description, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void setToolbar()
@@ -156,49 +223,49 @@ public class Detail extends AppCompatActivity
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".setDetail");
 
-        final MDM_Data             modelData    = MDM_Data.getInstance(this);
-        final MDM_DataTag          modelDataTag = MDM_DataTag.getInstance(this);
-        final MDM_Tag              modelTag     = MDM_Tag.getInstance(this);
-        final ME_Data              dbResultData = modelData.getFromID(this.id);
-        final Map<Integer, ME_Tag> dbResultTag  = modelTag.getAll();
-
-        final HtmlTextView no          = (HtmlTextView) super.findViewById(R.id.content_detail_htv_no);
-        final HtmlTextView year        = (HtmlTextView) super.findViewById(R.id.content_detail_htv_year);
-        final HtmlTextView description = (HtmlTextView) super.findViewById(R.id.content_detail_htv_description);
-        final HtmlTextView status      = (HtmlTextView) super.findViewById(R.id.content_detail_htv_status);
-        final TagView      tag         = (TagView) super.findViewById(R.id.content_detail_tv_tag);
-        tag.setOnTagClickListener(new OnTagClickListener()
+        new AsyncTask<Void, Void, Void>()
         {
+
+            List<Integer> dbResultTagID;
+            Map<Integer, ME_Tag> dbResultTag;
+            ME_Data dbResultData;
+
             @Override
-            public void onTagClick(int i, Tag tag)
+            protected Void doInBackground(Void... voids)
             {
-                if(tag instanceof ME_TagAdapter)
+                final MDM_Data    modelData    = MDM_Data.getInstance(Detail.this);
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Detail.this);
+                final MDM_Tag     modelTag     = MDM_Tag.getInstance(Detail.this);
+                this.dbResultData = modelData.getFromID(Detail.this.id);
+                this.dbResultTag = modelTag.getAll();
+                this.dbResultTagID = modelDataTag.getTagFromDataID(Detail.this.id);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+                if(dbResultData != null)
                 {
-                    Toast.makeText(Detail.this, ((ME_TagAdapter) tag).description, Toast.LENGTH_SHORT).show();
+                    no.setHtml(dbResultData.getNo());
+                    //year.setHtml(String.valueOf(dbResultData.getYear()));
+                    description.setHtml(dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : dbResultData.getDescription());
+                    status.setHtml(dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : dbResultData.getStatus());
+
+                    while(!dbResultTagID.isEmpty())
+                    {
+                        tag.addTag(new ME_TagAdapter(dbResultTag.get(dbResultTagID.remove(0)), 12f));
+                    }
                 }
+                else
+                {
+                    no.setText("-");
+                    //year.setText("-");
+                    description.setText("-");
+                    status.setText("-");
+                }
+                super.onPostExecute(aVoid);
             }
-        });
-
-        if(dbResultData != null)
-        {
-            no.setHtml(dbResultData.getNo());
-            year.setHtml(String.valueOf(dbResultData.getYear()));
-            description.setHtml(dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : dbResultData.getDescription());
-            status.setHtml(dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : dbResultData.getStatus());
-
-            final List<Integer> dbResultTagID = modelDataTag.getTagFromDataID(this.id);
-            while(!dbResultTagID.isEmpty())
-            {
-                tag.addTag(new ME_TagAdapter(dbResultTag.get(dbResultTagID.remove(0)), 12f));
-            }
-        }
-        else
-        {
-            no.setText("-");
-            year.setText("-");
-            description.setText("-");
-            status.setText("-");
-        }
-
+        }.execute();
     }
 }
