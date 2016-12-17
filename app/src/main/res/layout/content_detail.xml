@@ -17,7 +17,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/card"
+        android:orientation="vertical"
+        android:paddingBottom="24dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="24dp">
 
         <TextView
             android:layout_width="match_parent"
@@ -39,25 +44,25 @@
             android:layout_marginBottom="32dp"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/content_detail_tv_year_label"
-            android:textSize="12sp"/>
+        <!--        <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/content_detail_tv_year_label"
+                    android:textSize="12sp"/>
 
-        <org.sufficientlysecure.htmltextview.HtmlTextView
-            android:id="@+id/content_detail_htv_year"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textAppearance="@style/TextAppearance.AppCompat"
-            android:textSize="20sp"/>
+                <org.sufficientlysecure.htmltextview.HtmlTextView
+                    android:id="@+id/content_detail_htv_year"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/TextAppearance.AppCompat"
+                    android:textSize="20sp"/>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            />
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="32dp"
+                    />-->
 
         <TextView
             android:layout_width="match_parent"
