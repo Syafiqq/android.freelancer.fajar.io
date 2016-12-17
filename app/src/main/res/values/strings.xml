@@ -19,10 +19,10 @@
     <string name="activity_detail_toolbar_logo_title">Status Hukum</string>
     <string name="activity_detail_menu_sync">Sync</string>
     <string name="activity_detail_menu_setting">Setting</string>
-    <string name="content_detail_tv_no_label">Status Hukum</string>
+    <string name="content_detail_tv_no_label">Nomor</string>
     <string name="content_detail_tv_year_label">Tahun</string>
-    <string name="content_detail_tv_description_label">Deskripsi</string>
-    <string name="content_detail_tv_tag_label">Tag</string>
+    <string name="content_detail_tv_description_label">Tentang</string>
+    <string name="content_detail_tv_tag_label">Label Pendukung</string>
     <string name="content_detail_tv_status_label">Status</string>
     <string name="content_setting_s_show_label_desc">Hanya menampilkan tahun yang memiliki data status hukum saja</string>
     <string name="content_setting_s_show_label">Tampilkan Yang Ada</string>
