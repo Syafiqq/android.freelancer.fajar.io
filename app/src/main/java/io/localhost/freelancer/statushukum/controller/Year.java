@@ -212,6 +212,11 @@ public class Year extends AppCompatActivity
                 this.doSync();
                 return true;
             }
+            case R.id.activity_year_menu_refresh:
+            {
+                this.setYearList();
+                return true;
+            }
             case android.R.id.home:
                 //perhaps use intent if needed but i'm sure there's a specific intent action for up you can use to handle
                 Year.this.onBackButtonPressed();

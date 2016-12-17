@@ -223,6 +223,11 @@ public class Dashboard extends AppCompatActivity
                 this.doSync();
                 return true;
             }
+            case R.id.activity_dashboard_menu_refresh:
+            {
+                this.setDataList();
+                return true;
+            }
             case android.R.id.home:
                 //perhaps use intent if needed but i'm sure there's a specific intent action for up you can use to handle
                 Dashboard.this.onBackButtonPressed();
