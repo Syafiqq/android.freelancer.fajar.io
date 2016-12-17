@@ -85,10 +85,153 @@ public class Setting
     public synchronized void doSync(final Observer message)
     {
         this.sycnObserve = message;
-        this.getServerVersion();
+        this.getServerVersion(new TaskDelegatable()
+        {
+            @Override
+            public void delegate(Object... data)
+            {
+                if(data[0] instanceof JSONObject)
+                {
+                    try
+                    {
+                        Setting.this.getDBVersion(LocalDateTime.parse(((JSONObject) data[0]).getString("timestamp"), timeStampFormat), new TaskDelegatable()
+                        {
+                            @Override
+                            public void delegate(Object... data)
+                            {
+                                Setting.this.getStreamData((LocalDateTime) data[0], (LocalDateTime) data[1], new TaskDelegatable()
+                                {
+                                    @Override
+                                    public void delegate(Object... data)
+                                    {
+                                        Setting.this.syncData((JSONArray) data[0]);
+                                        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                                        dataTagModel.deleteAll();
+                                        Setting.this.insertData((JSONArray) data[1]);
+                                        Setting.this.syncTag((JSONArray) data[2]);
+                                        Setting.this.sycnObserve.update(null, SYNC_SUCCESS);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    catch(JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
-    private void getStreamData(final LocalDateTime serverVersion, final LocalDateTime dbVersion)
+    public synchronized void doDeepSync(Observer message)
+    {
+        this.sycnObserve = message;
+        this.getServerVersion(new TaskDelegatable()
+        {
+            @Override
+            public void delegate(Object... data)
+            {
+                if(data[0] instanceof JSONObject)
+                {
+                    try
+                    {
+                        Setting.this.getStreamData(LocalDateTime.parse(((JSONObject) data[0]).getString("timestamp"), timeStampFormat), LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat), new TaskDelegatable()
+                        {
+                            @Override
+                            public void delegate(Object... data)
+                            {
+                                MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                                dataModel.deleteAll();
+                                Setting.this.insertData((JSONArray) data[0]);
+                                MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                                dataTagModel.deleteAll();
+                                Setting.this.insertDataTag((JSONArray) data[1]);
+                                MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                                tagModel.deleteAll();
+                                Setting.this.insertTag((JSONArray) data[2]);
+                                Setting.this.sycnObserve.update(null, SYNC_SUCCESS);
+                            }
+                        });
+                    }
+                    catch(JSONException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    private synchronized void insertTag(JSONArray tag)
+    {
+        MDM_Tag dataTag = MDM_Tag.getInstance(this.context);
+        for(int i = -1, is = tag.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = tag.getJSONObject(i);
+                dataTag.insert(
+                        entry.getInt("id"),
+                        entry.getString("name"),
+                        entry.getString("description"),
+                        entry.getString("color"),
+                        entry.getString("colortext"),
+                        entry.getString("timestamp"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
+    }
+
+    private synchronized void insertDataTag(JSONArray datatag)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
+        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(this.context);
+        for(int i = -1, is = datatag.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = datatag.getJSONObject(i);
+                dataTagModel.insert(
+                        entry.getInt("data"),
+                        entry.getInt("tag"),
+                        entry.getString("timestamp"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
+    }
+
+    private synchronized void insertData(JSONArray data)
+    {
+        MDM_Data dataModel = MDM_Data.getInstance(this.context);
+        for(int i = -1, is = data.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = data.getJSONObject(i);
+                dataModel.insert(
+                        entry.getInt("id"),
+                        entry.getInt("year"),
+                        entry.getString("no"),
+                        entry.getString("description"),
+                        entry.getString("status"),
+                        entry.getString("timestamp"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
+    }
+
+    private synchronized void getStreamData(final LocalDateTime serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         if(serverVersion.isEqual(dbVersion))
@@ -124,10 +267,7 @@ public class Setting
                                         response = response.getJSONObject("data");
                                         if(response.has("data") && response.has("tag") && response.has("datatag"))
                                         {
-                                            Setting.this.syncData(response.getJSONArray("data"));
-                                            Setting.this.syncDataTag(response.getJSONArray("datatag"));
-                                            Setting.this.syncTag(response.getJSONArray("tag"));
-                                            Setting.this.sycnObserve.update(null, SYNC_SUCCESS);
+                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("datatag"), response.getJSONArray("tag"));
                                             return;
                                         }
                                     }
@@ -166,7 +306,7 @@ public class Setting
 
     }
 
-    private void syncTag(JSONArray tag)
+    private synchronized void syncTag(JSONArray tag)
     {
         MDM_Tag dataTag = MDM_Tag.getInstance(this.context);
         for(int i = -1, is = tag.length(); ++i < is; )
@@ -189,30 +329,7 @@ public class Setting
         }
     }
 
-    private void syncDataTag(JSONArray datatag)
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
-
-        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(this.context);
-        dataTagModel.deleteAll();
-        for(int i = -1, is = datatag.length(); ++i < is; )
-        {
-            try
-            {
-                final JSONObject entry = datatag.getJSONObject(i);
-                dataTagModel.insert(
-                        entry.getInt("data"),
-                        entry.getInt("tag"),
-                        entry.getString("timestamp"));
-            }
-            catch(JSONException ignored)
-            {
-                Log.i(CLASS_NAME, "JSONException");
-            }
-        }
-    }
-
-    private void syncData(final JSONArray data)
+    private synchronized void syncData(final JSONArray data)
     {
         MDM_Data dataModel = MDM_Data.getInstance(this.context);
         for(int i = -1, is = data.length(); ++i < is; )
@@ -235,7 +352,7 @@ public class Setting
         }
     }
 
-    private void getDBVersion(LocalDateTime serverVersion)
+    private synchronized void getDBVersion(LocalDateTime serverVersion, TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
         if(serverVersion == null)
@@ -264,11 +381,11 @@ public class Setting
             {
                 defaultTimeStamp = latestDataTag;
             }
-            this.getStreamData(serverVersion, defaultTimeStamp);
+            delegatable.delegate(serverVersion, defaultTimeStamp);
         }
     }
 
-    private void getServerVersion()
+    private synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
         String url = NetworkConstants.API_SITE_URL + "/api/latest";
@@ -289,7 +406,7 @@ public class Setting
                                         response = response.getJSONObject("data");
                                         if(response.has("timestamp"))
                                         {
-                                            Setting.this.getDBVersion(LocalDateTime.parse(response.getString("timestamp"), timeStampFormat));
+                                            delegatable.delegate(response);
                                             return;
                                         }
                                     }
@@ -327,8 +444,8 @@ public class Setting
         NetworkRequestQueue.getInstance(this.context).addToRequestQueue(request);
     }
 
-    public synchronized void doDeepSync()
+    private interface TaskDelegatable
     {
-
+        void delegate(Object... data);
     }
 }
