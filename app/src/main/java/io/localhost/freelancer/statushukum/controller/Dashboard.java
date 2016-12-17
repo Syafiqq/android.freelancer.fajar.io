@@ -34,6 +34,7 @@ public class Dashboard extends AppCompatActivity
     private CountPerYearAdapter recycleViewAdapter;
     private boolean isSyncOperated = false;
     private List<MDM_Data.CountPerYear> entryList;
+    private SearchView                  search;
 
     private void doSync()
     {
@@ -70,6 +71,12 @@ public class Dashboard extends AppCompatActivity
                                             Toast.makeText(Dashboard.this, Dashboard.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
                                             Dashboard.this.setDataList();
                                         }
+                                        break;
+                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
+                                        {
+                                            Toast.makeText(Dashboard.this, Dashboard.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
                                     }
                                 }
                             });
@@ -103,7 +110,6 @@ public class Dashboard extends AppCompatActivity
         setContentView(R.layout.activity_dashboard);
         this.setToolbar();
         this.setProperty();
-        this.setDataList();
     }
 
     private void setProperty()
@@ -118,8 +124,9 @@ public class Dashboard extends AppCompatActivity
         {
             this.entryList.clear();
         }
+        this.setDataList();
         this.setYearList();
-        final SearchView search = (SearchView) super.findViewById(R.id.content_dashboard_search_filter);
+        this.search = (SearchView) super.findViewById(R.id.content_dashboard_search_filter);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
@@ -170,7 +177,7 @@ public class Dashboard extends AppCompatActivity
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                Dashboard.this.recycleViewAdapter.notifyDataSetChanged();
+                Dashboard.this.search.setQuery(Dashboard.this.search.getQuery(), true);
                 super.onPostExecute(aVoid);
             }
         }.execute();
