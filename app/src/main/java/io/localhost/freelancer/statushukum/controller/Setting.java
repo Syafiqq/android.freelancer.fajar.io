@@ -10,6 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
+
+import java.util.Observable;
+import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 
@@ -34,17 +38,8 @@ public class Setting extends AppCompatActivity
 
     private void registerComponent()
     {
-        final Switch show     = (Switch) super.findViewById(R.id.content_setting_s_show);
         final Switch sync     = (Switch) super.findViewById(R.id.content_setting_s_sync);
         final Switch deepSync = (Switch) super.findViewById(R.id.content_setting_s_deep_sync);
-        show.setChecked(this.setting.isAllShowed());
-        show.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
-            {
-                Setting.this.setting.setAllShowed(isChecked);
-            }
-        });
 
         sync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -52,24 +47,11 @@ public class Setting extends AppCompatActivity
             {
                 if(isChecked)
                 {
-                    new AsyncTask<Void, Void, Void>()
+                    if(buttonView instanceof Switch)
                     {
-                        @Override
-                        protected Void doInBackground(Void... voids)
-                        {
-                            Setting.this.setting.doSync(null);
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid)
-                        {
-                            if(buttonView instanceof Switch)
-                            {
-                                buttonView.setChecked(false);
-                            }
-                        }
-                    }.execute();
+                        buttonView.setEnabled(false);
+                    }
+                    Setting.this.doSync(buttonView);
                 }
             }
         });
@@ -80,27 +62,136 @@ public class Setting extends AppCompatActivity
             {
                 if(isChecked)
                 {
-                    new AsyncTask<Void, Void, Void>()
+                    if(buttonView instanceof Switch)
                     {
-                        @Override
-                        protected Void doInBackground(Void... voids)
-                        {
-                            Setting.this.setting.doDeepSync();
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid)
-                        {
-                            if(buttonView instanceof Switch)
-                            {
-                                buttonView.setChecked(false);
-                            }
-                        }
-                    }.execute();
+                        buttonView.setEnabled(false);
+                    }
+                    Setting.this.doDeepSync(buttonView);
                 }
             }
         });
+    }
+
+    private synchronized void doDeepSync(final CompoundButton buttonView)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+        new AsyncTask<Void, Void, Void>()
+        {
+            private Observer callback;
+
+            @Override
+            protected void onPreExecute()
+            {
+                callback = new Observer()
+                {
+                    @Override
+                    public void update(final Observable observable, final Object o)
+                    {
+                        Setting.super.runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                switch((Integer) o)
+                                {
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                }
+                                buttonView.setChecked(false);
+                                buttonView.setEnabled(true);
+                            }
+                        });
+                    }
+                };
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids)
+            {
+                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Setting.this).doDeepSync(this.callback);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+            }
+        }.execute();
+    }
+
+    private synchronized void doSync(final CompoundButton buttonView)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+        new AsyncTask<Void, Void, Void>()
+        {
+            private Observer callback;
+
+            @Override
+            protected void onPreExecute()
+            {
+                callback = new Observer()
+                {
+                    @Override
+                    public void update(final Observable observable, final Object o)
+                    {
+                        Setting.super.runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                switch((Integer) o)
+                                {
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
+                                    {
+                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                }
+                                buttonView.setChecked(false);
+                                buttonView.setEnabled(true);
+                            }
+                        });
+                    }
+                };
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids)
+            {
+                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Setting.this).doSync(this.callback);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+            }
+        }.execute();
     }
 
     private void setToolbar()
