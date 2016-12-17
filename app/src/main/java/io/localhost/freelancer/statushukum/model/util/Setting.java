@@ -43,6 +43,8 @@ public class Setting
     public static final String CLASS_PATH   = "io.localhost.freelancer.statushukum.model.util.Setting";
     public static final int    SYNC_FAILED  = 0;
     public static final int    SYNC_SUCCESS = 1;
+    public static final int    SYNC_EQUAL   = 2;
+
 
     public static final DateTimeFormatter timeStampFormat = DateTimeFormat.forPattern(DatabaseHelper.TIMESTAMP_FORMAT);
     private static Setting ourInstance;
@@ -89,7 +91,11 @@ public class Setting
     private void getStreamData(final LocalDateTime serverVersion, final LocalDateTime dbVersion)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
-        Log.i(CLASS_NAME, serverVersion.toString(timeStampFormat) + " " + dbVersion.toString(timeStampFormat));
+        if(serverVersion.isEqual(dbVersion))
+        {
+            Setting.this.sycnObserve.update(null, SYNC_EQUAL);
+            return;
+        }
         String url = null;
         try
         {
@@ -241,9 +247,11 @@ public class Setting
         {
             final MDM_Data      modelData        = MDM_Data.getInstance(this.context);
             final MDM_Tag       modelTag         = MDM_Tag.getInstance(this.context);
+            final MDM_DataTag   modelDataTag     = MDM_DataTag.getInstance(this.context);
             LocalDateTime       defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
             final LocalDateTime latestData       = modelData.getLatestTimestamp();
             final LocalDateTime latestTag        = modelTag.getLatestTimestamp();
+            final LocalDateTime latestDataTag    = modelDataTag.getLatestTimestamp();
             if((latestData != null) && defaultTimeStamp.isBefore(latestData))
             {
                 defaultTimeStamp = latestData;
@@ -251,6 +259,10 @@ public class Setting
             if((latestTag != null) && defaultTimeStamp.isBefore(latestTag))
             {
                 defaultTimeStamp = latestTag;
+            }
+            if((latestDataTag != null) && defaultTimeStamp.isBefore(latestDataTag))
+            {
+                defaultTimeStamp = latestDataTag;
             }
             this.getStreamData(serverVersion, defaultTimeStamp);
         }

@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import org.joda.time.LocalDateTime;
+
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
+import io.localhost.freelancer.statushukum.model.util.Setting;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database.model> created by :
@@ -131,5 +134,41 @@ public class MDM_DataTag extends DatabaseModel
         }
 
         MDM_DataTag.deleteAll(super.database);
+    }
+
+    public LocalDateTime getLatestTimestamp()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
+                        DataTag.COLUMN_NAME_TIMESTAMP,
+                        DataTag.TABLE_NAME,
+                        DataTag.COLUMN_NAME_TIMESTAMP
+                ),
+                new String[] {});
+
+        LocalDateTime total = null;
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return total;
+
     }
 }

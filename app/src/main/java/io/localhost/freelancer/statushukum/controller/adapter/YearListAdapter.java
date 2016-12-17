@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
+import java.util.Iterator;
 import java.util.List;
 
 import io.localhost.freelancer.statushukum.R;
@@ -34,13 +37,14 @@ import me.kaede.tagview.TagView;
  * Github       : syafiqq
  */
 
-public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHolder>
+public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHolder> implements Filterable
 {
     public static final String CLASS_NAME = "YearListAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter";
 
     private final List<MDM_Data.YearMetadata> yearList;
     private final Context                     context;
+    private       Filter                      filter;
 
     public YearListAdapter(final List<MDM_Data.YearMetadata> yearList, final Context context)
     {
@@ -57,7 +61,6 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
 
         this.yearList.clear();
         this.yearList.addAll(YearMetadata);
-        super.notifyDataSetChanged();
     }
 
     @Override
@@ -74,18 +77,23 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     {
 
         final MDM_Data.YearMetadata tmpMetadata = this.yearList.get(position);
+        final Iterator<ME_Tag>      tags        = tmpMetadata.getTags().iterator();
         holder.tag.removeAllTags();
 
         holder.no.setText(tmpMetadata.getNo());
-        holder.year.setText(String.valueOf(tmpMetadata.getYear()));
-        holder.search.setImageDrawable(new IconicsDrawable(this.context)
-                .icon(MaterialDesignIconic.Icon.gmi_search)
-                .color(ContextCompat.getColor(this.context, R.color.green_a700))
+        holder.task.setImageDrawable(new IconicsDrawable(this.context)
+                .icon(MaterialDesignIconic.Icon.gmi_receipt)
+                .color(ContextCompat.getColor(this.context, R.color.grey_700))
                 .sizeDp(24));
-        for(final ME_Tag tag : tmpMetadata.getTags())
+        for(int i = -1, is = tmpMetadata.getTagSize() > 3 ? 3 : tmpMetadata.getTagSize(); ++i < is; )
         {
-            holder.tag.addTag(new ME_TagAdapter(tag, 10f));
+            holder.tag.addTag(new ME_TagAdapter(tags.next(), 10f));
         }
+        if(tmpMetadata.getTagSize() > 3)
+        {
+            holder.tag.addTag(new ME_TagAdapter(new ME_Tag(-1, "...", "Dan ke-" + (tmpMetadata.getTagSize() - 3) + " lainnya.", ContextCompat.getColor(this.context, R.color.black), ContextCompat.getColor(this.context, R.color.white)), 10f));
+        }
+
         holder.tag.setOnTagClickListener(null);
         holder.tag.setOnTagClickListener(new OnTagClickListener()
         {
@@ -120,14 +128,25 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
         return this.yearList.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    @Override
+    public Filter getFilter()
+    {
+        return this.filter;
+    }
+
+    public void setFilter(Filter filter)
+    {
+        this.filter = filter;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter.ViewHolder";
 
-        public final TextView no, year;
-        final ImageView search;
-        final TagView   tag;
+        public final TextView  no;
+        final        ImageView task;
+        final        TagView   tag;
         View.OnClickListener listener;
 
         ViewHolder(final View view)
@@ -135,8 +154,7 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
             super(view);
 
             this.no = (TextView) view.findViewById(R.id.content_year_recycler_view_item_no);
-            this.year = (TextView) view.findViewById(R.id.content_year_recycler_view_item_year);
-            this.search = (ImageView) view.findViewById(R.id.content_year_recycler_view_item_magnify);
+            this.task = (ImageView) view.findViewById(R.id.content_year_recycler_view_item_task);
             this.tag = (TagView) view.findViewById(R.id.content_year_recycler_view_item_tag);
         }
 
