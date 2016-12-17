@@ -228,4 +228,20 @@ public class MDM_Tag extends DatabaseModel
         cursor.close();
         return exist;
     }
+
+    public void deleteAll()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_Tag.deleteAll(super.database);
+    }
 }
