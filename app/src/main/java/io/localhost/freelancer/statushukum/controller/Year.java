@@ -9,24 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter;
-import io.localhost.freelancer.statushukum.controller.filter.YearListFilter;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
@@ -38,78 +33,10 @@ public class Year extends AppCompatActivity
     public static final String CLASS_PATH      = "io.localhost.freelancer.statushukum.controller.Year";
     public static final String EXTRA_YEAR      = "year";
     public static final String EXTRA_YEAR_SIZE = "count";
-    private int             year;
-    private int             yearSize;
-    private YearListAdapter yearListAdapter;
-    private boolean isSyncOperated = false;
+    private int                         year;
+    private int                         yearSize;
+    private YearListAdapter             yearListAdapter;
     private List<MDM_Data.YearMetadata> entryList;
-    private SearchView                  search;
-
-
-    private void doSync()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-        if(!this.isSyncOperated)
-        {
-            this.isSyncOperated = true;
-            new AsyncTask<Void, Void, Void>()
-            {
-                private Observer callback;
-
-                @Override
-                protected void onPreExecute()
-                {
-                    callback = new Observer()
-                    {
-                        @Override
-                        public void update(final Observable observable, final Object o)
-                        {
-                            Year.super.runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    switch((Integer) o)
-                                    {
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                        {
-                                            Toast.makeText(Year.this, Year.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                        {
-                                            Toast.makeText(Year.this, Year.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                            Year.this.setYearList();
-                                        }
-                                        break;
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                        {
-                                            Toast.makeText(Year.this, Year.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                    }
-                                }
-                            });
-                        }
-                    };
-                    super.onPreExecute();
-                }
-
-                @Override
-                protected Void doInBackground(Void... voids)
-                {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Year.this).doSync(this.callback);
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void aVoid)
-                {
-                    Year.this.isSyncOperated = false;
-                }
-            }.execute();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -142,22 +69,6 @@ public class Year extends AppCompatActivity
         }
         this.setYearListAdapter();
         this.setYearList();
-        this.search = (SearchView) super.findViewById(R.id.content_year_search_filter);
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-        {
-            @Override
-            public boolean onQueryTextSubmit(String query)
-            {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText)
-            {
-                Year.this.yearListAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
     }
 
     private void setToolbar()
@@ -207,11 +118,6 @@ public class Year extends AppCompatActivity
                 startActivity(new Intent(this, Setting.class));
                 return true;
             }
-            case R.id.activity_year_menu_sync:
-            {
-                this.doSync();
-                return true;
-            }
             case R.id.activity_year_menu_refresh:
             {
                 this.setYearList();
@@ -246,7 +152,6 @@ public class Year extends AppCompatActivity
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_year_recycle_view_container);
         this.yearListAdapter = new YearListAdapter(new ArrayList<MDM_Data.YearMetadata>(0), this);
-        this.yearListAdapter.setFilter(new YearListFilter(this.yearListAdapter, this.entryList));
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -254,7 +159,7 @@ public class Year extends AppCompatActivity
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setYearList()
+    private synchronized void setYearList()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".setYearList");
 
@@ -288,9 +193,18 @@ public class Year extends AppCompatActivity
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                Year.this.search.setQuery(Year.this.search.getQuery(), true);
+                Year.this.yearListAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
+    }
+
+    @Override
+    protected void onPostResume()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onPostResume");
+        this.setYearList();
+
+        super.onPostResume();
     }
 }
