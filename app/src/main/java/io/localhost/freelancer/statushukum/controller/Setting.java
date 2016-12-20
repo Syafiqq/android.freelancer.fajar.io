@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -52,10 +53,11 @@ public class Setting extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
-                mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {"syafiq.rezpector@gmail.com"});
-                mailto.putExtra(Intent.EXTRA_SUBJECT, "Status Hukum Feedback");
-                mailto.putExtra(Intent.EXTRA_TEXT, "Saya memberikan saran untuk aplikasi ini");
+                final Resources resources = Setting.this.getResources();
+                final Intent    mailto    = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
+                mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {resources.getString(R.string.activity_setting_mailto_receipt)});
+                mailto.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.activity_setting_mailto_subject));
+                mailto.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.activity_setting_mailto_content));
                 Setting.super.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
             }
         });
