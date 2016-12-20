@@ -3,15 +3,10 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".controller.Detail">
-    <item
-        android:id="@+id/activity_detail_menu_sync"
-        android:orderInCategory="0"
-        android:title="@string/activity_detail_menu_sync"
-        app:showAsAction="never"/>
 
     <item
         android:id="@+id/activity_detail_menu_setting"
-        android:orderInCategory="1"
+        android:orderInCategory="0"
         android:title="@string/activity_detail_menu_setting"
         app:showAsAction="never"/>
 </menu>
