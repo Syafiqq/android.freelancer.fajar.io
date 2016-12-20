@@ -14,58 +14,6 @@
     tools:context="io.localhost.freelancer.statushukum.controller.Dashboard"
     tools:showIn="@layout/activity_dashboard">
 
-    <!--    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/content_dashboard_spinner_century_chooser"/>
-
-            <com.jaredrummler.materialspinner.MaterialSpinner
-                android:id="@+id/content_dashboard_spinner_century_chooser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                app:ms_text_color="@color/black"/>
-
-        </LinearLayout>-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:background="@drawable/card"
-        android:orientation="horizontal"
-        android:paddingBottom="8dp"
-        android:paddingEnd="16dp"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        >
-
-        <android.support.v7.widget.SearchView
-            android:id="@+id/content_dashboard_search_filter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-
-
-    <!--    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:background="@color/colorAccent"
-            android:orientation="horizontal">
-        </LinearLayout>-->
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/content_dashboard_recycle_view_container"
         android:layout_width="match_parent"

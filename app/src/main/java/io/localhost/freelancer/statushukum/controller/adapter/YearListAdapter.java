@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,14 +35,13 @@ import me.kaede.tagview.TagView;
  * Github       : syafiqq
  */
 
-public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHolder> implements Filterable
+public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHolder>
 {
     public static final String CLASS_NAME = "YearListAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter";
 
     private final List<MDM_Data.YearMetadata> yearList;
     private final Context                     context;
-    private       Filter                      filter;
 
     public YearListAdapter(final List<MDM_Data.YearMetadata> yearList, final Context context)
     {
@@ -126,17 +123,6 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     public int getItemCount()
     {
         return this.yearList.size();
-    }
-
-    @Override
-    public Filter getFilter()
-    {
-        return this.filter;
-    }
-
-    public void setFilter(Filter filter)
-    {
-        this.filter = filter;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener

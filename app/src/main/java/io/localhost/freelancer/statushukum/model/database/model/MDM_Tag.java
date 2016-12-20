@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.util.Log;
 
-import org.joda.time.LocalDateTime;
-
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -16,7 +14,6 @@ import java.util.Map;
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.Tag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
-import io.localhost.freelancer.statushukum.model.util.Setting;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database.model> created by :
@@ -56,13 +53,13 @@ public class MDM_Tag extends DatabaseModel
         return MDM_Tag.mInstance;
     }
 
-    public static void insert(final SQLiteDatabase database, int id, String name, String description, String color, String colorText, String timestamp)
+    public static void insert(final SQLiteDatabase database, int id, String name, String description, String color, String colorText)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
         database.execSQL(
-                String.format(Locale.getDefault(), "INSERT INTO %s(`id`, `name`, `description`, `color`, `colortext`, `timestamp`) VALUES (?, ?, ?, ?, ?, ?)", Tag.TABLE_NAME),
-                new Object[] {id, name, description, color, colorText, timestamp});
+                String.format(Locale.getDefault(), "INSERT INTO %s(`id`, `name`, `description`, `color`, `colortext`) VALUES (?, ?, ?, ?, ?)", Tag.TABLE_NAME),
+                new Object[] {id, name, description, color, colorText});
     }
 
     public static void deleteAll(final SQLiteDatabase database)
@@ -72,11 +69,27 @@ public class MDM_Tag extends DatabaseModel
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Tag.TABLE_NAME), new Object[] {});
     }
 
-    public void insert(int id, String name, String description, String color, String colorText, String timestamp)
+    public void insert(int id, String name, String description, String color, String colorText)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
 
-        MDM_Tag.insert(super.database, id, name, description, color, colorText, timestamp);
+        MDM_Tag.insert(super.database, id, name, description, color, colorText);
+    }
+
+    public void deleteAll()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ". deleteAll");
+
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_Tag.deleteAll(super.database);
     }
 
     public Map<Integer, ME_Tag> getAll()
@@ -117,56 +130,20 @@ public class MDM_Tag extends DatabaseModel
         return records;
     }
 
-    public LocalDateTime getLatestTimestamp()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
-                String.format(
-                        Locale.getDefault(),
-                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
-                        Tag.COLUMN_NAME_TIMESTAMP,
-                        Tag.TABLE_NAME,
-                        Tag.COLUMN_NAME_TIMESTAMP
-                ),
-                new String[] {});
-
-        LocalDateTime total = null;
-        if(cursor.moveToFirst())
-        {
-            do
-            {
-                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
-            }
-            while(cursor.moveToNext());
-        }
-        cursor.close();
-        return total;
-
-    }
-
-    public void insertOrUpdate(int id, String name, String description, String color, String colortext, String timestamp)
+    public void insertOrUpdate(int id, String name, String description, String color, String colortext)
     {
         boolean exists = this.isExists(id);
         if(exists)
         {
-            this.update(id, name, description, color, colortext, timestamp);
+            this.update(id, name, description, color, colortext);
         }
         else
         {
-            this.insert(id, name, description, color, colortext, timestamp);
+            this.insert(id, name, description, color, colortext);
         }
     }
 
-    private void update(int id, String name, String description, String color, String colortext, String timestamp)
+    private void update(int id, String name, String description, String color, String colortext)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".update");
         try
@@ -179,16 +156,15 @@ public class MDM_Tag extends DatabaseModel
         }
 
         super.database.execSQL(
-                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
                         Tag.TABLE_NAME,
                         Tag.COLUMN_NAME_NAME,
                         Tag.COLUMN_NAME_DESCRIPTION,
                         Tag.COLUMN_NAME_COLOR,
                         Tag.COLUMN_NAME_COLORTEXT,
-                        Tag.COLUMN_NAME_TIMESTAMP,
                         Tag.COLUMN_NAME_ID
                 ),
-                new Object[] {name, description, color, colortext, timestamp, id});
+                new Object[] {name, description, color, colortext, id});
     }
 
     private boolean isExists(int id)
@@ -227,21 +203,5 @@ public class MDM_Tag extends DatabaseModel
         }
         cursor.close();
         return exist;
-    }
-
-    public void deleteAll()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
-
-        try
-        {
-            super.openWrite();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        MDM_Tag.deleteAll(super.database);
     }
 }

@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import org.joda.time.LocalDateTime;
-
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -16,7 +14,6 @@ import java.util.Locale;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
-import io.localhost.freelancer.statushukum.model.util.Setting;
 
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Data;
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
@@ -59,20 +56,19 @@ public class MDM_Data extends DatabaseModel
         return MDM_Data.mInstance;
     }
 
-    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status, String timestamp)
+    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
         database.execSQL(
-                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?, ?)",
+                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?)",
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_ID,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
-                        Data.COLUMN_NAME_STATUS,
-                        Data.COLUMN_NAME_TIMESTAMP),
-                new Object[] {id, year, no, description, status, timestamp});
+                        Data.COLUMN_NAME_STATUS),
+                new Object[] {id, year, no, description, status});
     }
 
     public static void deleteAll(final SQLiteDatabase database)
@@ -82,23 +78,7 @@ public class MDM_Data extends DatabaseModel
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Data.TABLE_NAME), new Object[] {});
     }
 
-    public void deleteAll()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
-
-        try
-        {
-            super.openWrite();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        MDM_Data.deleteAll(super.database);
-    }
-
-    public void insert(int id, int year, String no, String description, String status, String timestamp)
+    public void insert(int id, int year, String no, String description, String status)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
         try
@@ -111,7 +91,23 @@ public class MDM_Data extends DatabaseModel
         }
 
 
-        MDM_Data.insert(super.database, id, year, no, description, status, timestamp);
+        MDM_Data.insert(super.database, id, year, no, description, status);
+    }
+
+    public void deleteAll()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ". deleteAll");
+
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_Data.deleteAll(super.database);
     }
 
     public List<CountPerYear> getCountPerYear()
@@ -194,41 +190,6 @@ public class MDM_Data extends DatabaseModel
         return records;
     }
 
-    public int getYearCount(int year)
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearCount");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
-                String.format(
-                        Locale.getDefault(),
-                        "SELECT count(`%s`) AS 'count' FROM `%s` WHERE `%s` = ? LIMIT 1",
-                        Data.COLUMN_NAME_ID,
-                        Data.TABLE_NAME,
-                        Data.COLUMN_NAME_YEAR
-                ),
-                new String[] {String.valueOf(year)});
-
-        int total = -1;
-        if(cursor.moveToFirst())
-        {
-            do
-            {
-                total = cursor.getInt(0);
-            }
-            while(cursor.moveToNext());
-        }
-        cursor.close();
-        return total;
-    }
-
     public ME_Data getFromID(int id)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getFromID");
@@ -268,55 +229,20 @@ public class MDM_Data extends DatabaseModel
         return total;
     }
 
-    public LocalDateTime getLatestTimestamp()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
-                String.format(
-                        Locale.getDefault(),
-                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
-                        Data.COLUMN_NAME_TIMESTAMP,
-                        Data.TABLE_NAME,
-                        Data.COLUMN_NAME_TIMESTAMP
-                ),
-                new String[] {});
-
-        LocalDateTime total = null;
-        if(cursor.moveToFirst())
-        {
-            do
-            {
-                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
-            }
-            while(cursor.moveToNext());
-        }
-        cursor.close();
-        return total;
-    }
-
-    public void insertOrUpdate(int id, int year, String no, String description, String status, String timestamp)
+    public void insertOrUpdate(int id, int year, String no, String description, String status)
     {
         boolean exists = this.isExists(id);
         if(exists)
         {
-            this.update(id, year, no, description, status, timestamp);
+            this.update(id, year, no, description, status);
         }
         else
         {
-            this.insert(id, year, no, description, status, timestamp);
+            this.insert(id, year, no, description, status);
         }
     }
 
-    private void update(int id, int year, String no, String description, String status, String timestamp)
+    private void update(int id, int year, String no, String description, String status)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".update");
         try
@@ -329,16 +255,15 @@ public class MDM_Data extends DatabaseModel
         }
 
         super.database.execSQL(
-                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
                         Data.COLUMN_NAME_STATUS,
-                        Data.COLUMN_NAME_TIMESTAMP,
                         Data.COLUMN_NAME_ID
                 ),
-                new Object[] {year, no, description, status, timestamp, id});
+                new Object[] {year, no, description, status, id});
     }
 
     private boolean isExists(int id)
