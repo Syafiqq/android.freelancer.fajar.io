@@ -22,8 +22,6 @@ public class Setting extends AppCompatActivity
     public static final String CLASS_NAME = "Setting";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Setting";
 
-    private io.localhost.freelancer.statushukum.model.util.Setting setting;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,15 +29,13 @@ public class Setting extends AppCompatActivity
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
         setContentView(R.layout.activity_setting);
-        this.setting = io.localhost.freelancer.statushukum.model.util.Setting.getInstance(this);
         this.setToolbar();
         this.registerComponent();
     }
 
     private void registerComponent()
     {
-        final Switch sync     = (Switch) super.findViewById(R.id.content_setting_s_sync);
-        final Switch deepSync = (Switch) super.findViewById(R.id.content_setting_s_deep_sync);
+        final Switch sync = (Switch) super.findViewById(R.id.content_setting_s_sync);
 
         sync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
@@ -55,82 +51,6 @@ public class Setting extends AppCompatActivity
                 }
             }
         });
-
-        deepSync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
-            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked)
-            {
-                if(isChecked)
-                {
-                    if(buttonView instanceof Switch)
-                    {
-                        buttonView.setEnabled(false);
-                    }
-                    Setting.this.doDeepSync(buttonView);
-                }
-            }
-        });
-    }
-
-    private synchronized void doDeepSync(final CompoundButton buttonView)
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-        new AsyncTask<Void, Void, Void>()
-        {
-            private Observer callback;
-
-            @Override
-            protected void onPreExecute()
-            {
-                callback = new Observer()
-                {
-                    @Override
-                    public void update(final Observable observable, final Object o)
-                    {
-                        Setting.super.runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                switch((Integer) o)
-                                {
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                }
-                                buttonView.setChecked(false);
-                                buttonView.setEnabled(true);
-                            }
-                        });
-                    }
-                };
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids)
-            {
-                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Setting.this).doDeepSync(this.callback);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-            }
-        }.execute();
     }
 
     private synchronized void doSync(final CompoundButton buttonView)
