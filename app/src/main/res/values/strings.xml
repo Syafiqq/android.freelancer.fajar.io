@@ -36,4 +36,6 @@
     <string name="system_setting_server_version_equal">Versi data sudah sama</string>
     <string name="activity_dashboard_menu_refresh">Refresh</string>
     <string name="activity_year_menu_refresh">Refresh</string>
+    <string name="content_setting_s_mailto_label">Saran</string>
+    <string name="content_setting_s_mailto_label_desc">Kirimkan saran kepada pengembang</string>
 </resources>

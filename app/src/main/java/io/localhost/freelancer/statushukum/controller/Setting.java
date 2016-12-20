@@ -1,5 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -9,8 +11,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
+
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -35,8 +41,24 @@ public class Setting extends AppCompatActivity
 
     private void registerComponent()
     {
-        final Switch sync = (Switch) super.findViewById(R.id.content_setting_s_sync);
-
+        final Switch      sync   = (Switch) super.findViewById(R.id.content_setting_s_sync);
+        final ImageButton button = (ImageButton) super.findViewById(R.id.content_setting_ib_mailto);
+        button.setImageDrawable(new IconicsDrawable(this)
+                .icon(MaterialDesignIconic.Icon.gmi_mail_send)
+                .color(ContextCompat.getColor(this, R.color.grey_700))
+                .sizeDp(24));
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
+                mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {"syafiq.rezpector@gmail.com"});
+                mailto.putExtra(Intent.EXTRA_SUBJECT, "Status Hukum Feedback");
+                mailto.putExtra(Intent.EXTRA_TEXT, "Saya memberikan saran untuk aplikasi ini");
+                Setting.super.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
+            }
+        });
         sync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
         {
             public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked)
