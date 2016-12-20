@@ -1,7 +1,6 @@
 package io.localhost.freelancer.statushukum.model.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -55,14 +54,14 @@ public class Setting
 
     private Setting(Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.context = context;
     }
 
     public static Setting getInstance(final Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         if(Setting.ourInstance == null)
         {
@@ -134,7 +133,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -156,14 +155,14 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
 
     private synchronized void insertDataTag(JSONArray datatag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
 
         MDM_DataTag dataTagModel = MDM_DataTag.getInstance(this.context);
         for(int i = -1, is = datatag.length(); ++i < is; )
@@ -177,7 +176,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -199,14 +198,14 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
 
     private synchronized void getStreamData(final LocalDateTime serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
+
         if(serverVersion.isEqual(dbVersion))
         {
             Setting.this.syncObserve.update(null, SYNC_EQUAL);
@@ -219,7 +218,7 @@ public class Setting
         }
         catch(UnsupportedEncodingException ignored)
         {
-            Log.i(CLASS_NAME, "UnsupportedEncodingException");
+
             this.syncObserve.update(null, SYNC_FAILED);
             return;
         }
@@ -246,7 +245,7 @@ public class Setting
                                     }
                                     catch(JSONException ignored)
                                     {
-                                        Log.i(CLASS_NAME, "JSONException");
+
                                     }
                                 }
                                 Setting.this.syncObserve.update(null, SYNC_FAILED);
@@ -257,7 +256,7 @@ public class Setting
                             @Override
                             public void onErrorResponse(VolleyError ignored)
                             {
-                                Log.i(CLASS_NAME, "onErrorResponse");
+
                                 Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         }
@@ -281,7 +280,7 @@ public class Setting
 
     private synchronized void getDBVersion(LocalDateTime serverVersion, TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
+
         if(serverVersion == null)
         {
             this.syncObserve.update(null, SYNC_FAILED);
@@ -302,7 +301,7 @@ public class Setting
 
     private synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
+
         String url = NetworkConstants.API_SITE_URL + "/api/latest";
         @NotNull
         final JsonObjectRequest request = new JsonObjectRequest
@@ -327,7 +326,7 @@ public class Setting
                                     }
                                     catch(JSONException ignored)
                                     {
-                                        Log.i(CLASS_NAME, "JSONException");
+
                                     }
                                 }
                                 Setting.this.syncObserve.update(null, SYNC_FAILED);
@@ -338,7 +337,7 @@ public class Setting
                             @Override
                             public void onErrorResponse(VolleyError ignored)
                             {
-                                Log.i(CLASS_NAME, "onErrorResponse");
+
                                 Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         }

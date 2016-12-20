@@ -3,7 +3,6 @@ package io.localhost.freelancer.statushukum.model.database.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -36,18 +35,18 @@ public class MDM_Data extends DatabaseModel
     private MDM_Data(final Context context)
     {
         super(context);
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
     }
 
     public static MDM_Data getInstance(final Context ctx)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
+
          */
         if(MDM_Data.mInstance == null)
         {
@@ -58,7 +57,7 @@ public class MDM_Data extends DatabaseModel
 
     public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
+
 
         database.execSQL(
                 String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?)",
@@ -73,21 +72,21 @@ public class MDM_Data extends DatabaseModel
 
     public static void deleteAll(final SQLiteDatabase database)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
 
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Data.TABLE_NAME), new Object[] {});
     }
 
     public void insert(int id, int year, String no, String description, String status)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+
         try
         {
             super.openWrite();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
 
@@ -96,7 +95,7 @@ public class MDM_Data extends DatabaseModel
 
     public void deleteAll()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ". deleteAll");
+
 
         try
         {
@@ -104,7 +103,7 @@ public class MDM_Data extends DatabaseModel
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_Data.deleteAll(super.database);
@@ -112,14 +111,14 @@ public class MDM_Data extends DatabaseModel
 
     public List<CountPerYear> getCountPerYear()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
@@ -149,14 +148,14 @@ public class MDM_Data extends DatabaseModel
 
     public List<YearMetadata> getYearList(final int year, final int listTotal)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
@@ -192,14 +191,14 @@ public class MDM_Data extends DatabaseModel
 
     public ME_Data getFromID(int id)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getFromID");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
@@ -244,14 +243,14 @@ public class MDM_Data extends DatabaseModel
 
     private void update(int id, int year, String no, String description, String status)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".update");
+
         try
         {
             super.openWrite();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         super.database.execSQL(
@@ -268,14 +267,14 @@ public class MDM_Data extends DatabaseModel
 
     private boolean isExists(int id)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".isExists");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(

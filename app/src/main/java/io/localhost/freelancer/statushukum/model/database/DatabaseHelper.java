@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,14 +33,14 @@ import static io.localhost.freelancer.statushukum.model.database.DatabaseContrac
 
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    public static final String CLASS_NAME = "DatabaseHelper";
-    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
-    public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final  String CLASS_NAME       = "DatabaseHelper";
+    public static final  String CLASS_PATH       = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
+    public static final  String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     // If you change the database schema, you must increment the database version.
-    private static final int   DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "status_hukum.mcrypt";
-    private static final char COMMA_SEPARATOR = ',';
-    private static final char WHITESPACE      = ' ';
+    private static final int    DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME    = "status_hukum.mcrypt";
+    private static final char   COMMA_SEPARATOR  = ',';
+    private static final char   WHITESPACE       = ' ';
 
     private static final String TYPE_TEXT    = "TEXT";
     private static final String TYPE_INTEGER = "INTEGER";
@@ -101,20 +100,20 @@ public class DatabaseHelper extends SQLiteOpenHelper
     private DatabaseHelper(final Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.context = context;
     }
 
     public static DatabaseHelper getInstance(final Context ctx)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
+
          */
         if(DatabaseHelper.mInstance == null)
         {
@@ -126,7 +125,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         sqLiteDatabase.execSQL(SQL_CREATE_DATA_ENTRIES);
         sqLiteDatabase.execSQL(SQL_CREATE_TAG_ENTRIES);
@@ -138,7 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldV, int newV)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onUpgrade");
+
 
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
@@ -153,12 +152,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
         super.onDowngrade(db, oldVersion, newVersion);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onDowngrade");
+
     }
 
     private void prePopulateDatabase(final SQLiteDatabase sqLiteDatabase)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".prePopulateDatabase");
+
 
         final String json = this.readDataFromAssets("stream.json");
         try
@@ -175,13 +174,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         catch(JSONException e)
         {
-            Log.i(CLASS_NAME, "JSONException");
+
         }
     }
 
     private void populateVersionTable(final SQLiteDatabase sqLiteDatabase, final JSONArray version)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
 
         MDM_Version.deleteAll(sqLiteDatabase);
         for(int i = -1, is = version.length(); ++i < is; )
@@ -196,14 +195,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
 
     private void populateDataTable(final SQLiteDatabase sqLiteDatabase, final JSONArray data)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTable");
+
 
         MDM_Data.deleteAll(sqLiteDatabase);
         for(int i = -1, is = data.length(); ++i < is; )
@@ -221,7 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -229,7 +228,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     private void populateTagTable(final SQLiteDatabase sqLiteDatabase, final JSONArray tag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateTagTable");
+
 
         MDM_Tag.deleteAll(sqLiteDatabase);
         for(int i = -1, is = tag.length(); ++i < is; )
@@ -247,7 +246,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -255,7 +254,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     private void populateDataTagTable(final SQLiteDatabase sqLiteDatabase, final JSONArray datatag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
 
         MDM_DataTag.deleteAll(sqLiteDatabase);
         for(int i = -1, is = datatag.length(); ++i < is; )
@@ -270,7 +269,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -278,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     @NonNull
     private String readDataFromAssets(String path)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".readDataFromAssets");
+
 
         final StringBuilder sb     = new StringBuilder();
         BufferedReader      reader = null;
@@ -295,7 +294,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         catch(IOException ignored)
         {
-            Log.i(CLASS_NAME, "IOException");
+
         }
         finally
         {
@@ -307,7 +306,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 }
                 catch(IOException ignored)
                 {
-                    Log.i(CLASS_NAME, "IOException");
+
                 }
             }
         }

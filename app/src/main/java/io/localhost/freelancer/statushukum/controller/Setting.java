@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -33,7 +32,7 @@ public class Setting extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         setContentView(R.layout.activity_setting);
         this.setToolbar();
@@ -79,7 +78,7 @@ public class Setting extends AppCompatActivity
 
     private synchronized void doSync(final CompoundButton buttonView)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+
         new AsyncTask<Void, Void, Void>()
         {
             private Observer callback;
@@ -140,7 +139,7 @@ public class Setting extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_setting_toolbar);
         super.setSupportActionBar(toolbar);
@@ -166,7 +165,7 @@ public class Setting extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
 
         super.finish();
     }

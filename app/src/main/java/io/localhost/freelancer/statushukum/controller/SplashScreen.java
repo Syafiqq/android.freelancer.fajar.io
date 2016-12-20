@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
@@ -24,7 +23,7 @@ public class SplashScreen extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         setContentView(R.layout.activity_splash_screen);
         JodaTimeAndroid.init(this);
@@ -43,7 +42,7 @@ public class SplashScreen extends AppCompatActivity
                 }
                 catch(SQLException e)
                 {
-                    Log.i(CLASS_NAME, CLASS_PATH + ".SQLException");
+
                 }
 
                 return null;

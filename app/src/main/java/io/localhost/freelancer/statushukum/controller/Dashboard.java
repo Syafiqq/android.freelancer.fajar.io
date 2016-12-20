@@ -9,7 +9,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -33,7 +32,6 @@ public class Dashboard extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
         setContentView(R.layout.activity_dashboard);
         this.setToolbar();
@@ -42,8 +40,6 @@ public class Dashboard extends AppCompatActivity
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
-
         if(this.entryList == null)
         {
             this.entryList = new LinkedList<>();
@@ -69,8 +65,6 @@ public class Dashboard extends AppCompatActivity
     @SuppressWarnings("ConstantConditions")
     private synchronized void setCenturyList()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setCenturyList");
-
         new AsyncTask<Void, Void, Void>()
         {
             @Override
@@ -95,8 +89,6 @@ public class Dashboard extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
-
         final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
@@ -110,8 +102,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
-
         getMenuInflater().inflate(R.menu.activity_dashboard_menu, menu);
         return true;
     }
@@ -119,8 +109,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
-
         switch(item.getItemId())
         {
             case R.id.activity_dashboard_menu_setting:
@@ -143,15 +131,12 @@ public class Dashboard extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
-
         this.onBackPressed();
     }
 
     @Override
     protected void onPostResume()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onPostResume");
         this.setCenturyList();
 
         super.onPostResume();
@@ -160,8 +145,6 @@ public class Dashboard extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
-
         super.finish();
     }
 }

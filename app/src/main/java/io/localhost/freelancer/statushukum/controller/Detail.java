@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +43,7 @@ public class Detail extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
@@ -77,7 +76,7 @@ public class Detail extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
         super.setSupportActionBar(toolbar);
@@ -103,7 +102,7 @@ public class Detail extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
+
 
         getMenuInflater().inflate(R.menu.activity_detail_menu, menu);
         return true;
@@ -112,7 +111,7 @@ public class Detail extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
+
 
         switch(item.getItemId())
         {
@@ -131,7 +130,7 @@ public class Detail extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
 
         this.onBackPressed();
     }
@@ -139,7 +138,7 @@ public class Detail extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
 
         super.finish();
     }
@@ -147,7 +146,7 @@ public class Detail extends AppCompatActivity
     @SuppressWarnings("ConstantConditions")
     private void setDetail()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setDetail");
+
 
         new AsyncTask<Void, Void, Void>()
         {
@@ -197,7 +196,7 @@ public class Detail extends AppCompatActivity
     @Override
     protected void onPostResume()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onPostResume");
+
         this.setDetail();
 
         super.onPostResume();

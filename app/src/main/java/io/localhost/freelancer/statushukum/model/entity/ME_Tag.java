@@ -1,6 +1,5 @@
 package io.localhost.freelancer.statushukum.model.entity;
 
-import android.util.Log;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.entity> created by :
@@ -23,7 +22,7 @@ public class ME_Tag
 
     public ME_Tag(int id, String name, String desc, int color, int colorText)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.id = id;
         this.name = name;

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -33,18 +32,18 @@ public class MDM_Tag extends DatabaseModel
     private MDM_Tag(final Context context)
     {
         super(context);
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
     }
 
     public static MDM_Tag getInstance(final Context ctx)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
+
          */
         if(MDM_Tag.mInstance == null)
         {
@@ -55,7 +54,7 @@ public class MDM_Tag extends DatabaseModel
 
     public static void insert(final SQLiteDatabase database, int id, String name, String description, String color, String colorText)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
+
 
         database.execSQL(
                 String.format(Locale.getDefault(), "INSERT INTO %s(`id`, `name`, `description`, `color`, `colortext`) VALUES (?, ?, ?, ?, ?)", Tag.TABLE_NAME),
@@ -64,21 +63,21 @@ public class MDM_Tag extends DatabaseModel
 
     public static void deleteAll(final SQLiteDatabase database)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
 
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Tag.TABLE_NAME), new Object[] {});
     }
 
     public void insert(int id, String name, String description, String color, String colorText)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+
 
         MDM_Tag.insert(super.database, id, name, description, color, colorText);
     }
 
     public void deleteAll()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ". deleteAll");
+
 
         try
         {
@@ -86,7 +85,7 @@ public class MDM_Tag extends DatabaseModel
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_Tag.deleteAll(super.database);
@@ -94,14 +93,14 @@ public class MDM_Tag extends DatabaseModel
 
     public Map<Integer, ME_Tag> getAll()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getAll");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
@@ -145,14 +144,14 @@ public class MDM_Tag extends DatabaseModel
 
     private void update(int id, String name, String description, String color, String colortext)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".update");
+
         try
         {
             super.openWrite();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         super.database.execSQL(
@@ -169,14 +168,14 @@ public class MDM_Tag extends DatabaseModel
 
     private boolean isExists(int id)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".isExists");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
