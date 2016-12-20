@@ -27,6 +27,7 @@ import io.localhost.freelancer.statushukum.model.database.DatabaseHelper;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
 import io.localhost.freelancer.statushukum.networking.NetworkConstants;
 import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
 
@@ -50,15 +51,13 @@ public class Setting
     private static Setting ourInstance;
 
     private final Context  context;
-    private       boolean  isAllShowed;
-    private       Observer sycnObserve;
+    private       Observer syncObserve;
 
     private Setting(Context context)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
         this.context = context;
-        this.isAllShowed = false;
     }
 
     public static Setting getInstance(final Context context)
@@ -72,19 +71,9 @@ public class Setting
         return Setting.ourInstance;
     }
 
-    public boolean isAllShowed()
-    {
-        return this.isAllShowed;
-    }
-
-    public void setAllShowed(boolean allShowed)
-    {
-        this.isAllShowed = allShowed;
-    }
-
     public synchronized void doSync(final Observer message)
     {
-        this.sycnObserve = message;
+        this.syncObserve = message;
         this.getServerVersion(new TaskDelegatable()
         {
             @Override
@@ -104,12 +93,19 @@ public class Setting
                                     @Override
                                     public void delegate(Object... data)
                                     {
-                                        Setting.this.syncData((JSONArray) data[0]);
+                                        MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                                        dataModel.deleteAll();
+                                        Setting.this.insertData((JSONArray) data[0]);
+                                        MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                                        tagModel.deleteAll();
+                                        Setting.this.insertTag((JSONArray) data[1]);
                                         MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
                                         dataTagModel.deleteAll();
-                                        Setting.this.insertData((JSONArray) data[1]);
-                                        Setting.this.syncTag((JSONArray) data[2]);
-                                        Setting.this.sycnObserve.update(null, SYNC_SUCCESS);
+                                        Setting.this.insertDataTag((JSONArray) data[2]);
+                                        MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
+                                        versionModel.deleteAll();
+                                        Setting.this.insertVersion((JSONArray) data[3]);
+                                        Setting.this.syncObserve.update(null, SYNC_SUCCESS);
                                     }
                                 });
                             }
@@ -124,43 +120,23 @@ public class Setting
         });
     }
 
-    public synchronized void doDeepSync(Observer message)
+    private void insertVersion(JSONArray version)
     {
-        this.sycnObserve = message;
-        this.getServerVersion(new TaskDelegatable()
+        MDM_Version versionTag = MDM_Version.getInstance(this.context);
+        for(int i = -1, is = version.length(); ++i < is; )
         {
-            @Override
-            public void delegate(Object... data)
+            try
             {
-                if(data[0] instanceof JSONObject)
-                {
-                    try
-                    {
-                        Setting.this.getStreamData(LocalDateTime.parse(((JSONObject) data[0]).getString("timestamp"), timeStampFormat), LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat), new TaskDelegatable()
-                        {
-                            @Override
-                            public void delegate(Object... data)
-                            {
-                                MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
-                                dataModel.deleteAll();
-                                Setting.this.insertData((JSONArray) data[0]);
-                                MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
-                                dataTagModel.deleteAll();
-                                Setting.this.insertDataTag((JSONArray) data[1]);
-                                MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
-                                tagModel.deleteAll();
-                                Setting.this.insertTag((JSONArray) data[2]);
-                                Setting.this.sycnObserve.update(null, SYNC_SUCCESS);
-                            }
-                        });
-                    }
-                    catch(JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
+                final JSONObject entry = version.getJSONObject(i);
+                versionTag.insert(
+                        entry.getInt("id"),
+                        entry.getString("timestamp"));
             }
-        });
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
     }
 
     private synchronized void insertTag(JSONArray tag)
@@ -176,8 +152,7 @@ public class Setting
                         entry.getString("name"),
                         entry.getString("description"),
                         entry.getString("color"),
-                        entry.getString("colortext"),
-                        entry.getString("timestamp"));
+                        entry.getString("colortext"));
             }
             catch(JSONException ignored)
             {
@@ -198,8 +173,7 @@ public class Setting
                 final JSONObject entry = datatag.getJSONObject(i);
                 dataTagModel.insert(
                         entry.getInt("data"),
-                        entry.getInt("tag"),
-                        entry.getString("timestamp"));
+                        entry.getInt("tag"));
             }
             catch(JSONException ignored)
             {
@@ -221,8 +195,7 @@ public class Setting
                         entry.getInt("year"),
                         entry.getString("no"),
                         entry.getString("description"),
-                        entry.getString("status"),
-                        entry.getString("timestamp"));
+                        entry.getString("status"));
             }
             catch(JSONException ignored)
             {
@@ -236,7 +209,7 @@ public class Setting
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         if(serverVersion.isEqual(dbVersion))
         {
-            Setting.this.sycnObserve.update(null, SYNC_EQUAL);
+            Setting.this.syncObserve.update(null, SYNC_EQUAL);
             return;
         }
         String url = null;
@@ -247,7 +220,7 @@ public class Setting
         catch(UnsupportedEncodingException ignored)
         {
             Log.i(CLASS_NAME, "UnsupportedEncodingException");
-            this.sycnObserve.update(null, SYNC_FAILED);
+            this.syncObserve.update(null, SYNC_FAILED);
             return;
         }
         @NotNull
@@ -267,7 +240,7 @@ public class Setting
                                         response = response.getJSONObject("data");
                                         if(response.has("data") && response.has("tag") && response.has("datatag"))
                                         {
-                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("datatag"), response.getJSONArray("tag"));
+                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
                                             return;
                                         }
                                     }
@@ -276,7 +249,7 @@ public class Setting
                                         Log.i(CLASS_NAME, "JSONException");
                                     }
                                 }
-                                Setting.this.sycnObserve.update(null, SYNC_FAILED);
+                                Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         },
                         new Response.ErrorListener()
@@ -285,7 +258,7 @@ public class Setting
                             public void onErrorResponse(VolleyError ignored)
                             {
                                 Log.i(CLASS_NAME, "onErrorResponse");
-                                Setting.this.sycnObserve.update(null, SYNC_FAILED);
+                                Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         }
                 )
@@ -306,80 +279,22 @@ public class Setting
 
     }
 
-    private synchronized void syncTag(JSONArray tag)
-    {
-        MDM_Tag dataTag = MDM_Tag.getInstance(this.context);
-        for(int i = -1, is = tag.length(); ++i < is; )
-        {
-            try
-            {
-                final JSONObject entry = tag.getJSONObject(i);
-                dataTag.insertOrUpdate(
-                        entry.getInt("id"),
-                        entry.getString("name"),
-                        entry.getString("description"),
-                        entry.getString("color"),
-                        entry.getString("colortext"),
-                        entry.getString("timestamp"));
-            }
-            catch(JSONException ignored)
-            {
-                Log.i(CLASS_NAME, "JSONException");
-            }
-        }
-    }
-
-    private synchronized void syncData(final JSONArray data)
-    {
-        MDM_Data dataModel = MDM_Data.getInstance(this.context);
-        for(int i = -1, is = data.length(); ++i < is; )
-        {
-            try
-            {
-                final JSONObject entry = data.getJSONObject(i);
-                dataModel.insertOrUpdate(
-                        entry.getInt("id"),
-                        entry.getInt("year"),
-                        entry.getString("no"),
-                        entry.getString("description"),
-                        entry.getString("status"),
-                        entry.getString("timestamp"));
-            }
-            catch(JSONException ignored)
-            {
-                Log.i(CLASS_NAME, "JSONException");
-            }
-        }
-    }
-
     private synchronized void getDBVersion(LocalDateTime serverVersion, TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
         if(serverVersion == null)
         {
-            this.sycnObserve.update(null, SYNC_FAILED);
+            this.syncObserve.update(null, SYNC_FAILED);
             return;
         }
         else
         {
-            final MDM_Data      modelData        = MDM_Data.getInstance(this.context);
-            final MDM_Tag       modelTag         = MDM_Tag.getInstance(this.context);
-            final MDM_DataTag   modelDataTag     = MDM_DataTag.getInstance(this.context);
+            final MDM_Version   versionData      = MDM_Version.getInstance(this.context);
             LocalDateTime       defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
-            final LocalDateTime latestData       = modelData.getLatestTimestamp();
-            final LocalDateTime latestTag        = modelTag.getLatestTimestamp();
-            final LocalDateTime latestDataTag    = modelDataTag.getLatestTimestamp();
+            final LocalDateTime latestData       = versionData.getVersion();
             if((latestData != null) && defaultTimeStamp.isBefore(latestData))
             {
                 defaultTimeStamp = latestData;
-            }
-            if((latestTag != null) && defaultTimeStamp.isBefore(latestTag))
-            {
-                defaultTimeStamp = latestTag;
-            }
-            if((latestDataTag != null) && defaultTimeStamp.isBefore(latestDataTag))
-            {
-                defaultTimeStamp = latestDataTag;
             }
             delegatable.delegate(serverVersion, defaultTimeStamp);
         }
@@ -415,7 +330,7 @@ public class Setting
                                         Log.i(CLASS_NAME, "JSONException");
                                     }
                                 }
-                                Setting.this.sycnObserve.update(null, SYNC_FAILED);
+                                Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         },
                         new Response.ErrorListener()
@@ -424,7 +339,7 @@ public class Setting
                             public void onErrorResponse(VolleyError ignored)
                             {
                                 Log.i(CLASS_NAME, "onErrorResponse");
-                                Setting.this.sycnObserve.update(null, SYNC_FAILED);
+                                Setting.this.syncObserve.update(null, SYNC_FAILED);
                             }
                         }
                 )

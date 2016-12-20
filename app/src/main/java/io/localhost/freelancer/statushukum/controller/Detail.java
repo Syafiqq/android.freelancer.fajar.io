@@ -17,8 +17,6 @@ import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
@@ -36,78 +34,11 @@ public class Detail extends AppCompatActivity
     public static final String CLASS_NAME = "Detail";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Detail";
     public static final String EXTRA_ID   = "id";
-    private int id;
-    private boolean isSyncOperated = false;
+    private int          id;
     private HtmlTextView no;
     private HtmlTextView description;
     private HtmlTextView status;
     private TagView      tag;
-
-
-    private void doSync()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-        if(!this.isSyncOperated)
-        {
-            this.isSyncOperated = true;
-            new AsyncTask<Void, Void, Void>()
-            {
-                private Observer callback;
-
-                @Override
-                protected void onPreExecute()
-                {
-                    callback = new Observer()
-                    {
-                        @Override
-                        public void update(final Observable observable, final Object o)
-                        {
-                            Detail.super.runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    switch((Integer) o)
-                                    {
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                        {
-                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                        {
-                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                            Detail.this.setDetail();
-                                        }
-                                        break;
-                                        case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                        {
-                                            Toast.makeText(Detail.this, Detail.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                    }
-                                }
-                            });
-                        }
-                    };
-                    super.onPreExecute();
-                }
-
-                @Override
-                protected Void doInBackground(Void... voids)
-                {
-                    io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Detail.this).doSync(this.callback);
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void aVoid)
-                {
-                    Detail.this.isSyncOperated = false;
-                }
-            }.execute();
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -190,11 +121,6 @@ public class Detail extends AppCompatActivity
                 startActivity(new Intent(this, Setting.class));
                 return true;
             }
-            case R.id.activity_detail_menu_sync:
-            {
-                this.doSync();
-                return true;
-            }
             case android.R.id.home:
                 //perhaps use intent if needed but i'm sure there's a specific intent action for up you can use to handle
                 Detail.this.onBackButtonPressed();
@@ -245,12 +171,12 @@ public class Detail extends AppCompatActivity
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                if(dbResultData != null)
+                tag.removeAllTags();
+                if(this.dbResultData != null)
                 {
-                    no.setHtml(dbResultData.getNo());
-                    //year.setHtml(String.valueOf(dbResultData.getYear()));
-                    description.setHtml(dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : dbResultData.getDescription());
-                    status.setHtml(dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : dbResultData.getStatus());
+                    no.setHtml(this.dbResultData.getNo());
+                    description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
+                    status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
 
                     while(!dbResultTagID.isEmpty())
                     {
@@ -260,12 +186,20 @@ public class Detail extends AppCompatActivity
                 else
                 {
                     no.setText("-");
-                    //year.setText("-");
                     description.setText("-");
                     status.setText("-");
                 }
                 super.onPostExecute(aVoid);
             }
         }.execute();
+    }
+
+    @Override
+    protected void onPostResume()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onPostResume");
+        this.setDetail();
+
+        super.onPostResume();
     }
 }

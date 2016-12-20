@@ -17,10 +17,12 @@ import java.io.InputStreamReader;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
 
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Data;
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
 import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Tag;
+import static io.localhost.freelancer.statushukum.model.database.DatabaseContract.Version;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database> created by :
@@ -34,13 +36,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
 {
     public static final String CLASS_NAME = "DatabaseHelper";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
-
-    // If you change the database schema, you must increment the database version.
-    public static final int    DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME    = "status_hukum.mcrypt";
-
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
+    // If you change the database schema, you must increment the database version.
+    private static final int   DATABASE_VERSION = 1;
+    private static final String DATABASE_NAME = "status_hukum.mcrypt";
     private static final char COMMA_SEPARATOR = ',';
     private static final char WHITESPACE      = ' ';
 
@@ -57,8 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Data.COLUMN_NAME_YEAR + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_NO + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_DESCRIPTION + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
-            Data.COLUMN_NAME_STATUS + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
-            Data.COLUMN_NAME_TIMESTAMP + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_CURRENT_TIMESTAMP + WHITESPACE +
+            Data.COLUMN_NAME_STATUS + WHITESPACE + TYPE_TEXT + WHITESPACE +
             " );";
 
     private static final String SQL_CREATE_TAG_ENTRIES = "" +
@@ -68,16 +66,21 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Tag.COLUMN_NAME_NAME + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Tag.COLUMN_NAME_DESCRIPTION + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Tag.COLUMN_NAME_COLOR + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
-            Tag.COLUMN_NAME_COLORTEXT + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
-            Tag.COLUMN_NAME_TIMESTAMP + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_CURRENT_TIMESTAMP + WHITESPACE +
+            Tag.COLUMN_NAME_COLORTEXT + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + WHITESPACE +
             " );";
 
     private static final String SQL_CREATE_DATATAG_ENTRIES = "" +
             "CREATE TABLE IF NOT EXISTS" + WHITESPACE + DataTag.TABLE_NAME + WHITESPACE +
             "( " +
             DataTag.COLUMN_NAME_DATA + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
-            DataTag.COLUMN_NAME_TAG + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
-            DataTag.COLUMN_NAME_TIMESTAMP + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_CURRENT_TIMESTAMP + WHITESPACE +
+            DataTag.COLUMN_NAME_TAG + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + WHITESPACE +
+            " );";
+
+    private static final String SQL_CREATE_VERSION_ENTRIES = "" +
+            "CREATE TABLE IF NOT EXISTS" + WHITESPACE + Version.TABLE_NAME + WHITESPACE +
+            "( " +
+            Version.COLUMN_NAME_ID + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
+            Version.COLUMN_NAME_TIMESTAMP + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_CURRENT_TIMESTAMP + WHITESPACE +
             " );";
 
     private static final String SQL_DROP_DATA_ENTRIES = "" +
@@ -88,6 +91,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     private static final String SQL_DROP_DATATAG_ENTRIES = "" +
             "DROP TABLE IF EXISTS " + DataTag.TABLE_NAME;
+
+    private static final String SQL_DROP_VERSION_ENTRIES = "" +
+            "DROP TABLE IF EXISTS " + Version.TABLE_NAME;
 
     private static DatabaseHelper mInstance = null;
     private final Context context;
@@ -125,11 +131,12 @@ public class DatabaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(SQL_CREATE_DATA_ENTRIES);
         sqLiteDatabase.execSQL(SQL_CREATE_TAG_ENTRIES);
         sqLiteDatabase.execSQL(SQL_CREATE_DATATAG_ENTRIES);
+        sqLiteDatabase.execSQL(SQL_CREATE_VERSION_ENTRIES);
         this.prePopulateDatabase(sqLiteDatabase);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1)
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldV, int newV)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onUpgrade");
 
@@ -138,6 +145,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(SQL_DROP_DATA_ENTRIES);
         sqLiteDatabase.execSQL(SQL_DROP_TAG_ENTRIES);
         sqLiteDatabase.execSQL(SQL_DROP_DATATAG_ENTRIES);
+        sqLiteDatabase.execSQL(SQL_DROP_VERSION_ENTRIES);
         onCreate(sqLiteDatabase);
     }
 
@@ -159,13 +167,37 @@ public class DatabaseHelper extends SQLiteOpenHelper
             final JSONArray  data       = jsonObject.getJSONObject("data").getJSONArray("data");
             final JSONArray  tag        = jsonObject.getJSONObject("data").getJSONArray("tag");
             final JSONArray  datatag    = jsonObject.getJSONObject("data").getJSONArray("datatag");
+            final JSONArray  version    = jsonObject.getJSONObject("data").getJSONArray("version");
             this.populateDataTable(sqLiteDatabase, data);
             this.populateTagTable(sqLiteDatabase, tag);
             this.populateDataTagTable(sqLiteDatabase, datatag);
+            this.populateVersionTable(sqLiteDatabase, version);
         }
         catch(JSONException e)
         {
             Log.i(CLASS_NAME, "JSONException");
+        }
+    }
+
+    private void populateVersionTable(final SQLiteDatabase sqLiteDatabase, final JSONArray version)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
+        MDM_Version.deleteAll(sqLiteDatabase);
+        for(int i = -1, is = version.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = version.getJSONObject(i);
+                MDM_Version.insert(
+                        sqLiteDatabase,
+                        entry.getInt("id"),
+                        entry.getString("timestamp"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
         }
     }
 
@@ -185,8 +217,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         entry.getInt("year"),
                         entry.getString("no"),
                         entry.getString("description"),
-                        entry.getString("status"),
-                        entry.getString("timestamp"));
+                        entry.getString("status"));
             }
             catch(JSONException ignored)
             {
@@ -212,8 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         entry.getString("name"),
                         entry.getString("description"),
                         entry.getString("color"),
-                        entry.getString("colortext"),
-                        entry.getString("timestamp"));
+                        entry.getString("colortext"));
             }
             catch(JSONException ignored)
             {
@@ -236,8 +266,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                 MDM_DataTag.insert(
                         sqLiteDatabase,
                         entry.getInt("data"),
-                        entry.getInt("tag"),
-                        entry.getString("timestamp"));
+                        entry.getInt("tag"));
             }
             catch(JSONException ignored)
             {

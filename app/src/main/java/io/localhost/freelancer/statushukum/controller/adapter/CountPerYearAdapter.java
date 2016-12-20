@@ -8,8 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,14 +32,13 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
  * Github       : syafiqq
  */
 
-public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapter.ViewHolder> implements Filterable
+public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapter.ViewHolder>
 {
     public static final String CLASS_NAME = "CountPerYearAdapter";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter";
 
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context                     context;
-    private       Filter                      filter;
 
     public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context)
     {
@@ -50,7 +47,6 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
         this.countPerYear = countPerYear;
         this.context = context;
-        this.filter = null;
     }
 
     public void update(final List<MDM_Data.CountPerYear> countPerYear)
@@ -86,17 +82,6 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public int getItemCount()
     {
         return this.countPerYear.size();
-    }
-
-    @Override
-    public Filter getFilter()
-    {
-        return this.filter;
-    }
-
-    public void setFilter(Filter filter)
-    {
-        this.filter = filter;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener

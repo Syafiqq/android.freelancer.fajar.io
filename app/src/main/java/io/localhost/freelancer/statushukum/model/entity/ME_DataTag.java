@@ -2,8 +2,6 @@ package io.localhost.freelancer.statushukum.model.entity;
 
 import android.util.Log;
 
-import org.joda.time.DateTime;
-
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.entity> created by :
  * Name         : syafiq
@@ -19,15 +17,13 @@ public class ME_DataTag
 
     private final int      data;
     private final int      tag;
-    private final DateTime timestamp;
 
-    public ME_DataTag(int data, int tag, DateTime timestamp)
+    public ME_DataTag(int data, int tag)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
         this.data = data;
         this.tag = tag;
-        this.timestamp = timestamp;
     }
 
     public int getData()
@@ -38,10 +34,5 @@ public class ME_DataTag
     public int getTag()
     {
         return this.tag;
-    }
-
-    public DateTime getTimestamp()
-    {
-        return this.timestamp;
     }
 }

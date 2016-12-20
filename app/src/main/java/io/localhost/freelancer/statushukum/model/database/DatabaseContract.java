@@ -27,7 +27,6 @@ public final class DatabaseContract
         public static final String COLUMN_NAME_NO          = "no";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_STATUS      = "status";
-        public static final String COLUMN_NAME_TIMESTAMP   = "timestamp";
     }
 
     /* Inner class that defines the table contents */
@@ -39,15 +38,21 @@ public final class DatabaseContract
         public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_COLOR       = "color";
         public static final String COLUMN_NAME_COLORTEXT   = "colortext";
-        public static final String COLUMN_NAME_TIMESTAMP   = "timestamp";
     }
 
     /* Inner class that defines the table contents */
     public static class DataTag implements BaseColumns
     {
-        public static final String TABLE_NAME            = "datatag";
-        public static final String COLUMN_NAME_DATA      = "data";
-        public static final String COLUMN_NAME_TAG       = "tag";
+        public static final String TABLE_NAME       = "datatag";
+        public static final String COLUMN_NAME_DATA = "data";
+        public static final String COLUMN_NAME_TAG  = "tag";
+    }
+
+    /* Inner class that defines the table contents */
+    public static class Version implements BaseColumns
+    {
+        public static final String TABLE_NAME            = "version";
+        public static final String COLUMN_NAME_ID        = "id";
         public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
     }
 }
