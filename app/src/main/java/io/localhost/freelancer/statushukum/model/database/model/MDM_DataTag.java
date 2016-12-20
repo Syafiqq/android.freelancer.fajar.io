@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import org.joda.time.LocalDateTime;
-
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +12,6 @@ import java.util.Locale;
 
 import io.localhost.freelancer.statushukum.model.database.DatabaseContract.DataTag;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
-import io.localhost.freelancer.statushukum.model.util.Setting;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.database.model> created by :
@@ -54,13 +51,13 @@ public class MDM_DataTag extends DatabaseModel
         return MDM_DataTag.mInstance;
     }
 
-    public static void insert(final SQLiteDatabase database, int data, int tag, String timestamp)
+    public static void insert(final SQLiteDatabase database, int data, int tag)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
         database.execSQL(
-                String.format(Locale.getDefault(), "INSERT INTO %s(`data`, `tag`, `timestamp`) VALUES (?, ?, ?)", DataTag.TABLE_NAME),
-                new Object[] {data, tag, timestamp});
+                String.format(Locale.getDefault(), "INSERT INTO %s(`data`, `tag`) VALUES (?, ?)", DataTag.TABLE_NAME),
+                new Object[] {data, tag});
     }
 
     public static void deleteAll(SQLiteDatabase database)
@@ -70,7 +67,7 @@ public class MDM_DataTag extends DatabaseModel
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", DataTag.TABLE_NAME), new Object[] {});
     }
 
-    public void insert(int data, int tag, String timestamp)
+    public void insert(int data, int tag)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
 
@@ -83,7 +80,21 @@ public class MDM_DataTag extends DatabaseModel
             Log.i(CLASS_NAME, "SQLException");
         }
 
-        MDM_DataTag.insert(super.database, data, tag, timestamp);
+        MDM_DataTag.insert(super.database, data, tag);
+    }
+
+    public void deleteAll()
+    {
+        try
+        {
+            super.openWrite();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        MDM_DataTag.deleteAll(super.database);
     }
 
     public List<Integer> getTagFromDataID(int data)
@@ -120,55 +131,5 @@ public class MDM_DataTag extends DatabaseModel
         }
         cursor.close();
         return records;
-    }
-
-    public void deleteAll()
-    {
-        try
-        {
-            super.openWrite();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        MDM_DataTag.deleteAll(super.database);
-    }
-
-    public LocalDateTime getLatestTimestamp()
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getLatestTimestamp");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
-                String.format(
-                        Locale.getDefault(),
-                        "SELECT `%s` FROM `%s` ORDER BY `%s` DESC LIMIT 1",
-                        DataTag.COLUMN_NAME_TIMESTAMP,
-                        DataTag.TABLE_NAME,
-                        DataTag.COLUMN_NAME_TIMESTAMP
-                ),
-                new String[] {});
-
-        LocalDateTime total = null;
-        if(cursor.moveToFirst())
-        {
-            do
-            {
-                total = LocalDateTime.parse(cursor.getString(0), Setting.timeStampFormat);
-            }
-            while(cursor.moveToNext());
-        }
-        cursor.close();
-        return total;
-
     }
 }
