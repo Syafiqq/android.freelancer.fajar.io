@@ -305,14 +305,12 @@ public class MDM_Data extends DatabaseModel
 
     public List<MetadataSearchable> getSearchableList(String query)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
         }
 
         final Cursor cursor = super.database.rawQuery(

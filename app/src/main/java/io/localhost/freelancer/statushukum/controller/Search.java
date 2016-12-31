@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +42,6 @@ public class Search extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
         setContentView(R.layout.activity_search);
         this.setToolbar();
@@ -52,7 +50,6 @@ public class Search extends AppCompatActivity
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
 
         if(this.entryList == null)
         {
@@ -90,7 +87,6 @@ public class Search extends AppCompatActivity
 
     private void doSearch(final String query)
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
 
         new AsyncTask<Void, Void, Void>()
         {
@@ -134,7 +130,6 @@ public class Search extends AppCompatActivity
 
     private void setSearchList()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setSearchList");
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_search_recycle_view_container);
         this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this);
@@ -147,7 +142,6 @@ public class Search extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
         final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_search_toolbar);
         super.setSupportActionBar(toolbar);
@@ -173,7 +167,6 @@ public class Search extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
 
         getMenuInflater().inflate(R.menu.activity_search_menu, menu);
         return true;
@@ -182,7 +175,6 @@ public class Search extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
 
         switch(item.getItemId())
         {
@@ -211,7 +203,6 @@ public class Search extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
 
         this.onBackPressed();
     }
@@ -219,7 +210,6 @@ public class Search extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
 
         super.finish();
     }
