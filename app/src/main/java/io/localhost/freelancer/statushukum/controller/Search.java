@@ -35,7 +35,9 @@ public class Search extends AppCompatActivity
     public static final String CLASS_NAME = "Search";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Search";
     private List<MDM_Data.MetadataSearchable> entryList;
+    private String                            latestQuery;
     private SearchAdapter                     searchAdapter;
+    private SearchView                        search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -61,13 +63,18 @@ public class Search extends AppCompatActivity
             this.entryList.clear();
         }
         this.setSearchList();
-        final SearchView search = (SearchView) super.findViewById(R.id.content_search_search_filter);
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        this.search = (SearchView) super.findViewById(R.id.content_search_search_filter);
+        this.latestQuery = this.search.getQuery().toString();
+        this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                Search.this.doSearch(query);
+                if((query.trim().length() > 0) && (!Search.this.latestQuery.contentEquals(query)))
+                {
+                    Search.this.latestQuery = query;
+                    Search.this.doSearch(query);
+                }
                 return false;
             }
 
@@ -182,6 +189,16 @@ public class Search extends AppCompatActivity
             case R.id.activity_search_menu_setting:
             {
                 this.startActivity(new Intent(this, Setting.class));
+                return true;
+            }
+            case R.id.activity_search_menu_refresh:
+            {
+                String query = this.search.getQuery().toString();
+                if((query.trim().length() > 0) && (!this.latestQuery.contentEquals(query)))
+                {
+                    Search.this.latestQuery = query;
+                    Search.this.doSearch(query);
+                }
                 return true;
             }
             case android.R.id.home:
