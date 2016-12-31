@@ -41,4 +41,12 @@
     <string name="activity_setting_mailto_receipt">fajaradhy@ymail.com</string>
     <string name="activity_setting_mailto_subject">Status Hukum Feedback</string>
     <string name="activity_setting_mailto_content">Saya memberikan saran untuk aplikasi ini</string>
+    <string name="activity_dashboard_menu_search">Cari</string>
+    <string name="activity_year_menu_search">Cari</string>
+    <string name="title_activity_search">Search</string>
+    <string name="activity_search_toolbar_logo_desc">Logo Desc</string>
+    <string name="activity_search_toolbar_logo_title">Status Hukum</string>
+    <string name="activity_search_menu_setting">Setting</string>
+    <string name="activity_search_menu_refresh">Refresh</string>
+    <string name="activity_search_info_search_empty">Tidak Ada Hasil</string>
 </resources>
