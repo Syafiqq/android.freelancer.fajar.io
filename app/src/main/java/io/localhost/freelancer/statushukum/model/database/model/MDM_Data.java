@@ -304,6 +304,50 @@ public class MDM_Data extends DatabaseModel
         return exist;
     }
 
+    public List<MetadataSearchable> getSearchableList(String query)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_NO,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_TAG,
+                        Data.TABLE_NAME,
+                        DataTag.TABLE_NAME,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf("%" + query + "%")});
+
+        final List<MetadataSearchable> records = new ArrayList<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.add(new MetadataSearchable(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(4), cursor.getString(3)));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
+    }
+
     public static class CountPerYear
     {
         private final int year;
@@ -391,6 +435,31 @@ public class MDM_Data extends DatabaseModel
                     ", no='" + no + '\'' +
                     ", tagSize=" + tagSize +
                     ", tags=" + tags +
+                    '}';
+        }
+    }
+
+    public static class MetadataSearchable extends YearMetadata
+    {
+        private final String description;
+
+        public MetadataSearchable(int id, int year, String no, int tagSize, String description)
+        {
+            super(id, year, no, tagSize);
+            this.description = description;
+        }
+
+        public String getDescription()
+        {
+            return description;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "MetadataSearchable{" +
+                    "description='" + description + '\'' +
+                    "YearMetadata='" + super.toString() + '\'' +
                     '}';
         }
     }

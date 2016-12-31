@@ -125,7 +125,12 @@ public class Dashboard extends AppCompatActivity
         {
             case R.id.activity_dashboard_menu_setting:
             {
-                startActivity(new Intent(this, Setting.class));
+                this.startActivity(new Intent(this, Setting.class));
+                return true;
+            }
+            case R.id.activity_dashboard_menu_search:
+            {
+                this.startActivity(new Intent(this, Search.class));
                 return true;
             }
             case R.id.activity_dashboard_menu_refresh:
