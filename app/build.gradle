@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'io.localhost.freelancer.statushukum'
+            keyPassword 'Muhammad_Syafiq'
+            storeFile file('/home/syafiq/Documents/keystores/io.localhost.freelancer.statushukum.jks')
+            storePassword 'Muhammad_Syafiq'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.1"
     defaultConfig {
@@ -20,6 +28,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            debuggable true
         }
     }
     externalNativeBuild {
@@ -30,7 +43,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -39,7 +52,7 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'net.danlew:android.joda:2.9.5.1'
     compile 'org.sufficientlysecure:html-textview:3.0'
-    compile "com.mikepenz:iconics-core:2.8.1@aar"
+    compile 'com.mikepenz:iconics-core:2.8.1@aar'
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.github.kaedea:Android-Cloud-TagView-Plus:b546a5f073'
     compile 'org.jetbrains:annotations-java5:15.0'
