@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import android.widget.Toast;
 
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
+
+import org.apache.commons.lang3.StringUtils;
+import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.util.Iterator;
 import java.util.List;
@@ -79,6 +83,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         holder.tag.removeAllTags();
 
         holder.no.setText(tmpMetadata.getNo());
+        holder.description.setHtml(StringUtils.abbreviate(tmpMetadata.getDescription(), 100));
         holder.task.setImageDrawable(new IconicsDrawable(this.context)
                 .icon(MaterialDesignIconic.Icon.gmi_receipt)
                 .color(ContextCompat.getColor(this.context, R.color.grey_700))
@@ -141,9 +146,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter.ViewHolder";
 
-        public final TextView  no;
-        final        ImageView task;
-        final        TagView   tag;
+        public final TextView     no;
+        final        ImageView    task;
+        final        TagView      tag;
+        final        HtmlTextView description;
         View.OnClickListener listener;
 
         ViewHolder(final View view)
@@ -151,6 +157,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             super(view);
 
             this.no = (TextView) view.findViewById(R.id.content_search_recycler_view_item_no);
+            this.description = (HtmlTextView) view.findViewById(R.id.content_search_recycler_view_item_description);
+            this.description.setEllipsize(TextUtils.TruncateAt.END);
             this.task = (ImageView) view.findViewById(R.id.content_search_recycler_view_item_task);
             this.tag = (TagView) view.findViewById(R.id.content_search_recycler_view_item_tag);
         }

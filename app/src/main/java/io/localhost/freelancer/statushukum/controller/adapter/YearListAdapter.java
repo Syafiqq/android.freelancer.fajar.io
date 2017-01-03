@@ -81,27 +81,35 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
                 .icon(MaterialDesignIconic.Icon.gmi_receipt)
                 .color(ContextCompat.getColor(this.context, R.color.grey_700))
                 .sizeDp(24));
-        for(int i = -1, is = tmpMetadata.getTagSize() > 3 ? 3 : tmpMetadata.getTagSize(); ++i < is; )
+        if(tmpMetadata.getTagSize() > 0)
         {
-            holder.tag.addTag(new ME_TagAdapter(tags.next(), 10f));
+            holder.tag.setVisibility(View.VISIBLE);
+            for(int i = -1, is = tmpMetadata.getTagSize() > 3 ? 3 : tmpMetadata.getTagSize(); ++i < is; )
+            {
+                holder.tag.addTag(new ME_TagAdapter(tags.next(), 10f));
+            }
+            if(tmpMetadata.getTagSize() > 3)
+            {
+                holder.tag.addTag(new ME_TagAdapter(new ME_Tag(-1, "...", "Dan ke-" + (tmpMetadata.getTagSize() - 3) + " lainnya.", ContextCompat.getColor(this.context, R.color.black), ContextCompat.getColor(this.context, R.color.white)), 10f));
+            }
+
+            holder.tag.setOnTagClickListener(new OnTagClickListener()
+            {
+                @Override
+                public void onTagClick(int i, Tag tag)
+                {
+                    if(tag instanceof ME_TagAdapter)
+                    {
+                        Toast.makeText(YearListAdapter.this.context, ((ME_TagAdapter) tag).description, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
-        if(tmpMetadata.getTagSize() > 3)
+        else
         {
-            holder.tag.addTag(new ME_TagAdapter(new ME_Tag(-1, "...", "Dan ke-" + (tmpMetadata.getTagSize() - 3) + " lainnya.", ContextCompat.getColor(this.context, R.color.black), ContextCompat.getColor(this.context, R.color.white)), 10f));
+            holder.tag.setVisibility(View.GONE);
         }
 
-        holder.tag.setOnTagClickListener(null);
-        holder.tag.setOnTagClickListener(new OnTagClickListener()
-        {
-            @Override
-            public void onTagClick(int i, Tag tag)
-            {
-                if(tag instanceof ME_TagAdapter)
-                {
-                    Toast.makeText(YearListAdapter.this.context, ((ME_TagAdapter) tag).description, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
         holder.listener = new View.OnClickListener()
         {
             @Override

@@ -10,10 +10,10 @@ android {
         }
     }
     compileSdkVersion 25
-    buildToolsVersion "25.0.1"
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "io.localhost.freelancer.statushukum"
-        minSdkVersion 17
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -40,6 +40,8 @@ android {
             path "CMakeLists.txt"
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
@@ -47,9 +49,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:design:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:design:25.1.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'org.apache.commons:commons-lang3:3.5'
     compile 'net.danlew:android.joda:2.9.5.1'
     compile 'org.sufficientlysecure:html-textview:3.0'
     compile 'com.mikepenz:iconics-core:2.8.1@aar'

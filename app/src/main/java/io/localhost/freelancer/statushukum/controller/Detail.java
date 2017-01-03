@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -38,6 +39,7 @@ public class Detail extends AppCompatActivity
     private HtmlTextView description;
     private HtmlTextView status;
     private TagView      tag;
+    private TextView     tagLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,7 +48,7 @@ public class Detail extends AppCompatActivity
 
 
         setContentView(R.layout.activity_detail);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         this.id = intent.getIntExtra(Detail.EXTRA_ID, -1);
 
         this.setToolbar();
@@ -57,11 +59,11 @@ public class Detail extends AppCompatActivity
     private void setProperty()
     {
         this.no = (HtmlTextView) super.findViewById(R.id.content_detail_htv_no);
-        //final HtmlTextView year        = (HtmlTextView) super.findViewById(R.id.content_detail_htv_year);
         this.description = (HtmlTextView) super.findViewById(R.id.content_detail_htv_description);
         this.status = (HtmlTextView) super.findViewById(R.id.content_detail_htv_status);
         this.tag = (TagView) super.findViewById(R.id.content_detail_tv_tag);
-        tag.setOnTagClickListener(new OnTagClickListener()
+        this.tagLabel = (TextView) super.findViewById(R.id.content_detail_tv_tag_label);
+        this.tag.setOnTagClickListener(new OnTagClickListener()
         {
             @Override
             public void onTagClick(int i, Tag tag)
@@ -78,7 +80,7 @@ public class Detail extends AppCompatActivity
     {
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
@@ -170,23 +172,33 @@ public class Detail extends AppCompatActivity
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                tag.removeAllTags();
+                Detail.this.tag.removeAllTags();
                 if(this.dbResultData != null)
                 {
-                    no.setHtml(this.dbResultData.getNo());
-                    description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
-                    status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
+                    Detail.this.no.setHtml(this.dbResultData.getNo());
+                    Detail.this.description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
+                    Detail.this.status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
 
+                    if(!dbResultTagID.isEmpty())
+                    {
+                        Detail.this.tag.setVisibility(View.VISIBLE);
+                        Detail.this.tagLabel.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        Detail.this.tag.setVisibility(View.GONE);
+                        Detail.this.tagLabel.setVisibility(View.GONE);
+                    }
                     while(!dbResultTagID.isEmpty())
                     {
-                        tag.addTag(new ME_TagAdapter(dbResultTag.get(dbResultTagID.remove(0)), 12f));
+                        Detail.this.tag.addTag(new ME_TagAdapter(dbResultTag.get(dbResultTagID.remove(0)), 12f));
                     }
                 }
                 else
                 {
-                    no.setText("-");
-                    description.setText("-");
-                    status.setText("-");
+                    Detail.this.no.setText("-");
+                    Detail.this.description.setText("-");
+                    Detail.this.status.setText("-");
                 }
                 super.onPostExecute(aVoid);
             }
