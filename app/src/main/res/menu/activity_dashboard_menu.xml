@@ -6,21 +6,8 @@
 
     <item
         android:id="@+id/activity_dashboard_menu_setting"
+        android:icon="@drawable/ic_setting"
         android:orderInCategory="0"
         android:title="@string/activity_dashboard_menu_setting"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/activity_dashboard_menu_search"
-        android:orderInCategory="1"
-        android:title="@string/activity_dashboard_menu_search"
-        app:showAsAction="never"
-        />
-
-    <item
-        android:id="@+id/activity_dashboard_menu_refresh"
-        android:orderInCategory="2"
-        android:title="@string/activity_dashboard_menu_refresh"
-        app:showAsAction="never"
-        />
+        app:showAsAction="ifRoom"/>
 </menu>

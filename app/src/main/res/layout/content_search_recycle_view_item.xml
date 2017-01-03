@@ -25,7 +25,8 @@
         android:layout_marginBottom="22dp"
         android:layout_marginTop="22dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingEnd="16dp">
 
         <TextView
             android:id="@+id/content_search_recycler_view_item_no"
@@ -37,10 +38,23 @@
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="20sp"/>
 
+        <org.sufficientlysecure.htmltextview.HtmlTextView
+            android:id="@+id/content_search_recycler_view_item_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:elevation="1dp"
+            android:ellipsize="end"
+            android:maxLength="100"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textSize="12sp"/>
+
         <me.kaede.tagview.TagView
             android:id="@+id/content_search_recycler_view_item_tag"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
             app:lineMargin="5dp"
             app:tagMargin="3dp"
