@@ -122,8 +122,6 @@ public class Dashboard extends AppCompatActivity
 
     private void doSearch(final String query)
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
-
         new AsyncTask<Void, Void, Void>()
         {
             @Override
