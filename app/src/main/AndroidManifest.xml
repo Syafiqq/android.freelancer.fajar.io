@@ -20,36 +20,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.Dashboard"
+            android:name=".controller._Dashboard"
             android:label="@string/title_activity_splash_screen"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".controller.Setting"
             android:label="@string/title_activity_setting"
-            android:parentActivityName=".controller.Dashboard"
+            android:parentActivityName=".controller._Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
+                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Year"
             android:label="@string/title_activity_year"
-            android:parentActivityName=".controller.Dashboard"
+            android:parentActivityName=".controller._Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
+                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Detail"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".controller.Dashboard"
+            android:parentActivityName=".controller._Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
+                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
         </activity>
     </application>
 

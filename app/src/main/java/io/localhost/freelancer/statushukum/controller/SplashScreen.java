@@ -57,7 +57,7 @@ public class SplashScreen extends AppCompatActivity
                 {
                     public void run()
                     {
-                        SplashScreen.super.startActivity(new Intent(SplashScreen.this, Dashboard.class));
+                        SplashScreen.super.startActivity(new Intent(SplashScreen.this, _Dashboard.class));
                         SplashScreen.super.finish();
                     }
                 }, secondsDelayed * 1000);
