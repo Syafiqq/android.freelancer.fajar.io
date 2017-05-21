@@ -17,7 +17,7 @@
     <item android:title="@string/nav_header_common_drawer_group_technical">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_menu_common_setting"
                 android:icon="@drawable/ic_setting_black_24"
                 android:title="@string/nav_header_common_drawer_technical_setting"/>
         </menu>
