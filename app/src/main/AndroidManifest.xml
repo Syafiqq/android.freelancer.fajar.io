@@ -51,6 +51,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
         </activity>
+        <activity
+            android:name=".TmpDashboard"
+            android:label="@string/title_activity_tmp_dashboard"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

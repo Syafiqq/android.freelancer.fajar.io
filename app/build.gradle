@@ -46,5 +46,6 @@ dependencies {
     compile 'com.mikepenz:material-design-iconic-typeface:2.2.0.2@aar'
     compile 'com.github.kaedea:Android-Cloud-TagView-Plus:b546a5f073'
     compile 'org.jetbrains:annotations-java5:15.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
 }

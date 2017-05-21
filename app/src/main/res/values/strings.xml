@@ -49,4 +49,10 @@
     <string name="activity_search_menu_setting">Setting</string>
     <string name="activity_search_menu_refresh">Refresh</string>
     <string name="activity_search_info_search_empty">Tidak Ada Hasil</string>
+    <string name="title_activity_tmp_dashboard">TmpDashboard</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
 </resources>
