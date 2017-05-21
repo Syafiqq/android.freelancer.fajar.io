@@ -34,10 +34,10 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Constitution extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    public static final String CLASS_NAME = "Dashboard";
-    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
+    public static final String CLASS_NAME = "Constitution";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Constitution";
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -54,7 +54,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        setContentView(R.layout.activity_dashboard_wrapper);
+        setContentView(R.layout.activity_constitution_wrapper);
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProperty();
@@ -87,10 +87,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                if((query.trim().length() > 0) && (!Dashboard.this.latestQuery.contentEquals(query)))
+                if((query.trim().length() > 0) && (!Constitution.this.latestQuery.contentEquals(query)))
                 {
-                    Dashboard.this.latestQuery = query;
-                    Dashboard.this.doSearch(query);
+                    Constitution.this.latestQuery = query;
+                    Constitution.this.doSearch(query);
                 }
                 return false;
             }
@@ -98,7 +98,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                Dashboard.this.searchAdapter.getFilter().filter(newText);
+                Constitution.this.searchAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -110,13 +110,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 System.out.println(isOnFocus);
                 if(isOnFocus)
                 {
-                    Dashboard.this.yearListView.setVisibility(View.GONE);
-                    Dashboard.this.searchListView.setVisibility(View.VISIBLE);
+                    Constitution.this.yearListView.setVisibility(View.GONE);
+                    Constitution.this.searchListView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    Dashboard.this.yearListView.setVisibility(View.VISIBLE);
-                    Dashboard.this.searchListView.setVisibility(View.GONE);
+                    Constitution.this.yearListView.setVisibility(View.VISIBLE);
+                    Constitution.this.searchListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -152,9 +152,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
-                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Dashboard.this);
-                final MDM_Tag modelTag = MDM_Tag.getInstance(Dashboard.this);
+                final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Constitution.this);
+                final MDM_Tag modelTag = MDM_Tag.getInstance(Constitution.this);
                 final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
@@ -168,20 +168,20 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         }
                     }
                 }
-                Dashboard.this.searchList.clear();
-                Dashboard.this.searchList.addAll(dbResultData);
-                Dashboard.this.searchAdapter.update(dbResultData);
+                Constitution.this.searchList.clear();
+                Constitution.this.searchList.addAll(dbResultData);
+                Constitution.this.searchAdapter.update(dbResultData);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                if(Dashboard.this.searchList.size() == 0)
+                if(Constitution.this.searchList.size() == 0)
                 {
-                    Toast.makeText(Dashboard.this, Dashboard.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Constitution.this, Constitution.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
-                Dashboard.this.searchAdapter.notifyDataSetChanged();
+                Constitution.this.searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -215,18 +215,18 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
+                final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear();
-                Dashboard.this.yearList.clear();
-                Dashboard.this.yearList.addAll(dbResult);
-                Dashboard.this.yearAdapter.update(dbResult);
+                Constitution.this.yearList.clear();
+                Constitution.this.yearList.addAll(dbResult);
+                Constitution.this.yearAdapter.update(dbResult);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                Dashboard.this.yearAdapter.notifyDataSetChanged();
+                Constitution.this.yearAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -255,7 +255,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             case android.R.id.home:
             {
-                Dashboard.this.onBackButtonPressed();
+                Constitution.this.onBackButtonPressed();
                 return true;
             }
         }

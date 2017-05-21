@@ -60,7 +60,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        View             itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_dashboard_recycler_view_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_constitution_recycler_view_item, parent, false);
         final ViewHolder holder   = new ViewHolder(itemView);
         itemView.setOnClickListener(holder);
         return holder;
@@ -121,7 +121,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
                 }
                 else
                 {
-                    Toast.makeText(context, String.format(Locale.getDefault(), context.getResources().getString(R.string.content_dashboard_recycler_view_item_no_entry_message), year), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, String.format(Locale.getDefault(), context.getResources().getString(R.string.content_constitution_recycler_view_item_no_entry_message), year), Toast.LENGTH_SHORT).show();
                 }
             }
             catch(ParseException ignored)

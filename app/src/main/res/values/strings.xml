@@ -1,17 +1,17 @@
 <resources>
     <string name="title_application_name">Status Hukum</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
-    <string name="activity_dashboard_toolbar_logo_title">Undang-Undang</string>
-    <string name="activity_dashboard_toolbar_logo_desc">Logo Desc</string>
-    <string name="activity_dashboard_menu_sync">Sync</string>
-    <string name="activity_dashboard_menu_setting">Setting</string>
+    <string name="activity_constitution_toolbar_logo_title">Undang-Undang</string>
+    <string name="activity_constitution_toolbar_logo_desc">Logo Desc</string>
+    <string name="activity_constitution_menu_sync">Sync</string>
+    <string name="activity_constitution_menu_setting">Setting</string>
     <string name="title_activity_setting">Setting</string>
-    <string name="content_dashboard_spinner_century_chooser">Abad</string>
-    <string name="content_dashboard_recycler_view_item_count" formatted="true">Status Hukum : %3d</string>
+    <string name="content_constitution_spinner_century_chooser">Abad</string>
+    <string name="content_constitution_recycler_view_item_count" formatted="true">Status Hukum : %3d</string>
     <string name="title_activity_year">Year</string>
     <string name="activity_year_menu_sync">Sync</string>
     <string name="activity_year_menu_setting">Setting</string>
-    <string name="content_dashboard_recycler_view_item_no_entry_message" formatted="true">Tidak ada status hukum pada tahun %d</string>
+    <string name="content_constitution_recycler_view_item_no_entry_message" formatted="true">Tidak ada status hukum pada tahun %d</string>
     <string name="activity_year_toolbar_logo_title">Status Hukum</string>
     <string name="activity_year_toolbar_logo_desc">Logo Desc</string>
     <string name="title_activity_detail">Detail</string>
@@ -34,14 +34,14 @@
     <string name="system_setting_server_version_error">Tidak dapat mengambil data dari server</string>
     <string name="system_setting_server_version_success">Update Berhasil</string>
     <string name="system_setting_server_version_equal">Versi data sudah sama</string>
-    <string name="activity_dashboard_menu_refresh">Refresh</string>
+    <string name="activity_constitution_menu_refresh">Refresh</string>
     <string name="activity_year_menu_refresh">Refresh</string>
     <string name="content_setting_s_mailto_label">Saran</string>
     <string name="content_setting_s_mailto_label_desc">Kirimkan saran kepada pengembang</string>
     <string name="activity_setting_mailto_receipt">fajaradhy@ymail.com</string>
     <string name="activity_setting_mailto_subject">Status Hukum Feedback</string>
     <string name="activity_setting_mailto_content">Saya memberikan saran untuk aplikasi ini</string>
-    <string name="activity_dashboard_menu_search">Cari</string>
+    <string name="activity_constitution_menu_search">Cari</string>
     <string name="activity_year_menu_search">Cari</string>
     <string name="title_activity_search">Search</string>
     <string name="activity_search_toolbar_logo_desc">Logo Desc</string>
@@ -49,11 +49,8 @@
     <string name="activity_search_menu_setting">Setting</string>
     <string name="activity_search_menu_refresh">Refresh</string>
     <string name="activity_search_info_search_empty">Tidak Ada Hasil</string>
-    <string name="title_activity_tmp_dashboard">TmpDashboard</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
     <string name="nav_header_common_logo_title">Status Hukum</string>
     <string name="nav_header_common_logo_desc">Logo Desc</string>

@@ -54,7 +54,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        setContentView(R.layout.activity_dashboard_wrapper);
+        setContentView(R.layout.activity_constitution_wrapper);
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProperty();
@@ -305,7 +305,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         {
             case R.id.nav_menu_common_uu:
             {
-                this.startActivity(new Intent(this, Dashboard.class));
+                this.startActivity(new Intent(this, Constitution.class));
                 super.finish();
                 return true;
             }
