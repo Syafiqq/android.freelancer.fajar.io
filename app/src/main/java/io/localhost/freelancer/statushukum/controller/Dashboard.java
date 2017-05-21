@@ -305,9 +305,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             case R.id.nav_menu_common_perpu:
             {
-                Toast.makeText(this, "Perpu", Toast.LENGTH_SHORT).show();
+                this.startActivity(new Intent(this, GovrnRule.class));
+                super.finish();
+                return true;
             }
-            break;
             case R.id.nav_menu_common_setting:
             {
                 this.startActivity(new Intent(this, Setting.class));
