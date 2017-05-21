@@ -3,7 +3,12 @@ package io.localhost.freelancer.statushukum.controller;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +16,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -30,18 +34,18 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-public class Dashboard extends AppCompatActivity
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
 
-    private CountPerYearAdapter               yearAdapter;
-    private List<MDM_Data.CountPerYear>       yearList;
-    private SearchView                        search;
-    private String                            latestQuery;
-    private RecyclerView                      yearListView;
-    private RecyclerView                      searchListView;
-    private SearchAdapter                     searchAdapter;
+    private CountPerYearAdapter yearAdapter;
+    private List<MDM_Data.CountPerYear> yearList;
+    private SearchView search;
+    private String latestQuery;
+    private RecyclerView yearListView;
+    private RecyclerView searchListView;
+    private SearchAdapter searchAdapter;
     private List<MDM_Data.MetadataSearchable> searchList;
 
     @Override
@@ -50,9 +54,22 @@ public class Dashboard extends AppCompatActivity
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.activity_dashboard_wrapper);
         this.setToolbar();
+        this.setNavigationSwipe();
         this.setProperty();
+    }
+
+    private void setNavigationSwipe()
+    {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private void setProperty()
@@ -135,11 +152,11 @@ public class Dashboard extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data                          modelData    = MDM_Data.getInstance(Dashboard.this);
-                final MDM_DataTag                       modelDataTag = MDM_DataTag.getInstance(Dashboard.this);
-                final MDM_Tag                           modelTag     = MDM_Tag.getInstance(Dashboard.this);
+                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Dashboard.this);
+                final MDM_Tag modelTag = MDM_Tag.getInstance(Dashboard.this);
                 final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query);
-                final Map<Integer, ME_Tag>              dbResultTag  = modelTag.getAll();
+                final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
                 {
                     if(result.getTagSize() > 0)
@@ -198,8 +215,8 @@ public class Dashboard extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data                    modelData = MDM_Data.getInstance(Dashboard.this);
-                final List<MDM_Data.CountPerYear> dbResult  = modelData.getCountPerYear();
+                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
+                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear();
                 Dashboard.this.yearList.clear();
                 Dashboard.this.yearList.addAll(dbResult);
                 Dashboard.this.yearAdapter.update(dbResult);
@@ -230,30 +247,17 @@ public class Dashboard extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
-
-        getMenuInflater().inflate(R.menu.activity_dashboard_menu, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
 
         switch(item.getItemId())
         {
-            case R.id.activity_dashboard_menu_setting:
-            {
-                this.startActivity(new Intent(this, Setting.class));
-                return true;
-            }
             case android.R.id.home:
-                //perhaps use intent if needed but i'm sure there's a specific intent action for up you can use to handle
+            {
                 Dashboard.this.onBackButtonPressed();
                 return true;
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -279,6 +283,40 @@ public class Dashboard extends AppCompatActivity
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
 
-        super.finish();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        if(drawer.isDrawerOpen(GravityCompat.START))
+        {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else
+        {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
+    {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        switch(id)
+        {
+            case R.id.nav_menu_common_perpu:
+            {
+                Toast.makeText(this, "Perpu", Toast.LENGTH_SHORT).show();
+            }
+            break;
+            case R.id.nav_menu_common_setting:
+            {
+                this.startActivity(new Intent(this, Setting.class));
+                return true;
+            }
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
