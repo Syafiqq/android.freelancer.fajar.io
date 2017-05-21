@@ -20,41 +20,36 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller._Dashboard"
+            android:name=".controller.Dashboard"
             android:label="@string/title_activity_splash_screen"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".controller.Setting"
             android:label="@string/title_activity_setting"
-            android:parentActivityName=".controller._Dashboard"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Year"
             android:label="@string/title_activity_year"
-            android:parentActivityName=".controller._Dashboard"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Detail"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".controller._Dashboard"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller._Dashboard"/>
-        </activity>
-        <activity
-            android:name=".TmpDashboard"
-            android:label="@string/title_activity_tmp_dashboard"
-            android:theme="@style/AppTheme.NoActionBar">
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
     </application>
 
