@@ -97,9 +97,9 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         {
             super(view);
 
-            this.year = (TextView) view.findViewById(R.id.content_dashboard_recycler_view_item_year);
+            this.year = (TextView) view.findViewById(R.id.content_constitution_recycler_view_item_year);
             this.count = 0;
-            this.status = (ImageView) view.findViewById(R.id.content_dashboard_recycler_view_item_status);
+            this.status = (ImageView) view.findViewById(R.id.content_constitution_recycler_view_item_status);
         }
 
         @Override

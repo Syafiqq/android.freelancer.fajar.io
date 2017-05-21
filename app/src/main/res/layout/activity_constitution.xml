@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/activity_dashboard_toolbar"
+            android:id="@+id/activity_constitution_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
