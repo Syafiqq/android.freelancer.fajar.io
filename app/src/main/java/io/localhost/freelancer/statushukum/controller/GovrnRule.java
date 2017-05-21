@@ -54,7 +54,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        setContentView(R.layout.activity_constitution_wrapper);
+        setContentView(R.layout.activity_govrn_rule_wrapper);
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProperty();
@@ -62,13 +62,13 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
 
     private void setNavigationSwipe()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, (Toolbar) super.findViewById(R.id.activity_constitution_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, (Toolbar) super.findViewById(R.id.activity_govrn_rule_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_constitution_wrapper_navigationview_nav);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_govrn_rule_wrapper_navigationview_nav);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -80,7 +80,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         this.setYearListAdapter();
         this.setYearList();
 
-        this.search = (SearchView) super.findViewById(R.id.content_constitution_search_filter);
+        this.search = (SearchView) super.findViewById(R.id.content_govrn_rule_search_filter);
         this.latestQuery = this.search.getQuery().toString();
         this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
@@ -134,7 +134,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         {
             this.searchList.clear();
         }
-        this.searchListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_search);
+        this.searchListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_search);
         this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this);
         this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
@@ -197,7 +197,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         {
             this.yearList.clear();
         }
-        this.yearListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_year);
+        this.yearListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_year);
         this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this);
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.yearListView.setLayoutManager(mLayoutManager);
@@ -236,7 +236,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
     {
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
-        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_constitution_toolbar);
+        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_govrn_rule_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
@@ -283,7 +283,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
         if(drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
@@ -316,7 +316,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
