@@ -34,10 +34,10 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Constitution extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-    public static final String CLASS_NAME = "Dashboard";
-    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
+    public static final String CLASS_NAME = "Constitution";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Constitution";
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -54,7 +54,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
 
-        setContentView(R.layout.activity_dashboard_wrapper);
+        setContentView(R.layout.activity_constitution_wrapper);
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProperty();
@@ -62,13 +62,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private void setNavigationSwipe()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, (Toolbar) super.findViewById(R.id.activity_constitution_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_constitution_wrapper_navigationview_nav);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -80,17 +80,17 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         this.setYearListAdapter();
         this.setYearList();
 
-        this.search = (SearchView) super.findViewById(R.id.content_dashboard_search_filter);
+        this.search = (SearchView) super.findViewById(R.id.content_constitution_search_filter);
         this.latestQuery = this.search.getQuery().toString();
         this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                if((query.trim().length() > 0) && (!Dashboard.this.latestQuery.contentEquals(query)))
+                if((query.trim().length() > 0) && (!Constitution.this.latestQuery.contentEquals(query)))
                 {
-                    Dashboard.this.latestQuery = query;
-                    Dashboard.this.doSearch(query);
+                    Constitution.this.latestQuery = query;
+                    Constitution.this.doSearch(query);
                 }
                 return false;
             }
@@ -98,7 +98,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                Dashboard.this.searchAdapter.getFilter().filter(newText);
+                Constitution.this.searchAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -110,13 +110,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 System.out.println(isOnFocus);
                 if(isOnFocus)
                 {
-                    Dashboard.this.yearListView.setVisibility(View.GONE);
-                    Dashboard.this.searchListView.setVisibility(View.VISIBLE);
+                    Constitution.this.yearListView.setVisibility(View.GONE);
+                    Constitution.this.searchListView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    Dashboard.this.yearListView.setVisibility(View.VISIBLE);
-                    Dashboard.this.searchListView.setVisibility(View.GONE);
+                    Constitution.this.yearListView.setVisibility(View.VISIBLE);
+                    Constitution.this.searchListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -134,7 +134,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             this.searchList.clear();
         }
-        this.searchListView = (RecyclerView) findViewById(R.id.content_dashboard_recycle_view_container_search);
+        this.searchListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_search);
         this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this);
         this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
@@ -152,9 +152,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
-                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Dashboard.this);
-                final MDM_Tag modelTag = MDM_Tag.getInstance(Dashboard.this);
+                final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Constitution.this);
+                final MDM_Tag modelTag = MDM_Tag.getInstance(Constitution.this);
                 final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
@@ -168,20 +168,20 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         }
                     }
                 }
-                Dashboard.this.searchList.clear();
-                Dashboard.this.searchList.addAll(dbResultData);
-                Dashboard.this.searchAdapter.update(dbResultData);
+                Constitution.this.searchList.clear();
+                Constitution.this.searchList.addAll(dbResultData);
+                Constitution.this.searchAdapter.update(dbResultData);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                if(Dashboard.this.searchList.size() == 0)
+                if(Constitution.this.searchList.size() == 0)
                 {
-                    Toast.makeText(Dashboard.this, Dashboard.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Constitution.this, Constitution.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
-                Dashboard.this.searchAdapter.notifyDataSetChanged();
+                Constitution.this.searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -197,7 +197,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             this.yearList.clear();
         }
-        this.yearListView = (RecyclerView) findViewById(R.id.content_dashboard_recycle_view_container_year);
+        this.yearListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_year);
         this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this);
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.yearListView.setLayoutManager(mLayoutManager);
@@ -215,18 +215,18 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(Dashboard.this);
+                final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear();
-                Dashboard.this.yearList.clear();
-                Dashboard.this.yearList.addAll(dbResult);
-                Dashboard.this.yearAdapter.update(dbResult);
+                Constitution.this.yearList.clear();
+                Constitution.this.yearList.addAll(dbResult);
+                Constitution.this.yearAdapter.update(dbResult);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                Dashboard.this.yearAdapter.notifyDataSetChanged();
+                Constitution.this.yearAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -236,7 +236,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     {
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
-        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
+        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_constitution_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
@@ -255,7 +255,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             case android.R.id.home:
             {
-                Dashboard.this.onBackButtonPressed();
+                Constitution.this.onBackButtonPressed();
                 return true;
             }
         }
@@ -283,7 +283,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
         if(drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
@@ -316,7 +316,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
