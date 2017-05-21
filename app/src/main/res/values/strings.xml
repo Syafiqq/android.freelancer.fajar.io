@@ -55,4 +55,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="nav_header_common_logo_title">Status Hukum</string>
+    <string name="nav_header_common_logo_desc">Logo Desc</string>
+    <string name="nav_header_common_drawer_group_rule">Peraturan</string>
+    <string name="nav_header_common_drawer_group_technical">Teknis</string>
+    <string name="nav_header_common_drawer_rule_law">Undang-Undang</string>
+    <string name="nav_header_common_drawer_rule_govr_reg">Peraturan Pemeritah</string>
+    <string name="nav_header_common_drawer_technical_setting">Setting</string>
 </resources>
