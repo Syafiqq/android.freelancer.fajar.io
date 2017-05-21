@@ -151,7 +151,7 @@ public class Setting extends AppCompatActivity
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             toolbar.setContentInsetStartWithNavigation(4);
-            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.content_toolbar_back));
+            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_left_thick_white_24));
             toolbar.setNavigationOnClickListener(new View.OnClickListener()
             {
                 @Override
