@@ -26,10 +26,19 @@
         android:paddingTop="8dp"
         >
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/content_dashboard_search_filter"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/search_edit_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@color/transparent">
+
+            <android.support.v7.widget.SearchView
+                android:id="@+id/content_dashboard_search_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.AppBarLayout>
+
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
