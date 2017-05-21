@@ -21,14 +21,15 @@
         </activity>
         <activity
             android:name=".controller.Dashboard"
-            android:label="@string/title_activity_splash_screen"
+            android:label="@string/activity_dashboard_toolbar_logo_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
             android:name=".controller.Setting"
             android:label="@string/title_activity_setting"
             android:parentActivityName=".controller.Dashboard"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
@@ -37,7 +38,8 @@
             android:name=".controller.Year"
             android:label="@string/title_activity_year"
             android:parentActivityName=".controller.Dashboard"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
@@ -46,10 +48,16 @@
             android:name=".controller.Detail"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".controller.Dashboard"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
+        </activity>
+        <activity
+            android:name=".controller.GovrnRule"
+            android:label="@string/activity_govrn_rule_toolbar_logo_title"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
