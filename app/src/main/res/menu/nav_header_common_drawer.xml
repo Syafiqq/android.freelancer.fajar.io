@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/nav_header_common_drawer_group_rule">
+        <menu>
+            <item
+                android:id="@+id/nav_menu_common_uu"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_common_drawer_rule_law"/>
+            <item
+                android:id="@+id/nav_menu_common_perpu"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_common_drawer_rule_govr_reg"/>
+        </menu>
+    </item>
+
+    <item android:title="@string/nav_header_common_drawer_group_technical">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_setting_black_24"
+                android:title="@string/nav_header_common_drawer_technical_setting"/>
+        </menu>
+    </item>
+
+</menu>
