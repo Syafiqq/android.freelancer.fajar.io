@@ -85,7 +85,7 @@ public class Year extends AppCompatActivity
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             toolbar.setContentInsetStartWithNavigation(4);
-            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_left_thick_white_24));
+            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_left_white_24));
             toolbar.setNavigationOnClickListener(new View.OnClickListener()
             {
                 @Override
