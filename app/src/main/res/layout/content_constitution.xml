@@ -11,8 +11,8 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="io.localhost.freelancer.statushukum.controller.Dashboard"
-    tools:showIn="@layout/activity_dashboard">
+    tools:context="io.localhost.freelancer.statushukum.controller.Constitution"
+    tools:showIn="@layout/activity_constitution">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,20 +26,29 @@
         android:paddingTop="8dp"
         >
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/content_dashboard_search_filter"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/search_edit_frame"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@color/transparent">
+
+            <android.support.v7.widget.SearchView
+                android:id="@+id/content_constitution_search_filter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </android.support.design.widget.AppBarLayout>
+
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_dashboard_recycle_view_container_year"
+        android:id="@+id/content_constitution_recycle_view_container_year"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/content_dashboard_recycle_view_container_search"
+        android:id="@+id/content_constitution_recycle_view_container_search"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"
