@@ -4,13 +4,13 @@
     <item android:title="@string/nav_header_common_drawer_group_rule">
         <menu>
             <item
-                android:id="@+id/nav_menu_common_uu"
+                android:id="@+id/nav_menu_common_rule_constitution"
                 android:icon="@drawable/ic_scale_balance_black_24"
-                android:title="@string/nav_header_common_drawer_rule_law"/>
+                android:title="@string/nav_header_common_drawer_rule_constitution"/>
             <item
-                android:id="@+id/nav_menu_common_perpu"
+                android:id="@+id/nav_menu_common_rule_govrn_rule"
                 android:icon="@drawable/ic_scale_balance_black_24"
-                android:title="@string/nav_header_common_drawer_rule_govr_reg"/>
+                android:title="@string/nav_header_common_drawer_rule_govrn_rule"/>
         </menu>
     </item>
 

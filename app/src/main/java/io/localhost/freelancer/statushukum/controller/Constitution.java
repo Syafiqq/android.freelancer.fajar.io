@@ -303,7 +303,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
 
         switch(id)
         {
-            case R.id.nav_menu_common_perpu:
+            case R.id.nav_menu_common_rule_govrn_rule:
             {
                 this.startActivity(new Intent(this, GovrnRule.class));
                 super.finish();

@@ -303,7 +303,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
 
         switch(id)
         {
-            case R.id.nav_menu_common_uu:
+            case R.id.nav_menu_common_rule_constitution:
             {
                 this.startActivity(new Intent(this, Constitution.class));
                 super.finish();
