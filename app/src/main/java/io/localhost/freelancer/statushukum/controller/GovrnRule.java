@@ -38,6 +38,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
 {
     public static final String CLASS_NAME = "GovrnRule";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.GovrnRule";
+    public static final int CATEGORY = 2;
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -135,7 +136,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             this.searchList.clear();
         }
         this.searchListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_search);
-        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this);
+        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this, CATEGORY);
         this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.searchListView.setLayoutManager(mLayoutManager);
@@ -155,7 +156,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
                 final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.this);
                 final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(GovrnRule.this);
                 final MDM_Tag modelTag = MDM_Tag.getInstance(GovrnRule.this);
-                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query);
+                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
                 {
@@ -198,7 +199,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             this.yearList.clear();
         }
         this.yearListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_year);
-        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this);
+        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this, CATEGORY);
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.yearListView.setLayoutManager(mLayoutManager);
         this.yearListView.setItemAnimator(new DefaultItemAnimator());
@@ -216,7 +217,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             protected Void doInBackground(Void... voids)
             {
                 final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.this);
-                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear();
+                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
                 GovrnRule.this.yearList.clear();
                 GovrnRule.this.yearList.addAll(dbResult);
                 GovrnRule.this.yearAdapter.update(dbResult);

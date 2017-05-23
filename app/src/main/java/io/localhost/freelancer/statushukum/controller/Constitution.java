@@ -38,6 +38,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
 {
     public static final String CLASS_NAME = "Constitution";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Constitution";
+    public static final int CATEGORY = 1;
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -135,7 +136,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
             this.searchList.clear();
         }
         this.searchListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_search);
-        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this);
+        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this, CATEGORY);
         this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.searchListView.setLayoutManager(mLayoutManager);
@@ -155,7 +156,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
                 final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
                 final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Constitution.this);
                 final MDM_Tag modelTag = MDM_Tag.getInstance(Constitution.this);
-                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query);
+                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
                 {
@@ -198,7 +199,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
             this.yearList.clear();
         }
         this.yearListView = (RecyclerView) findViewById(R.id.content_constitution_recycle_view_container_year);
-        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this);
+        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this, CATEGORY);
         final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
         this.yearListView.setLayoutManager(mLayoutManager);
         this.yearListView.setItemAnimator(new DefaultItemAnimator());
@@ -216,7 +217,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
             protected Void doInBackground(Void... voids)
             {
                 final MDM_Data modelData = MDM_Data.getInstance(Constitution.this);
-                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear();
+                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
                 Constitution.this.yearList.clear();
                 Constitution.this.yearList.addAll(dbResult);
                 Constitution.this.yearAdapter.update(dbResult);
