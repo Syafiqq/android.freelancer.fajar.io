@@ -55,19 +55,20 @@ public class MDM_Data extends DatabaseModel
         return MDM_Data.mInstance;
     }
 
-    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status)
+    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status, int category)
     {
 
 
         database.execSQL(
-                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?)",
+                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?, ?)",
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_ID,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
-                        Data.COLUMN_NAME_STATUS),
-                new Object[] {id, year, no, description, status});
+                        Data.COLUMN_NAME_STATUS,
+                        Data.COLUMN_NAME_CATEGORY),
+                new Object[] {id, year, no, description, status, category});
     }
 
     public static void deleteAll(final SQLiteDatabase database)
@@ -77,7 +78,7 @@ public class MDM_Data extends DatabaseModel
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Data.TABLE_NAME), new Object[] {});
     }
 
-    public void insert(int id, int year, String no, String description, String status)
+    public void insert(int id, int year, String no, String description, String status, int category)
     {
 
         try
@@ -90,7 +91,7 @@ public class MDM_Data extends DatabaseModel
         }
 
 
-        MDM_Data.insert(super.database, id, year, no, description, status);
+        MDM_Data.insert(super.database, id, year, no, description, status, category);
     }
 
     public void deleteAll()
@@ -109,7 +110,7 @@ public class MDM_Data extends DatabaseModel
         MDM_Data.deleteAll(super.database);
     }
 
-    public List<CountPerYear> getCountPerYear()
+    public List<CountPerYear> getCountPerYear(int category)
     {
 
         try
@@ -124,14 +125,15 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` GROUP BY `%s` ORDER BY `%s` ASC",
+                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` WHERE `%s` = ? GROUP BY `%s` ORDER BY `%s` ASC",
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME,
+                        Data.COLUMN_NAME_CATEGORY,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_YEAR
                 ),
-                new String[] {});
+                new String[] {String.valueOf(category)});
 
         List<CountPerYear> records = new LinkedList<>();
         if(cursor.moveToFirst())
@@ -146,7 +148,7 @@ public class MDM_Data extends DatabaseModel
         return records;
     }
 
-    public List<YearMetadata> getYearList(final int year, final int listTotal)
+    public List<YearMetadata> getYearList(final int year, int category)
     {
 
         try
@@ -161,7 +163,7 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? AND `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
@@ -171,12 +173,13 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf(year)});
+                new String[] {String.valueOf(year), String.valueOf(category)});
 
-        final List<YearMetadata> records = new ArrayList<>(listTotal);
+        final List<YearMetadata> records = new ArrayList<>();
         if(cursor.moveToFirst())
         {
             do
@@ -204,12 +207,13 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
                         Data.COLUMN_NAME_ID,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
                         Data.COLUMN_NAME_STATUS,
+                        Data.COLUMN_NAME_CATEGORY,
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_ID
                 ),
@@ -228,20 +232,20 @@ public class MDM_Data extends DatabaseModel
         return total;
     }
 
-    public void insertOrUpdate(int id, int year, String no, String description, String status)
+    public void insertOrUpdate(int id, int year, String no, String description, String status, int category)
     {
         boolean exists = this.isExists(id);
         if(exists)
         {
-            this.update(id, year, no, description, status);
+            this.update(id, year, no, description, status, category);
         }
         else
         {
-            this.insert(id, year, no, description, status);
+            this.insert(id, year, no, description, status, category);
         }
     }
 
-    private void update(int id, int year, String no, String description, String status)
+    private void update(int id, int year, String no, String description, String status, int category)
     {
 
         try
@@ -254,12 +258,13 @@ public class MDM_Data extends DatabaseModel
         }
 
         super.database.execSQL(
-                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=? WHERE `%s`=?",
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?, `%s`=? WHERE `%s`=?",
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
                         Data.COLUMN_NAME_STATUS,
+                        Data.COLUMN_NAME_CATEGORY,
                         Data.COLUMN_NAME_ID
                 ),
                 new Object[] {year, no, description, status, id});
@@ -303,7 +308,7 @@ public class MDM_Data extends DatabaseModel
         return exist;
     }
 
-    public List<MetadataSearchable> getSearchableList(String query)
+    public List<MetadataSearchable> getSearchableList(String query, int category)
     {
         try
         {
@@ -316,21 +321,23 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
                         Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_TAG,
                         Data.TABLE_NAME,
                         DataTag.TABLE_NAME,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
                         Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf("%" + query + "%")});
+                new String[] {String.valueOf("%" + query + "%"), String.valueOf(category)});
 
         final List<MetadataSearchable> records = new ArrayList<>();
         if(cursor.moveToFirst())
@@ -378,10 +385,10 @@ public class MDM_Data extends DatabaseModel
 
     public static class YearMetadata
     {
-        private final int          id;
-        private final int          year;
-        private final String       no;
-        private final int          tagSize;
+        private final int id;
+        private final int year;
+        private final String no;
+        private final int tagSize;
         private final List<ME_Tag> tags;
 
         public YearMetadata(int id, int year, String no, int tagSize)

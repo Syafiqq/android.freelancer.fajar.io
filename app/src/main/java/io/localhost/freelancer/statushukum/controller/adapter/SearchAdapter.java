@@ -46,16 +46,18 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter";
 
     private final List<MDM_Data.MetadataSearchable> yearList;
-    private final Context                           context;
-    private       Filter                            filter;
+    private final Context context;
+    private final int category;
+    private Filter filter;
 
 
-    public SearchAdapter(final List<MDM_Data.MetadataSearchable> yearList, final Context context)
+    public SearchAdapter(final List<MDM_Data.MetadataSearchable> yearList, final Context context, int dataCategory)
     {
         super();
 
         this.yearList = yearList;
         this.context = context;
+        this.category = dataCategory;
     }
 
     public void update(final List<MDM_Data.MetadataSearchable> MetadataSearchable)
@@ -68,8 +70,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     @Override
     public SearchAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        final View                     itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_search_recycle_view_item, parent, false);
-        final SearchAdapter.ViewHolder holder   = new SearchAdapter.ViewHolder(itemView);
+        final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_search_recycle_view_item, parent, false);
+        final SearchAdapter.ViewHolder holder = new SearchAdapter.ViewHolder(itemView);
         itemView.setOnClickListener(holder);
         return holder;
     }
@@ -79,7 +81,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     {
 
         final MDM_Data.MetadataSearchable tmpMetadata = this.yearList.get(position);
-        final Iterator<ME_Tag>            tags        = tmpMetadata.getTags().iterator();
+        final Iterator<ME_Tag> tags = tmpMetadata.getTags().iterator();
         holder.tag.removeAllTags();
 
         holder.no.setText(tmpMetadata.getNo());
@@ -116,8 +118,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             {
 
                 final Context context = SearchAdapter.this.context;
-                final int     id      = tmpMetadata.getId();
-                final Intent  intent  = new Intent(context, Detail.class);
+                final int id = tmpMetadata.getId();
+                final Intent intent = new Intent(context, Detail.class);
                 intent.putExtra(Detail.EXTRA_ID, id);
                 context.startActivity(intent);
             }
@@ -146,10 +148,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter.ViewHolder";
 
-        public final TextView     no;
-        final        ImageView    task;
-        final        TagView      tag;
-        final        HtmlTextView description;
+        public final TextView no;
+        final ImageView task;
+        final TagView tag;
+        final HtmlTextView description;
         View.OnClickListener listener;
 
         ViewHolder(final View view)

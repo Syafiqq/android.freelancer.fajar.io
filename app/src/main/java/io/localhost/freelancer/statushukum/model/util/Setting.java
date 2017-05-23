@@ -1,6 +1,8 @@
 package io.localhost.freelancer.statushukum.model.util;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -90,21 +92,30 @@ public class Setting
                                 Setting.this.getStreamData((LocalDateTime) data[0], (LocalDateTime) data[1], new TaskDelegatable()
                                 {
                                     @Override
-                                    public void delegate(Object... data)
+                                    public void delegate(final Object... data)
                                     {
-                                        MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
-                                        dataModel.deleteAll();
-                                        Setting.this.insertData((JSONArray) data[0]);
-                                        MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
-                                        tagModel.deleteAll();
-                                        Setting.this.insertTag((JSONArray) data[1]);
-                                        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
-                                        dataTagModel.deleteAll();
-                                        Setting.this.insertDataTag((JSONArray) data[2]);
-                                        MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
-                                        versionModel.deleteAll();
-                                        Setting.this.insertVersion((JSONArray) data[3]);
-                                        Setting.this.syncObserve.update(null, SYNC_SUCCESS);
+                                        new AsyncTask<Void, Void, Void>()
+                                        {
+
+                                            @Override
+                                            protected Void doInBackground(Void... params)
+                                            {
+                                                MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                                                dataModel.deleteAll();
+                                                Setting.this.insertData((JSONArray) data[0]);
+                                                MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                                                tagModel.deleteAll();
+                                                Setting.this.insertTag((JSONArray) data[1]);
+                                                MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                                                dataTagModel.deleteAll();
+                                                Setting.this.insertDataTag((JSONArray) data[2]);
+                                                MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
+                                                versionModel.deleteAll();
+                                                Setting.this.insertVersion((JSONArray) data[3]);
+                                                Setting.this.syncObserve.update(null, SYNC_SUCCESS);
+                                                return null;
+                                            }
+                                        }.execute();
                                     }
                                 });
                             }
@@ -194,7 +205,8 @@ public class Setting
                         entry.getInt("year"),
                         entry.getString("no"),
                         entry.getString("description"),
-                        entry.getString("status"));
+                        entry.getString("status"),
+                        entry.getInt("category"));
             }
             catch(JSONException ignored)
             {

@@ -28,14 +28,14 @@ import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
 public class Year extends AppCompatActivity
 {
-    public static final String CLASS_NAME      = "Year";
-    public static final String CLASS_PATH      = "io.localhost.freelancer.statushukum.controller.Year";
-    public static final String EXTRA_YEAR      = "year";
-    public static final String EXTRA_YEAR_SIZE = "count";
-    private int                         year;
-    private int                         yearSize;
-    private YearListAdapter             yearListAdapter;
+    public static final String CLASS_NAME = "Year";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Year";
+    public static final String EXTRA_YEAR = "year";
+    public static final String EXTRA_CATEGORY = "count";
+    private int year;
+    private YearListAdapter yearListAdapter;
     private List<MDM_Data.YearMetadata> entryList;
+    private int category;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,7 +46,7 @@ public class Year extends AppCompatActivity
         setContentView(R.layout.activity_year);
         Intent intent = getIntent();
         this.year = intent.getIntExtra(Year.EXTRA_YEAR, -1);
-        this.yearSize = intent.getIntExtra(Year.EXTRA_YEAR_SIZE, -1);
+        this.category = intent.getIntExtra(Year.EXTRA_CATEGORY, 1);
 
         this.setToolbar();
         this.setProperty();
@@ -84,7 +84,7 @@ public class Year extends AppCompatActivity
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             toolbar.setContentInsetStartWithNavigation(4);
-            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.content_toolbar_back));
+            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_left_white_24));
             toolbar.setNavigationOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -162,11 +162,11 @@ public class Year extends AppCompatActivity
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data                    modelData    = MDM_Data.getInstance(Year.this);
-                final MDM_DataTag                 modelDataTag = MDM_DataTag.getInstance(Year.this);
-                final MDM_Tag                     modelTag     = MDM_Tag.getInstance(Year.this);
-                final List<MDM_Data.YearMetadata> dbResultData = modelData.getYearList(Year.this.year, Year.this.yearSize);
-                final Map<Integer, ME_Tag>        dbResultTag  = modelTag.getAll();
+                final MDM_Data modelData = MDM_Data.getInstance(Year.this);
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Year.this);
+                final MDM_Tag modelTag = MDM_Tag.getInstance(Year.this);
+                final List<MDM_Data.YearMetadata> dbResultData = modelData.getYearList(Year.this.year, Year.this.category);
+                final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.YearMetadata result : dbResultData)
                 {
                     if(result.getTagSize() > 0)

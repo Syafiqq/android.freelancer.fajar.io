@@ -10,13 +10,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
-import android.widget.Switch;
+import android.widget.ProgressBar;
 import android.widget.Toast;
-
-import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -41,42 +37,44 @@ public class Setting extends AppCompatActivity
 
     private void registerComponent()
     {
-        final Switch      sync   = (Switch) super.findViewById(R.id.content_setting_s_sync);
+        final ImageButton sync = (ImageButton) super.findViewById(R.id.content_setting_ib_sync);
+        final ProgressBar progress = (ProgressBar) super.findViewById(R.id.content_setting_pb_progress);
         final ImageButton button = (ImageButton) super.findViewById(R.id.content_setting_ib_mailto);
-        button.setImageDrawable(new IconicsDrawable(this)
-                .icon(MaterialDesignIconic.Icon.gmi_mail_send)
-                .color(ContextCompat.getColor(this, R.color.grey_700))
-                .sizeDp(24));
         button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
                 final Resources resources = Setting.this.getResources();
-                final Intent    mailto    = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
+                final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
                 mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {resources.getString(R.string.activity_setting_mailto_receipt)});
                 mailto.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.activity_setting_mailto_subject));
                 mailto.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.activity_setting_mailto_content));
                 Setting.super.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
             }
         });
-        sync.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        sync.setOnClickListener(new View.OnClickListener()
         {
-            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked)
+            @Override
+            public void onClick(View v)
             {
-                if(isChecked)
+                if(progress.getVisibility() == View.GONE)
                 {
-                    if(buttonView instanceof Switch)
+                    progress.setVisibility(View.VISIBLE);
+                    Setting.this.doSync(new Observer()
                     {
-                        buttonView.setEnabled(false);
-                    }
-                    Setting.this.doSync(buttonView);
+                        @Override
+                        public void update(Observable o, Object arg)
+                        {
+                            progress.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         });
     }
 
-    private synchronized void doSync(final CompoundButton buttonView)
+    private synchronized void doSync(final Observer clbk)
     {
 
         new AsyncTask<Void, Void, Void>()
@@ -114,8 +112,7 @@ public class Setting extends AppCompatActivity
                                     }
                                     break;
                                 }
-                                buttonView.setChecked(false);
-                                buttonView.setEnabled(true);
+                                clbk.update(null, null);
                             }
                         });
                     }
@@ -150,7 +147,7 @@ public class Setting extends AppCompatActivity
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayShowTitleEnabled(false);
             toolbar.setContentInsetStartWithNavigation(4);
-            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.content_toolbar_back));
+            toolbar.setNavigationIcon(ContextCompat.getDrawable(this, R.drawable.ic_arrow_left_white_24));
             toolbar.setNavigationOnClickListener(new View.OnClickListener()
             {
                 @Override
