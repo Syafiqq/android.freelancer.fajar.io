@@ -38,13 +38,15 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter";
 
     private final List<MDM_Data.CountPerYear> countPerYear;
-    private final Context                     context;
+    private final Context context;
+    private final int category;
 
-    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context)
+    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
     {
         super();
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
+        this.category = dataCategory;
         this.countPerYear = countPerYear;
         this.context = context;
     }
@@ -61,7 +63,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_constitution_recycler_view_item, parent, false);
-        final ViewHolder holder   = new ViewHolder(itemView);
+        final ViewHolder holder = new ViewHolder(itemView);
         itemView.setOnClickListener(holder);
         return holder;
     }
@@ -89,7 +91,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter.ViewHolder";
 
-        public final TextView  year;
+        public final TextView year;
         public final ImageView status;
         Integer count;
 
@@ -110,13 +112,13 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
             try
             {
                 final Context context = CountPerYearAdapter.this.context;
-                final int     year    = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
-                final int     count   = this.count;
+                final int year = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
+                final int count = this.count;
                 if(count > 0)
                 {
                     final Intent intent = new Intent(context, Year.class);
                     intent.putExtra(Year.EXTRA_YEAR, year);
-                    intent.putExtra(Year.EXTRA_YEAR_SIZE, count);
+                    intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
                     context.startActivity(intent);
                 }
                 else
