@@ -27,6 +27,7 @@ public final class DatabaseContract
         public static final String COLUMN_NAME_NO          = "no";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_STATUS      = "status";
+        public static final String COLUMN_NAME_CATEGORY = "category";
     }
 
     /* Inner class that defines the table contents */

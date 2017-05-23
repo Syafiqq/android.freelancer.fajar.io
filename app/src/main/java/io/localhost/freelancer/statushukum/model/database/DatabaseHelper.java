@@ -38,15 +38,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     // If you change the database schema, you must increment the database version.
-    private static final int   DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String DATABASE_NAME = "status_hukum.mcrypt";
     private static final char COMMA_SEPARATOR = ',';
-    private static final char WHITESPACE      = ' ';
+    private static final char WHITESPACE = ' ';
 
-    private static final String TYPE_TEXT    = "TEXT";
+    private static final String TYPE_TEXT = "TEXT";
     private static final String TYPE_INTEGER = "INTEGER";
 
-    private static final String CONSTRAINT_NOT_NULL          = "NOT NULL";
+    private static final String CONSTRAINT_NOT_NULL = "NOT NULL";
     private static final String CONSTRAINT_CURRENT_TIMESTAMP = "DEFAULT CURRENT_TIMESTAMP";
 
     private static final String SQL_CREATE_DATA_ENTRIES = "" +
@@ -56,7 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Data.COLUMN_NAME_YEAR + WHITESPACE + TYPE_INTEGER + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_NO + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_DESCRIPTION + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
-            Data.COLUMN_NAME_STATUS + WHITESPACE + TYPE_TEXT + WHITESPACE +
+            Data.COLUMN_NAME_STATUS + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
+            Data.COLUMN_NAME_CATEGORY + WHITESPACE + TYPE_INTEGER + WHITESPACE +
             " );";
 
     private static final String SQL_CREATE_TAG_ENTRIES = "" +
@@ -160,14 +161,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".prePopulateDatabase");
 
-        final String json = this.readDataFromAssets("stream.json");
+        final String json = this.readDataFromAssets("stream.min.json");
         try
         {
             final JSONObject jsonObject = new JSONObject(json);
-            final JSONArray  data       = jsonObject.getJSONObject("data").getJSONArray("data");
-            final JSONArray  tag        = jsonObject.getJSONObject("data").getJSONArray("tag");
-            final JSONArray  datatag    = jsonObject.getJSONObject("data").getJSONArray("datatag");
-            final JSONArray  version    = jsonObject.getJSONObject("data").getJSONArray("version");
+            final JSONArray data = jsonObject.getJSONObject("data").getJSONArray("data");
+            final JSONArray tag = jsonObject.getJSONObject("data").getJSONArray("tag");
+            final JSONArray datatag = jsonObject.getJSONObject("data").getJSONArray("datatag");
+            final JSONArray version = jsonObject.getJSONObject("data").getJSONArray("version");
             this.populateDataTable(sqLiteDatabase, data);
             this.populateTagTable(sqLiteDatabase, tag);
             this.populateDataTagTable(sqLiteDatabase, datatag);
@@ -217,7 +218,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         entry.getInt("year"),
                         entry.getString("no"),
                         entry.getString("description"),
-                        entry.getString("status"));
+                        entry.getString("status"),
+                        entry.getInt("category"));
             }
             catch(JSONException ignored)
             {
@@ -280,8 +282,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".readDataFromAssets");
 
-        final StringBuilder sb     = new StringBuilder();
-        BufferedReader      reader = null;
+        final StringBuilder sb = new StringBuilder();
+        BufferedReader reader = null;
         try
         {
             reader = new BufferedReader(new InputStreamReader(this.context.getAssets().open(path)));
