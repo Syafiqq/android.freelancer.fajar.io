@@ -344,7 +344,7 @@ public class MDM_Data extends DatabaseModel
         {
             do
             {
-                records.add(new MetadataSearchable(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(4), cursor.getString(3)));
+                records.add(new MetadataSearchable(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getInt(5), cursor.getString(3)));
             }
             while(cursor.moveToNext());
         }
