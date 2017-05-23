@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -226,9 +225,6 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
 
     private void setToolbar()
     {
-        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
-
         final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_govrn_rule_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
@@ -269,8 +265,6 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
         if(drawer.isDrawerOpen(GravityCompat.START))
         {

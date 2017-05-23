@@ -2,7 +2,6 @@ package io.localhost.freelancer.statushukum.model.util;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
