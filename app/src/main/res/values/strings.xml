@@ -56,7 +56,7 @@
     <string name="nav_header_common_logo_desc">Logo Desc</string>
     <string name="nav_header_common_drawer_group_rule">Peraturan</string>
     <string name="nav_header_common_drawer_group_technical">Teknis</string>
-    <string name="nav_header_common_drawer_rule_constitution">Undang-Undang</string>
+    <string name="nav_header_common_drawer_rule_constitution">Undang-Undang/Perpu</string>
     <string name="nav_header_common_drawer_rule_govrn_rule">Peraturan Pemeritah</string>
     <string name="nav_header_common_drawer_technical_setting">Setting</string>
     <string name="activity_govrn_rule_toolbar_logo_desc">Logo Desc</string>
