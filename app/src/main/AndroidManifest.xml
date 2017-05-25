@@ -59,6 +59,11 @@
             android:label="@string/activity_govrn_rule_toolbar_logo_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".controller.Dashboard"
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

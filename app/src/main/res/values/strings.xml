@@ -61,4 +61,5 @@
     <string name="nav_header_common_drawer_technical_setting">Setting</string>
     <string name="activity_govrn_rule_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_govrn_rule_toolbar_logo_title">Peraturan Pemerintah</string>
+    <string name="title_activity_dashboard">Dashboard</string>
 </resources>
