@@ -1,8 +1,11 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -16,7 +19,7 @@ import android.widget.ImageButton;
 
 import io.localhost.freelancer.statushukum.R;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constitution.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
@@ -32,6 +35,24 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         this.setToolbar();
         this.setNavigationSwipe();
+
+        if(savedInstanceState == null)
+        {
+            Fragment fragment = null;
+            Class fragmentClass = null;
+            fragmentClass = Constitution.class;
+            try
+            {
+                fragment = (Fragment) fragmentClass.newInstance();
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
+        }
     }
 
     @Override
@@ -69,21 +90,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     {
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
-
         switch(id)
         {
             case R.id.nav_menu_dashboard_rule_constitution:
             {
-                //this.startActivity(new Intent(this, GovrnRule.class));
-                //super.finish();
-                //return true;
+                this.changeLayout(Constitution.class);
             }
             break;
             case R.id.nav_menu_dashboard_rule_govrn_rule:
             {
-                //this.startActivity(new Intent(this, GovrnRule.class));
-                //super.finish();
-                //return true;
+                this.changeLayout(GovrnRule.class);
             }
             break;
             case R.id.nav_menu_dashboard_setting:
@@ -95,6 +111,25 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         this.onBackPressed();
         return true;
+    }
+
+    private void changeLayout(Class<? extends Fragment> fragmentClass)
+    {
+        try
+        {
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            final Fragment oldFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
+            if(oldFragment == null || !oldFragment.isVisible())
+            {
+                final Fragment newFragment = fragmentClass.newInstance();
+                fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, newFragment, fragmentClass.getName()).commit();
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     private void setToolbar()
@@ -136,5 +171,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
 
         this.onBackPressed();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri)
+    {
+
     }
 }
