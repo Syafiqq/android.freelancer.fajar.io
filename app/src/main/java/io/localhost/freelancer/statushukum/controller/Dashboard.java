@@ -1,6 +1,5 @@
 package io.localhost.freelancer.statushukum.controller;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,6 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import io.localhost.freelancer.statushukum.R;
 
@@ -26,6 +26,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     public DrawerLayout drawer;
     public Toolbar toolbar;
+    private TextView toolbarTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -137,6 +138,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
         this.toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
+        this.toolbarTitle = (TextView) this.toolbar.findViewById(R.id.activity_dashboard_toolbar_title);
         super.setSupportActionBar(this.toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
@@ -174,8 +176,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri)
+    public void onFragmentChangeForTitle(int string)
     {
-
+        this.toolbarTitle.setText(super.getResources().getString(string));
     }
 }
