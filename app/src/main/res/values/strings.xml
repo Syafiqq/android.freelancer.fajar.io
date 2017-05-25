@@ -62,4 +62,6 @@
     <string name="activity_govrn_rule_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_govrn_rule_toolbar_logo_title">Peraturan Pemerintah</string>
     <string name="title_activity_dashboard">Dashboard</string>
+    <string name="hello_blank_fragment_constitution">Hello blank fragment Constitution</string>
+    <string name="hello_blank_fragment_govrn_rule">Government Rule</string>
 </resources>
