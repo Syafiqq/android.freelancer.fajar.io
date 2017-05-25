@@ -1,56 +1,60 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.content.Context;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter;
+import io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter;
+import io.localhost.freelancer.statushukum.controller.filter.SearchFilter;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
+import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
+import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link GovrnRule.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link GovrnRule#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class GovrnRule extends Fragment
 {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    public static final String CLASS_NAME = "GovrnRule";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.GovrnRule";
+    public static final int CATEGORY = 2;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private CountPerYearAdapter yearAdapter;
+    private List<MDM_Data.CountPerYear> yearList;
+    private SearchView search;
+    private String latestQuery;
+    private RecyclerView yearListView;
+    private RecyclerView searchListView;
+    private SearchAdapter searchAdapter;
+    private List<MDM_Data.MetadataSearchable> searchList;
+    private View root;
 
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener listener;
 
     public GovrnRule()
     {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GovrnRule.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static GovrnRule newInstance(String param1, String param2)
+    public static GovrnRule newInstance()
     {
         GovrnRule fragment = new GovrnRule();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,11 +63,6 @@ public class GovrnRule extends Fragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null)
-        {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -71,25 +70,186 @@ public class GovrnRule extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_govrn_rule, container, false);
+        this.root = inflater.inflate(R.layout.fragment_govrn_rule, container, false);
+        this.setProperty();
+        this.listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_govrn_rule);
+        return this.root;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri)
+    private void setProperty()
     {
-        if(mListener != null)
+        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
+
+        this.setSearchListAdapter();
+        this.setYearListAdapter();
+
+        this.search = (SearchView) this.root.findViewById(R.id.content_govrn_rule_search_filter);
+        this.latestQuery = this.search.getQuery().toString();
+        this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
-            mListener.onFragmentInteraction(uri);
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+                if((query.trim().length() > 0) && (!GovrnRule.this.latestQuery.contentEquals(query)))
+                {
+                    GovrnRule.this.latestQuery = query;
+                    GovrnRule.this.doSearch(query);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                GovrnRule.this.searchAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        this.search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
+        {
+            @Override
+            public void onFocusChange(View view, boolean isOnFocus)
+            {
+                System.out.println(isOnFocus);
+                if(isOnFocus)
+                {
+                    GovrnRule.this.yearListView.setVisibility(View.GONE);
+                    GovrnRule.this.searchListView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    GovrnRule.this.yearListView.setVisibility(View.VISIBLE);
+                    GovrnRule.this.searchListView.setVisibility(View.GONE);
+                }
+            }
+        });
+    }
+
+    private void setSearchListAdapter()
+    {
+        Log.d(CLASS_NAME, CLASS_PATH + ".setSearchListAdapter");
+
+        if(this.searchList == null)
+        {
+            this.searchList = new LinkedList<>();
         }
+        else
+        {
+            this.searchList.clear();
+        }
+        this.searchListView = (RecyclerView) this.root.findViewById(R.id.content_govrn_rule_recycle_view_container_search);
+        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), super.getContext(), CATEGORY);
+        this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
+        this.searchListView.setLayoutManager(mLayoutManager);
+        this.searchListView.setItemAnimator(new DefaultItemAnimator());
+        this.searchListView.setAdapter(this.searchAdapter);
+    }
+
+    private void doSearch(final String query)
+    {
+        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
+
+        new AsyncTask<Void, Void, Void>()
+        {
+            @Override
+            protected Void doInBackground(Void... voids)
+            {
+                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(GovrnRule.super.getContext());
+                final MDM_Tag modelTag = MDM_Tag.getInstance(GovrnRule.super.getContext());
+                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
+                final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
+                for(final MDM_Data.MetadataSearchable result : dbResultData)
+                {
+                    if(result.getTagSize() > 0)
+                    {
+                        final List<Integer> dbResultTagID = modelDataTag.getTagFromDataID(result.getId());
+                        for(int tagId : dbResultTagID)
+                        {
+                            result.add(dbResultTag.get(tagId));
+                        }
+                    }
+                }
+                GovrnRule.this.searchList.clear();
+                GovrnRule.this.searchList.addAll(dbResultData);
+                GovrnRule.this.searchAdapter.update(dbResultData);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+                if(GovrnRule.this.searchList.size() == 0)
+                {
+                    Toast.makeText(GovrnRule.super.getContext(), GovrnRule.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                }
+                GovrnRule.this.searchAdapter.notifyDataSetChanged();
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
+    }
+
+    private void setYearListAdapter()
+    {
+        if(this.yearList == null)
+        {
+            this.yearList = new LinkedList<>();
+        }
+        else
+        {
+            this.yearList.clear();
+        }
+        this.yearListView = (RecyclerView) this.root.findViewById(R.id.content_govrn_rule_recycle_view_container_year);
+        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), super.getContext(), CATEGORY);
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
+        this.yearListView.setLayoutManager(mLayoutManager);
+        this.yearListView.setItemAnimator(new DefaultItemAnimator());
+        this.yearListView.setAdapter(this.yearAdapter);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private synchronized void setYearList()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".setYearList");
+
+        new AsyncTask<Void, Void, Void>()
+        {
+            @Override
+            protected Void doInBackground(Void... voids)
+            {
+                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
+                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
+                GovrnRule.this.yearList.clear();
+                GovrnRule.this.yearList.addAll(dbResult);
+                GovrnRule.this.yearAdapter.update(dbResult);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+                GovrnRule.this.yearAdapter.notifyDataSetChanged();
+                super.onPostExecute(aVoid);
+            }
+        }.execute();
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        this.setYearList();
     }
 
     @Override
     public void onAttach(Context context)
     {
         super.onAttach(context);
-        if(context instanceof OnFragmentInteractionListener)
+        if(context instanceof Constitution.OnFragmentInteractionListener)
         {
-            mListener = (OnFragmentInteractionListener) context;
+            listener = (OnFragmentInteractionListener) context;
         }
         else
         {
@@ -102,22 +262,11 @@ public class GovrnRule extends Fragment
     public void onDetach()
     {
         super.onDetach();
-        mListener = null;
+        listener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener
     {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentChangeForTitle(int string);
     }
 }
