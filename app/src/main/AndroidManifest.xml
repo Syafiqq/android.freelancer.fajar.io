@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name=".controller.Constitution"
-            android:label="@string/activity_constitution_toolbar_logo_title"
+            android:label="@string/activity_dashboard_toolbar_logo_title"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity

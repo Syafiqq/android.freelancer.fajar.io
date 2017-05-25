@@ -1,60 +1,45 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 
 import io.localhost.freelancer.statushukum.R;
 
-public class Dashboard extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    public static final String CLASS_NAME = "Dashboard";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
+
+    public DrawerLayout drawer;
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_dashboard_wrapper);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        this.setToolbar();
+        this.setNavigationSwipe();
     }
 
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if(drawer.isDrawerOpen(GravityCompat.START))
+        if(this.drawer.isDrawerOpen(GravityCompat.START))
         {
-            drawer.closeDrawer(GravityCompat.START);
+            this.drawer.closeDrawer(GravityCompat.START);
         }
         else
         {
@@ -63,64 +48,93 @@ public class Dashboard extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.dashboard, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
 
-        //noinspection SimplifiableIfStatement
-        if(id == R.id.action_settings)
+        switch(item.getItemId())
         {
-            return true;
+            case android.R.id.home:
+            {
+                Dashboard.this.onBackButtonPressed();
+                return true;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
-        if(id == R.id.nav_camera)
+        switch(id)
         {
-            // Handle the camera action
-        }
-        else if(id == R.id.nav_gallery)
-        {
-
-        }
-        else if(id == R.id.nav_slideshow)
-        {
-
-        }
-        else if(id == R.id.nav_manage)
-        {
-
-        }
-        else if(id == R.id.nav_share)
-        {
-
-        }
-        else if(id == R.id.nav_send)
-        {
-
+            case R.id.nav_menu_dashboard_rule_constitution:
+            {
+                //this.startActivity(new Intent(this, GovrnRule.class));
+                //super.finish();
+                //return true;
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_govrn_rule:
+            {
+                //this.startActivity(new Intent(this, GovrnRule.class));
+                //super.finish();
+                //return true;
+            }
+            break;
+            case R.id.nav_menu_dashboard_setting:
+            {
+                //this.startActivity(new Intent(this, Setting.class));
+                //return true;
+            }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        this.onBackPressed();
         return true;
+    }
+
+    private void setToolbar()
+    {
+        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
+        this.toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
+        super.setSupportActionBar(this.toolbar);
+        final ActionBar actionBar = super.getSupportActionBar();
+        if(actionBar != null)
+        {
+            actionBar.setDisplayShowTitleEnabled(false);
+            this.toolbar.setContentInsetStartWithNavigation(4);
+        }
+    }
+
+    private void setNavigationSwipe()
+    {
+        this.drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, this.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        this.drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
+        ImageButton button = (ImageButton) navigationView.getHeaderView(0).findViewById(R.id.nav_header_dashboard_imagebutton_back);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Dashboard.this.onBackPressed();
+            }
+        });
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void onBackButtonPressed()
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
+        this.onBackPressed();
     }
 }

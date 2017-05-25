@@ -65,7 +65,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
     {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_constitution_wrapper_drawerlayout_container);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, (Toolbar) super.findViewById(R.id.activity_constitution_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -237,7 +237,7 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
     {
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
-        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_constitution_toolbar);
+        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
@@ -304,13 +304,13 @@ public class Constitution extends AppCompatActivity implements NavigationView.On
 
         switch(id)
         {
-            case R.id.nav_menu_common_rule_govrn_rule:
+            case R.id.nav_menu_dashboard_rule_govrn_rule:
             {
                 this.startActivity(new Intent(this, GovrnRule.class));
                 super.finish();
                 return true;
             }
-            case R.id.nav_menu_common_setting:
+            case R.id.nav_menu_dashboard_setting:
             {
                 this.startActivity(new Intent(this, Setting.class));
                 return true;
