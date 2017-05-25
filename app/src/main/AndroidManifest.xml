@@ -20,44 +20,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".controller.CConstitution"
-            android:label="@string/activity_dashboard_toolbar_logo_title"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
             android:name=".controller.Setting"
             android:label="@string/title_activity_setting"
-            android:parentActivityName=".controller.CConstitution"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.CConstitution"/>
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Year"
             android:label="@string/title_activity_year"
-            android:parentActivityName=".controller.CConstitution"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.CConstitution"/>
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Detail"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".controller.CConstitution"
+            android:parentActivityName=".controller.Dashboard"
             android:theme="@style/AppTheme.NoActionBar"
             tools:targetApi="jelly_bean">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.CConstitution"/>
-        </activity>
-        <activity
-            android:name=".controller.CGovrnRule"
-            android:label="@string/activity_govrn_rule_toolbar_logo_title"
-            android:theme="@style/AppTheme.NoActionBar">
+                android:value="io.localhost.freelancer.statushukum.controller.Dashboard"/>
         </activity>
         <activity
             android:name=".controller.Dashboard"
