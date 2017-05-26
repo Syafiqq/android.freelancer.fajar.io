@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "status_hukum.mcrypt";
     private static final char COMMA_SEPARATOR = ',';
     private static final char WHITESPACE = ' ';
@@ -56,7 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Data.COLUMN_NAME_NO + WHITESPACE + TYPE_TEXT + WHITESPACE + CONSTRAINT_NOT_NULL + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_DESCRIPTION + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_STATUS + WHITESPACE + TYPE_TEXT + COMMA_SEPARATOR + WHITESPACE +
-            Data.COLUMN_NAME_CATEGORY + WHITESPACE + TYPE_INTEGER + WHITESPACE +
+            Data.COLUMN_NAME_CATEGORY + WHITESPACE + TYPE_INTEGER + COMMA_SEPARATOR + WHITESPACE +
+            Data.COLUMN_NAME_REFERENCE + WHITESPACE + TYPE_TEXT + WHITESPACE +
             " );";
 
     private static final String SQL_CREATE_TAG_ENTRIES = "" +
@@ -218,7 +219,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         entry.getString("no"),
                         entry.getString("description"),
                         entry.getString("status"),
-                        entry.getInt("category"));
+                        entry.getInt("category"),
+                        entry.getString("reference"));
             }
             catch(JSONException ignored)
             {

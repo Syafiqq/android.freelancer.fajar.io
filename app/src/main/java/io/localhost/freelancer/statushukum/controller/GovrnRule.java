@@ -1,22 +1,17 @@
 package io.localhost.freelancer.statushukum.controller;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -33,7 +28,7 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-public class GovrnRule extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
+public class GovrnRule extends Fragment
 {
     public static final String CLASS_NAME = "GovrnRule";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.GovrnRule";
@@ -47,37 +42,46 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
     private RecyclerView searchListView;
     private SearchAdapter searchAdapter;
     private List<MDM_Data.MetadataSearchable> searchList;
+    private View root;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    private OnFragmentInteractionListener listener;
+
+    public GovrnRule()
     {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_govrn_rule_wrapper);
-        this.setToolbar();
-        this.setNavigationSwipe();
-        this.setProperty();
+        // Required empty public constructor
     }
 
-    private void setNavigationSwipe()
+    public static GovrnRule newInstance()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, (Toolbar) super.findViewById(R.id.activity_govrn_rule_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        GovrnRule fragment = new GovrnRule();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.activity_govrn_rule_wrapper_navigationview_nav);
-        navigationView.setNavigationItemSelectedListener(this);
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState)
+    {
+        // Inflate the layout for this fragment
+        this.root = inflater.inflate(R.layout.fragment_govrn_rule, container, false);
+        this.setProperty();
+        this.listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_govrn_rule);
+        return this.root;
     }
 
     private void setProperty()
     {
         this.setSearchListAdapter();
         this.setYearListAdapter();
-        this.setYearList();
 
-        this.search = (SearchView) super.findViewById(R.id.content_govrn_rule_search_filter);
+        this.search = (SearchView) this.root.findViewById(R.id.content_govrn_rule_search_filter);
         this.latestQuery = this.search.getQuery().toString();
         this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
@@ -129,10 +133,10 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         {
             this.searchList.clear();
         }
-        this.searchListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_search);
-        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), this, CATEGORY);
+        this.searchListView = (RecyclerView) this.root.findViewById(R.id.content_govrn_rule_recycle_view_container_search);
+        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), super.getContext(), CATEGORY);
         this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
         this.searchListView.setLayoutManager(mLayoutManager);
         this.searchListView.setItemAnimator(new DefaultItemAnimator());
         this.searchListView.setAdapter(this.searchAdapter);
@@ -145,9 +149,9 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.this);
-                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(GovrnRule.this);
-                final MDM_Tag modelTag = MDM_Tag.getInstance(GovrnRule.this);
+                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(GovrnRule.super.getContext());
+                final MDM_Tag modelTag = MDM_Tag.getInstance(GovrnRule.super.getContext());
                 final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
@@ -172,7 +176,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             {
                 if(GovrnRule.this.searchList.size() == 0)
                 {
-                    Toast.makeText(GovrnRule.this, GovrnRule.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GovrnRule.super.getContext(), GovrnRule.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
                 GovrnRule.this.searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
@@ -190,9 +194,9 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         {
             this.yearList.clear();
         }
-        this.yearListView = (RecyclerView) findViewById(R.id.content_govrn_rule_recycle_view_container_year);
-        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), this, CATEGORY);
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getApplicationContext());
+        this.yearListView = (RecyclerView) this.root.findViewById(R.id.content_govrn_rule_recycle_view_container_year);
+        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), super.getContext(), CATEGORY);
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
         this.yearListView.setLayoutManager(mLayoutManager);
         this.yearListView.setItemAnimator(new DefaultItemAnimator());
         this.yearListView.setAdapter(this.yearAdapter);
@@ -206,7 +210,7 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.this);
+                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
                 GovrnRule.this.yearList.clear();
                 GovrnRule.this.yearList.addAll(dbResult);
@@ -223,83 +227,38 @@ public class GovrnRule extends AppCompatActivity implements NavigationView.OnNav
         }.execute();
     }
 
-    private void setToolbar()
-    {
-        final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_govrn_rule_toolbar);
-        super.setSupportActionBar(toolbar);
-        final ActionBar actionBar = super.getSupportActionBar();
-        if(actionBar != null)
-        {
-            actionBar.setDisplayShowTitleEnabled(false);
-            toolbar.setContentInsetStartWithNavigation(4);
-        }
-    }
-
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public void onResume()
     {
-        switch(item.getItemId())
-        {
-            case android.R.id.home:
-            {
-                GovrnRule.this.onBackButtonPressed();
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
+        super.onResume();
 
-    private void onBackButtonPressed()
-    {
-        this.onBackPressed();
-    }
-
-    @Override
-    protected void onPostResume()
-    {
         this.setYearList();
-
-        super.onPostResume();
     }
 
     @Override
-    public void onBackPressed()
+    public void onAttach(Context context)
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
-        if(drawer.isDrawerOpen(GravityCompat.START))
+        super.onAttach(context);
+        if(context instanceof Constitution.OnFragmentInteractionListener)
         {
-            drawer.closeDrawer(GravityCompat.START);
+            listener = (OnFragmentInteractionListener) context;
         }
         else
         {
-            super.onBackPressed();
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item)
+    public void onDetach()
     {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        super.onDetach();
+        listener = null;
+    }
 
-        switch(id)
-        {
-            case R.id.nav_menu_common_rule_constitution:
-            {
-                this.startActivity(new Intent(this, Constitution.class));
-                super.finish();
-                return true;
-            }
-            case R.id.nav_menu_common_setting:
-            {
-                this.startActivity(new Intent(this, Setting.class));
-                return true;
-            }
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_govrn_rule_wrapper_drawerlayout_container);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+    public interface OnFragmentInteractionListener
+    {
+        void onFragmentChangeForTitle(int string);
     }
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@drawable/nav_header_dashboard_background"
+    android:gravity="bottom"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageButton
+        android:id="@+id/nav_header_dashboard_imagebutton_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/transparent"
+        app:srcCompat="@drawable/ic_arrow_left_white_24"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/nav_header_dashboard_logo_desc"
+        app:srcCompat="@drawable/nav_header_dashboard_logo"/>
+
+    <Space
+        android:layout_width="@dimen/activity_horizontal_margin"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="start|center_vertical"
+        android:text="@string/nav_header_dashboard_logo_title"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+
+</LinearLayout>
