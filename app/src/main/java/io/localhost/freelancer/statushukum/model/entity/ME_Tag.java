@@ -14,11 +14,11 @@ public class ME_Tag
     public static final String CLASS_NAME = "ME_Tag";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.entity.ME_Tag";
 
-    private final int    id;
+    private final int id;
     private final String name;
     private final String desc;
-    private final int    color;
-    private final int    colorText;
+    private final int color;
+    private final int colorText;
 
     public ME_Tag(int id, String name, String desc, int color, int colorText)
     {

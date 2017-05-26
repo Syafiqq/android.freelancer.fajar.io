@@ -22,10 +22,10 @@ import com.android.volley.toolbox.Volley;
 public class NetworkRequestQueue
 {
     @SuppressLint("StaticFieldLeak") private static NetworkRequestQueue instance;
-    @SuppressLint("StaticFieldLeak") private static Context             context;
+    @SuppressLint("StaticFieldLeak") private static Context context;
 
     private RequestQueue requestQueue;
-    private ImageLoader  imageLoader;
+    private ImageLoader imageLoader;
 
     private NetworkRequestQueue(Context context)
     {

@@ -40,7 +40,7 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter";
 
     private final List<MDM_Data.YearMetadata> yearList;
-    private final Context                     context;
+    private final Context context;
 
     public YearListAdapter(final List<MDM_Data.YearMetadata> yearList, final Context context)
     {
@@ -62,8 +62,8 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     @Override
     public YearListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
-        final View                       itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_year_recycle_view_item, parent, false);
-        final YearListAdapter.ViewHolder holder   = new YearListAdapter.ViewHolder(itemView);
+        final View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.content_year_recycle_view_item, parent, false);
+        final YearListAdapter.ViewHolder holder = new YearListAdapter.ViewHolder(itemView);
         itemView.setOnClickListener(holder);
         return holder;
     }
@@ -73,7 +73,7 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
     {
 
         final MDM_Data.YearMetadata tmpMetadata = this.yearList.get(position);
-        final Iterator<ME_Tag>      tags        = tmpMetadata.getTags().iterator();
+        final Iterator<ME_Tag> tags = tmpMetadata.getTags().iterator();
         holder.tag.removeAllTags();
 
         holder.no.setText(tmpMetadata.getNo());
@@ -118,8 +118,8 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
 
 
                 final Context context = YearListAdapter.this.context;
-                final int     id      = tmpMetadata.getId();
-                final Intent  intent  = new Intent(context, Detail.class);
+                final int id = tmpMetadata.getId();
+                final Intent intent = new Intent(context, Detail.class);
                 intent.putExtra(Detail.EXTRA_ID, id);
                 context.startActivity(intent);
             }
@@ -137,9 +137,9 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
         public static final String CLASS_NAME = "ViewHolder";
         public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.adapter.YearListAdapter.ViewHolder";
 
-        public final TextView  no;
-        final        ImageView task;
-        final        TagView   tag;
+        public final TextView no;
+        final ImageView task;
+        final TagView tag;
         View.OnClickListener listener;
 
         ViewHolder(final View view)

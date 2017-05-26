@@ -1,16 +1,7 @@
 package io.localhost.freelancer.statushukum.model.util;
 
-import android.content.ContentUris;
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
-
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;

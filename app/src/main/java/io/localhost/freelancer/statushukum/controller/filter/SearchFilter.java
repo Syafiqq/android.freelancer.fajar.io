@@ -21,7 +21,7 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 public class SearchFilter extends Filter
 {
     final RecyclerView.Adapter<SearchAdapter.ViewHolder> adapter;
-    final List<MDM_Data.MetadataSearchable>              list;
+    final List<MDM_Data.MetadataSearchable> list;
 
     public SearchFilter(RecyclerView.Adapter<SearchAdapter.ViewHolder> adapter, List<MDM_Data.MetadataSearchable> list)
     {
@@ -33,7 +33,7 @@ public class SearchFilter extends Filter
     protected FilterResults performFiltering(CharSequence query)
     {
         final List<MDM_Data.MetadataSearchable> filtered = new LinkedList<>();
-        final FilterResults                     results  = new FilterResults();
+        final FilterResults results = new FilterResults();
         if(query.length() == 0)
         {
             filtered.addAll(this.list);

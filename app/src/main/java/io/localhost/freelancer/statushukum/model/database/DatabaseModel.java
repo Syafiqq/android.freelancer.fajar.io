@@ -18,9 +18,9 @@ public class DatabaseModel
     public static final String CLASS_NAME = "DatabaseModel";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseModel";
 
-    protected final Context        context;
-    protected       DatabaseHelper dbHelper;
-    protected       SQLiteDatabase database;
+    protected final Context context;
+    protected DatabaseHelper dbHelper;
+    protected SQLiteDatabase database;
 
     public DatabaseModel(final Context context)
     {

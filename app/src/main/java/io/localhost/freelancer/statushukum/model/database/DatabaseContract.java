@@ -21,40 +21,40 @@ public final class DatabaseContract
     /* Inner class that defines the table contents */
     public static class Data implements BaseColumns
     {
-        public static final String TABLE_NAME              = "data";
-        public static final String COLUMN_NAME_ID          = "id";
-        public static final String COLUMN_NAME_YEAR        = "year";
-        public static final String COLUMN_NAME_NO          = "no";
+        public static final String TABLE_NAME = "data";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_YEAR = "year";
+        public static final String COLUMN_NAME_NO = "no";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
-        public static final String COLUMN_NAME_STATUS      = "status";
-        public static final String COLUMN_NAME_CATEGORY    = "category";
-        public static final String COLUMN_NAME_REFERENCE   = "reference";
+        public static final String COLUMN_NAME_STATUS = "status";
+        public static final String COLUMN_NAME_CATEGORY = "category";
+        public static final String COLUMN_NAME_REFERENCE = "reference";
     }
 
     /* Inner class that defines the table contents */
     public static class Tag implements BaseColumns
     {
-        public static final String TABLE_NAME              = "tag";
-        public static final String COLUMN_NAME_ID          = "id";
-        public static final String COLUMN_NAME_NAME        = "name";
+        public static final String TABLE_NAME = "tag";
+        public static final String COLUMN_NAME_ID = "id";
+        public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
-        public static final String COLUMN_NAME_COLOR       = "color";
-        public static final String COLUMN_NAME_COLORTEXT   = "colortext";
+        public static final String COLUMN_NAME_COLOR = "color";
+        public static final String COLUMN_NAME_COLORTEXT = "colortext";
     }
 
     /* Inner class that defines the table contents */
     public static class DataTag implements BaseColumns
     {
-        public static final String TABLE_NAME       = "datatag";
+        public static final String TABLE_NAME = "datatag";
         public static final String COLUMN_NAME_DATA = "data";
-        public static final String COLUMN_NAME_TAG  = "tag";
+        public static final String COLUMN_NAME_TAG = "tag";
     }
 
     /* Inner class that defines the table contents */
     public static class Version implements BaseColumns
     {
-        public static final String TABLE_NAME            = "version";
-        public static final String COLUMN_NAME_ID        = "id";
+        public static final String TABLE_NAME = "version";
+        public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_TIMESTAMP = "timestamp";
     }
 }
