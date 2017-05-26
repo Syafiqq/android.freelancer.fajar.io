@@ -8,7 +8,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +77,7 @@ public class Constitution extends Fragment
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
+
 
         this.setSearchListAdapter();
         this.setYearListAdapter();
@@ -126,7 +126,7 @@ public class Constitution extends Fragment
 
     private void setSearchListAdapter()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setSearchListAdapter");
+
 
         if(this.searchList == null)
         {
@@ -147,7 +147,7 @@ public class Constitution extends Fragment
 
     private void doSearch(final String query)
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
+
 
         new AsyncTask<Void, Void, Void>()
         {
@@ -210,7 +210,7 @@ public class Constitution extends Fragment
     @SuppressWarnings("ConstantConditions")
     private synchronized void setYearList()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setYearList");
+
 
         new AsyncTask<Void, Void, Void>()
         {

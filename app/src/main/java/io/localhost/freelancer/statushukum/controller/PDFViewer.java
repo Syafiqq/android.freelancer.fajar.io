@@ -6,7 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,7 +61,7 @@ public class PDFViewer extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_pdf_viewer_toolbar);
         super.setSupportActionBar(toolbar);
@@ -87,7 +87,7 @@ public class PDFViewer extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
+
 
         getMenuInflater().inflate(R.menu.activity_pdf_viewer_menu, menu);
         return true;
@@ -96,7 +96,7 @@ public class PDFViewer extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
+
 
         switch(item.getItemId())
         {
@@ -115,7 +115,7 @@ public class PDFViewer extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
 
         this.onBackPressed();
     }
@@ -123,7 +123,7 @@ public class PDFViewer extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
 
         super.finish();
     }

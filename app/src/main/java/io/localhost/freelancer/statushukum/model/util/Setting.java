@@ -10,7 +10,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
-import android.util.Log;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -64,14 +64,14 @@ public class Setting
 
     private Setting(Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.context = context;
     }
 
     public static Setting getInstance(final Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         if(Setting.ourInstance == null)
         {
@@ -152,7 +152,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -174,14 +174,14 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
 
     private synchronized void insertDataTag(JSONArray datatag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
 
         MDM_DataTag dataTagModel = MDM_DataTag.getInstance(this.context);
         for(int i = -1, is = datatag.length(); ++i < is; )
@@ -195,7 +195,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
