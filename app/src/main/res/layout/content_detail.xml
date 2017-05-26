@@ -136,7 +136,8 @@
                 android:drawableLeft="@drawable/ic_download_black_24"
                 android:drawableStart="@drawable/ic_download_black_24"
                 android:text="@string/content_detail_button_download"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:visibility="gone"/>
         </LinearLayout>
 
     </LinearLayout>
