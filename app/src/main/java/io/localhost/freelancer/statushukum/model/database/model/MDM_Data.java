@@ -56,20 +56,29 @@ public class MDM_Data extends DatabaseModel
         return MDM_Data.mInstance;
     }
 
-    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status, int category)
+    public static void insert(final SQLiteDatabase database, int id, int year, String no, String description, String status, int category, String reference)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
 
-        database.execSQL(
-                String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?, ?)",
-                        Data.TABLE_NAME,
-                        Data.COLUMN_NAME_ID,
-                        Data.COLUMN_NAME_YEAR,
-                        Data.COLUMN_NAME_NO,
-                        Data.COLUMN_NAME_DESCRIPTION,
-                        Data.COLUMN_NAME_STATUS,
-                        Data.COLUMN_NAME_CATEGORY),
-                new Object[] {id, year, no, description, status, category});
+        try
+        {
+            database.execSQL(
+                    String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`, `%s`, `%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                            Data.TABLE_NAME,
+                            Data.COLUMN_NAME_ID,
+                            Data.COLUMN_NAME_YEAR,
+                            Data.COLUMN_NAME_NO,
+                            Data.COLUMN_NAME_DESCRIPTION,
+                            Data.COLUMN_NAME_STATUS,
+                            Data.COLUMN_NAME_CATEGORY,
+                            Data.COLUMN_NAME_REFERENCE),
+                    new Object[] {id, year, no, description, status, category, reference});
+        }
+        catch(android.database.SQLException e)
+        {
+            System.out.println(e);
+        }
+
     }
 
     public static void deleteAll(final SQLiteDatabase database)
@@ -79,7 +88,7 @@ public class MDM_Data extends DatabaseModel
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Data.TABLE_NAME), new Object[] {});
     }
 
-    public void insert(int id, int year, String no, String description, String status, int category)
+    public void insert(int id, int year, String no, String description, String status, int category, String reference)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".insert");
         try
@@ -92,7 +101,7 @@ public class MDM_Data extends DatabaseModel
         }
 
 
-        MDM_Data.insert(super.database, id, year, no, description, status, category);
+        MDM_Data.insert(super.database, id, year, no, description, status, category, reference);
     }
 
     public void deleteAll()
@@ -208,13 +217,14 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
+                        "SELECT `%s`, `%s`, `%s`, `%s`, `%s`, `%s`, `%s` FROM `%s` WHERE `%s` = ? LIMIT 1",
                         Data.COLUMN_NAME_ID,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
                         Data.COLUMN_NAME_STATUS,
                         Data.COLUMN_NAME_CATEGORY,
+                        Data.COLUMN_NAME_REFERENCE,
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_ID
                 ),
@@ -225,7 +235,7 @@ public class MDM_Data extends DatabaseModel
         {
             do
             {
-                total = new ME_Data(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4));
+                total = new ME_Data(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5), cursor.getString(6));
             }
             while(cursor.moveToNext());
         }
@@ -233,20 +243,20 @@ public class MDM_Data extends DatabaseModel
         return total;
     }
 
-    public void insertOrUpdate(int id, int year, String no, String description, String status, int category)
+    public void insertOrUpdate(int id, int year, String no, String description, String status, int category, String reference)
     {
         boolean exists = this.isExists(id);
         if(exists)
         {
-            this.update(id, year, no, description, status, category);
+            this.update(id, year, no, description, status, category, reference);
         }
         else
         {
-            this.insert(id, year, no, description, status, category);
+            this.insert(id, year, no, description, status, category, reference);
         }
     }
 
-    private void update(int id, int year, String no, String description, String status, int category)
+    private void update(int id, int year, String no, String description, String status, int category, String reference)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".update");
         try
@@ -259,16 +269,17 @@ public class MDM_Data extends DatabaseModel
         }
 
         super.database.execSQL(
-                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?, `%s`=? WHERE `%s`=?",
+                String.format(Locale.getDefault(), "UPDATE `%s` SET `%s`=?,`%s`=?,`%s`=?,`%s`=?, `%s`=?, `%s`=? WHERE `%s`=?",
                         Data.TABLE_NAME,
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_NO,
                         Data.COLUMN_NAME_DESCRIPTION,
                         Data.COLUMN_NAME_STATUS,
                         Data.COLUMN_NAME_CATEGORY,
+                        Data.COLUMN_NAME_REFERENCE,
                         Data.COLUMN_NAME_ID
                 ),
-                new Object[] {year, no, description, status, id});
+                new Object[] {year, no, description, status, id, category, reference});
     }
 
     private boolean isExists(int id)

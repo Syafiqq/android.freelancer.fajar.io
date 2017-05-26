@@ -1,7 +1,15 @@
 package io.localhost.freelancer.statushukum.model.util;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -41,18 +49,18 @@ import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
  */
 public class Setting
 {
-    public static final String CLASS_NAME   = "Setting";
-    public static final String CLASS_PATH   = "io.localhost.freelancer.statushukum.model.util.Setting";
-    public static final int    SYNC_FAILED  = 0;
-    public static final int    SYNC_SUCCESS = 1;
-    public static final int    SYNC_EQUAL   = 2;
+    public static final String CLASS_NAME = "Setting";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.util.Setting";
+    public static final int SYNC_FAILED = 0;
+    public static final int SYNC_SUCCESS = 1;
+    public static final int SYNC_EQUAL = 2;
 
 
     public static final DateTimeFormatter timeStampFormat = DateTimeFormat.forPattern(DatabaseHelper.TIMESTAMP_FORMAT);
     private static Setting ourInstance;
 
-    private final Context  context;
-    private       Observer syncObserve;
+    private final Context context;
+    private Observer syncObserve;
 
     private Setting(Context context)
     {
@@ -206,7 +214,8 @@ public class Setting
                         entry.getString("no"),
                         entry.getString("description"),
                         entry.getString("status"),
-                        entry.getInt("category"));
+                        entry.getInt("category"),
+                        entry.getString("reference"));
             }
             catch(JSONException ignored)
             {
@@ -300,9 +309,9 @@ public class Setting
         }
         else
         {
-            final MDM_Version   versionData      = MDM_Version.getInstance(this.context);
-            LocalDateTime       defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
-            final LocalDateTime latestData       = versionData.getVersion();
+            final MDM_Version versionData = MDM_Version.getInstance(this.context);
+            LocalDateTime defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
+            final LocalDateTime latestData = versionData.getVersion();
             if((latestData != null) && defaultTimeStamp.isBefore(latestData))
             {
                 defaultTimeStamp = latestData;

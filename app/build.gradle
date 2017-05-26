@@ -47,5 +47,7 @@ dependencies {
     compile 'com.github.kaedea:Android-Cloud-TagView-Plus:b546a5f073'
     compile 'org.jetbrains:annotations-java5:15.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.github.barteksc:android-pdf-viewer:2.5.1'
     testCompile 'junit:junit:4.12'
 }

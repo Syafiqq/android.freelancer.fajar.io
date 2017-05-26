@@ -2,6 +2,8 @@ package io.localhost.freelancer.statushukum.model.entity;
 
 import android.util.Log;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.entity> created by :
  * Name         : syafiq
@@ -20,8 +22,10 @@ public class ME_Data
     private final String no;
     private final String description;
     private final String status;
+    private final int category;
+    private final String reference;
 
-    public ME_Data(int id, int year, String no, String description, String status)
+    public ME_Data(int id, int year, String no, String description, String status, int category, String reference)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
@@ -30,6 +34,8 @@ public class ME_Data
         this.no = no;
         this.description = description;
         this.status = status;
+        this.category = category;
+        this.reference = reference;
     }
 
     public int getId()
@@ -57,15 +63,27 @@ public class ME_Data
         return this.status;
     }
 
+    public int getCategory()
+    {
+        return this.category;
+    }
+
+    public String getReference()
+    {
+        return this.reference;
+    }
+
     @Override
     public String toString()
     {
-        return "ME_Data{" +
-                "id=" + id +
-                ", year=" + year +
-                ", no='" + no + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("year", year)
+                .append("no", no)
+                .append("description", description)
+                .append("status", status)
+                .append("category", category)
+                .append("reference", reference)
+                .toString();
     }
 }
