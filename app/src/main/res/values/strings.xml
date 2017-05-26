@@ -64,4 +64,9 @@
     <string name="title_activity_dashboard">Dashboard</string>
     <string name="hello_blank_fragment_constitution">Hello blank fragment Constitution</string>
     <string name="hello_blank_fragment_govrn_rule">Government Rule</string>
+    <string name="content_detail_button_open">buka</string>
+    <string name="content_detail_button_download">Download</string>
+    <string name="title_activity_pdfviewer">PDFViewer</string>
+    <string name="activity_pdf_viewer_toolbar_logo_desc">Logo Desc</string>
+    <string name="activity_pdf_viewer_toolbar_logo_title">Detail</string>
 </resources>

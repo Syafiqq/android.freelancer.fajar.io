@@ -102,5 +102,42 @@
             app:textPaddingLeft="10dp"
             app:textPaddingRight="10dp"
             app:textPaddingTop="3dp"/>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/content_detail_button_open"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:drawableLeft="@drawable/ic_book_open_black_24"
+                android:drawableStart="@drawable/ic_book_open_black_24"
+                android:text="@string/content_detail_button_open"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:visibility="gone"/>
+
+            <Button
+                android:id="@+id/content_detail_button_download"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:drawableLeft="@drawable/ic_download_black_24"
+                android:drawableStart="@drawable/ic_download_black_24"
+                android:text="@string/content_detail_button_download"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
