@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -84,12 +85,26 @@ public class PDFViewer extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
+
+        getMenuInflater().inflate(R.menu.activity_pdf_viewer_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
 
         switch(item.getItemId())
         {
+            case R.id.activity_pdf_viewer_menu_setting:
+            {
+                startActivity(new Intent(this, Setting.class));
+                return true;
+            }
             case android.R.id.home:
                 //perhaps use intent if needed but i'm sure there's a specific intent action for up you can use to handle
                 PDFViewer.this.onBackButtonPressed();
