@@ -217,7 +217,7 @@ public class Detail extends AppCompatActivity
                     Detail.this.no.setHtml(this.dbResultData.getNo());
                     Detail.this.description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
                     Detail.this.status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
-                    Detail.this.checkFileStatus(dbResultData);
+                    //Detail.this.checkFileStatus(dbResultData);
                     if(!dbResultTagID.isEmpty())
                     {
                         Detail.this.tag.setVisibility(View.VISIBLE);
