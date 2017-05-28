@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
@@ -56,6 +55,9 @@ public class Detail extends AppCompatActivity
     private Button download;
     private Button open;
     private long downloadID;
+    private String path;
+    private String filename;
+
     private BroadcastReceiver downloadReceiver = new BroadcastReceiver()
     {
 
@@ -70,10 +72,26 @@ public class Detail extends AppCompatActivity
             {
 
                 Toast.makeText(Detail.this, "File Berhasil Diunduh", Toast.LENGTH_SHORT).show();
+                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename + "_tmp");
+                final File oldFile = new File(path);
+                final File newFile = new File(tmpPath);
+                if(oldFile.exists())
+                {
+                    oldFile.delete();
+                }
+                newFile.renameTo(oldFile);
+                Detail.this.download.setEnabled(true);
                 Detail.this.checkOfflineData();
             }
         }
     };
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        this.setDetail();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -216,7 +234,7 @@ public class Detail extends AppCompatActivity
                     Detail.this.no.setHtml(this.dbResultData.getNo());
                     Detail.this.description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
                     Detail.this.status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
-                    //Detail.this.checkFileStatus(dbResultData);
+                    Detail.this.checkFileStatus(dbResultData);
                     if(!dbResultTagID.isEmpty())
                     {
                         Detail.this.tag.setVisibility(View.VISIBLE);
@@ -245,100 +263,101 @@ public class Detail extends AppCompatActivity
 
     private void checkFileStatus(@NotNull final ME_Data dbResultData)
     {
-        @Nullable
-        final String path = String.format(Locale.getDefault(), "%s/%s/reference/%d.pdf", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, dbResultData.getId());
+        this.filename = dbResultData.getNo().trim().replaceAll(" ", "_");
+        this.filename = filename.replaceAll("[\\p{Punct}&&[^_]]+", "");
+        this.path = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename);
         final File dlc = new File(path);
-        if(dlc.exists())
+
+        if(!dbResultData.getReference().equalsIgnoreCase("null"))
         {
-            this.checkOfflineData();
+            final String finalFilename = filename;
+            Detail.this.download.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    final Uri uri = Uri.parse(dbResultData.getReference());
+                    final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                    DownloadManager.Request request = new DownloadManager.Request(uri);
+
+                    //Setting title of request
+                    request.setTitle("Download");
+
+                    //Setting description of request
+                    request.setDescription("Mohon Tunggu");
+
+                    //Set the local destination for the downloaded file to a path within the application's external files directory
+                    request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%s_tmp.pdf", finalFilename));
+
+                    //Enqueue download and save the referenceId
+                    Detail.this.download.setEnabled(false);
+                    Detail.this.downloadID = downloadManager.enqueue(request);
+                }
+            });
+            Detail.this.download.setVisibility(View.VISIBLE);
         }
         else
         {
-            if(!dbResultData.getReference().equalsIgnoreCase("null"))
-            {
-                Detail.this.download.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final Uri uri = Uri.parse(dbResultData.getReference());
-                        final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                        DownloadManager.Request request = new DownloadManager.Request(uri);
-
-                        //Setting title of request
-                        request.setTitle("Download");
-
-                        //Setting description of request
-                        request.setDescription("Mohon Tunggu");
-
-                        //Set the local destination for the downloaded file to a path within the application's external files directory
-                        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%d.pdf", dbResultData.getId()));
-
-                        //Enqueue download and save the referenceId
-                        Detail.this.downloadID = downloadManager.enqueue(request);
-                    }
-                });
-                Detail.this.download.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                Detail.this.download.setVisibility(View.GONE);
-            }
-            Detail.this.open.setVisibility(View.GONE);
+            Detail.this.download.setVisibility(View.GONE);
+        }
+        Detail.this.open.setVisibility(View.GONE);
+        if(dlc.exists() && (!dbResultData.getReference().equalsIgnoreCase("null")))
+        {
+            this.checkOfflineData();
         }
     }
 
     private void checkOfflineData()
     {
-        @Nullable
-        final String path = String.format(Locale.getDefault(), "%s/%s/reference/%d.pdf", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, this.id);
-        final File dlc = new File(path);
-        Detail.this.open.setVisibility(View.VISIBLE);
-        Detail.this.download.setVisibility(View.GONE);
-        Detail.this.open.setOnClickListener(new View.OnClickListener()
+        if(this.path != null)
         {
-            @Override
-            public void onClick(View v)
+            final File dlc = new File(path);
+            Detail.this.open.setVisibility(View.VISIBLE);
+            Detail.this.download.setVisibility(View.VISIBLE);
+            Detail.this.download.setText(super.getResources().getText(R.string.content_detail_button_update));
+            Detail.this.open.setOnClickListener(new View.OnClickListener()
             {
-                Intent intent;
-                if(Build.VERSION.SDK_INT < 24)
+                @Override
+                public void onClick(View v)
                 {
-                    intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(dlc), "application/pdf");
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
-                else
-                {
-                    intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    Uri pdfURI = FileProvider.getUriForFile(Detail.this, getApplicationContext()
-                            .getPackageName() +
-                            ".provider", dlc);
-                    intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    intent.setType("application/pdf");
-                }
-                try
-                {
-                    if(intent.resolveActivity(getPackageManager()) != null)
+                    Intent intent;
+                    if(Build.VERSION.SDK_INT < 24)
                     {
-                        startActivity(intent);
+                        intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(dlc), "application/pdf");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     }
                     else
                     {
-                        final Intent viewer = new Intent(Detail.this, PDFViewer.class);
-                        viewer.putExtra(PDFViewer.EXTRA_URI, path);
-                        Detail.super.startActivity(viewer);
+                        intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        Uri pdfURI = FileProvider.getUriForFile(Detail.this, Detail.super.getApplicationContext().getPackageName() + ".provider", dlc);
+                        intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        intent.setType("application/pdf");
+                    }
+                    try
+                    {
+                        if(intent.resolveActivity(getPackageManager()) != null)
+                        {
+                            startActivity(intent);
+                        }
+                        else
+                        {
+                            final Intent viewer = new Intent(Detail.this, PDFViewer.class);
+                            viewer.putExtra(PDFViewer.EXTRA_URI, path);
+                            Detail.super.startActivity(viewer);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        Log.e("ErrorPDF", e.getMessage());
                     }
                 }
-                catch(Exception ignored)
-                {
-
-                }
-            }
-        });
+            });
+        }
     }
 
     @Override
