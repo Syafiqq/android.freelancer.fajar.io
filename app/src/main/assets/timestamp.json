@@ -1,7 +1,7 @@
 {
-  "code": 200,
-  "message": "Accepted",
-  "data": {
-    "timestamp": "2017-05-25 15:58:00"
-  }
+   "code":200,
+   "message":"Accepted",
+   "data":{
+      "timestamp":"2017-05-27 23:23:04"
+   }
 }
