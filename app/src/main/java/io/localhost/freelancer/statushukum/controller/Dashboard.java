@@ -1,5 +1,6 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -105,8 +106,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             break;
             case R.id.nav_menu_dashboard_setting:
             {
-                //this.startActivity(new Intent(this, Setting.class));
-                //return true;
+                this.startActivity(new Intent(this, Setting.class));
+                return true;
             }
         }
 
