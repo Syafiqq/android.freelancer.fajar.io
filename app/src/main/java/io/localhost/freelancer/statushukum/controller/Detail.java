@@ -351,9 +351,8 @@ public class Detail extends AppCompatActivity
                             Detail.super.startActivity(viewer);
                         }
                     }
-                    catch(Exception e)
+                    catch(Exception ignored)
                     {
-                        Log.e("ErrorPDF", e.getMessage());
                     }
                 }
             });
