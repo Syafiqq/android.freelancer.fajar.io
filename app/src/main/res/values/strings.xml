@@ -69,4 +69,5 @@
     <string name="title_activity_pdfviewer">PDFViewer</string>
     <string name="activity_pdf_viewer_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_pdf_viewer_toolbar_logo_title">Status Hukum</string>
+    <string name="content_detail_button_update">Update</string>
 </resources>
