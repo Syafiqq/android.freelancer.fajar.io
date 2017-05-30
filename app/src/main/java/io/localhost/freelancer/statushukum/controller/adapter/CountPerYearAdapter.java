@@ -15,8 +15,6 @@ import android.widget.Toast;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.material_design_iconic_typeface_library.MaterialDesignIconic;
 
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,7 +70,8 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public void onBindViewHolder(ViewHolder holder, int position)
     {
         final MDM_Data.CountPerYear tmpCPY = this.countPerYear.get(position);
-        holder.year.setText(String.valueOf(tmpCPY.getYear()));
+        holder.setYear(tmpCPY.getYear());
+        holder.year.setText(String.format(Locale.getDefault(), "Tahun %d", tmpCPY.getYear()));
         holder.count = tmpCPY.getCount();
         holder.status.setImageDrawable(new IconicsDrawable(this.context)
                 .icon(MaterialDesignIconic.Icon.gmi_calendar)
@@ -94,6 +93,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         public final TextView year;
         public final ImageView status;
         Integer count;
+        private int _year;
 
         public ViewHolder(final View view)
         {
@@ -109,27 +109,24 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         {
             Log.i(CLASS_NAME, CLASS_PATH + ".onClick");
 
-            try
+            final Context context = CountPerYearAdapter.this.context;
+            final int count = this.count;
+            if(count > 0)
             {
-                final Context context = CountPerYearAdapter.this.context;
-                final int year = NumberFormat.getInstance(Locale.getDefault()).parse(this.year.getText().toString()).intValue();
-                final int count = this.count;
-                if(count > 0)
-                {
-                    final Intent intent = new Intent(context, Year.class);
-                    intent.putExtra(Year.EXTRA_YEAR, year);
-                    intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
-                    context.startActivity(intent);
-                }
-                else
-                {
-                    Toast.makeText(context, String.format(Locale.getDefault(), context.getResources().getString(R.string.content_dashboard_recycler_view_item_no_entry_message), year), Toast.LENGTH_SHORT).show();
-                }
+                final Intent intent = new Intent(context, Year.class);
+                intent.putExtra(Year.EXTRA_YEAR, _year);
+                intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
+                context.startActivity(intent);
             }
-            catch(ParseException ignored)
+            else
             {
-                Log.i(CLASS_NAME, ".ParseException");
+                Toast.makeText(context, String.format(Locale.getDefault(), context.getResources().getString(R.string.content_dashboard_recycler_view_item_no_entry_message), _year), Toast.LENGTH_SHORT).show();
             }
+        }
+
+        public void setYear(int year)
+        {
+            this._year = year;
         }
     }
 }
