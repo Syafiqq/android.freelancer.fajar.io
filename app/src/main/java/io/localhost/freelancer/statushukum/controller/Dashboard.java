@@ -1,6 +1,6 @@
 package io.localhost.freelancer.statushukum.controller;
 
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import io.localhost.freelancer.statushukum.R;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constitution.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
@@ -27,6 +30,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public DrawerLayout drawer;
     public Toolbar toolbar;
     private TextView toolbarTitle;
+    private ProgressDialog progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,6 +40,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         this.setToolbar();
         this.setNavigationSwipe();
+        this.setProgressView();
 
         if(savedInstanceState == null)
         {
@@ -54,6 +59,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
         }
+    }
+
+    private void setProgressView()
+    {
+        this.progressBar = new ProgressDialog(Dashboard.this);
+        progressBar.setMessage(super.getResources().getString(R.string.content_setting_s_sync_label_desc));
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setIndeterminate(true);
+        progressBar.setCancelable(false);
     }
 
     @Override
@@ -91,6 +105,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     {
         // Handle navigation view item clicks here.
         final int id = item.getItemId();
+        item.setCheckable(false);
         switch(id)
         {
             case R.id.nav_menu_dashboard_rule_constitution:
@@ -103,9 +118,25 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 this.changeLayout(GovrnRule.class);
             }
             break;
-            case R.id.nav_menu_dashboard_setting:
+            case R.id.nav_menu_dashboard_sync:
             {
-                this.startActivity(new Intent(this, Setting.class));
+                this.onBackPressed();
+
+                this.progressBar.show();
+                io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
+                {
+                    @Override
+                    public void update(Observable o, Object arg)
+                    {
+                        Dashboard.this.progressBar.dismiss();
+                    }
+                }, Dashboard.this);
+                return true;
+            }
+            case R.id.nav_menu_dashboard_mailto:
+            {
+                this.onBackPressed();
+                io.localhost.freelancer.statushukum.model.util.Setting.sendFeedback(Dashboard.this);
                 return true;
             }
         }

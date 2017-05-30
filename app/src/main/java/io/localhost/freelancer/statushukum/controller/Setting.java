@@ -1,9 +1,5 @@
 package io.localhost.freelancer.statushukum.controller;
 
-import android.content.Intent;
-import android.content.res.Resources;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -12,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -45,12 +40,7 @@ public class Setting extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                final Resources resources = Setting.this.getResources();
-                final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
-                mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {resources.getString(R.string.activity_setting_mailto_receipt)});
-                mailto.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.activity_setting_mailto_subject));
-                mailto.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.activity_setting_mailto_content));
-                Setting.super.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
+                io.localhost.freelancer.statushukum.model.util.Setting.sendFeedback(Setting.this);
             }
         });
         sync.setOnClickListener(new View.OnClickListener()
@@ -61,77 +51,17 @@ public class Setting extends AppCompatActivity
                 if(progress.getVisibility() == View.GONE)
                 {
                     progress.setVisibility(View.VISIBLE);
-                    Setting.this.doSync(new Observer()
+                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
                     {
                         @Override
                         public void update(Observable o, Object arg)
                         {
                             progress.setVisibility(View.GONE);
                         }
-                    });
+                    }, Setting.this);
                 }
             }
         });
-    }
-
-    private synchronized void doSync(final Observer clbk)
-    {
-
-        new AsyncTask<Void, Void, Void>()
-        {
-            private Observer callback;
-
-            @Override
-            protected void onPreExecute()
-            {
-                callback = new Observer()
-                {
-                    @Override
-                    public void update(final Observable observable, final Object o)
-                    {
-                        Setting.super.runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                switch((Integer) o)
-                                {
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                    {
-                                        Toast.makeText(Setting.this, Setting.super.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                }
-                                clbk.update(null, null);
-                            }
-                        });
-                    }
-                };
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids)
-            {
-                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(Setting.this).doSync(this.callback);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-            }
-        }.execute();
     }
 
     private void setToolbar()
