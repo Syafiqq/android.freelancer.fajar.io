@@ -315,7 +315,6 @@ public class Detail extends AppCompatActivity
             final File dlc = new File(path);
             Detail.this.open.setVisibility(View.VISIBLE);
             Detail.this.download.setVisibility(View.VISIBLE);
-            Detail.this.download.setText(super.getResources().getText(R.string.content_detail_button_update));
             Detail.this.open.setOnClickListener(new View.OnClickListener()
             {
                 @Override
