@@ -1,16 +1,13 @@
 package io.localhost.freelancer.statushukum.model.util;
 
-import android.content.ContentUris;
+import android.app.Activity;
 import android.content.Context;
-import android.database.Cursor;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Environment;
-import android.provider.DocumentsContract;
-import android.provider.MediaStore;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -30,8 +27,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Observer;
 
+import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.DatabaseHelper;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
@@ -78,6 +77,76 @@ public class Setting
             Setting.ourInstance = new Setting(context);
         }
         return Setting.ourInstance;
+    }
+
+    public static void sendFeedback(Context context)
+    {
+        final Resources resources = context.getResources();
+        final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
+        mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {resources.getString(R.string.activity_setting_mailto_receipt)});
+        mailto.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.activity_setting_mailto_subject));
+        mailto.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.activity_setting_mailto_content));
+        context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
+    }
+
+    public static synchronized void doSync(final Observer clbk, final Activity activity)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+        new AsyncTask<Void, Void, Void>()
+        {
+            private Observer callback;
+
+            @Override
+            protected void onPreExecute()
+            {
+                callback = new Observer()
+                {
+                    @Override
+                    public void update(final Observable observable, final Object o)
+                    {
+                        activity.runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                switch((Integer) o)
+                                {
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
+                                    {
+                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
+                                    {
+                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
+                                    {
+                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                }
+                                clbk.update(null, null);
+                            }
+                        });
+                    }
+                };
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids)
+            {
+                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(activity).doSync(this.callback);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid)
+            {
+            }
+        }.execute();
     }
 
     public synchronized void doSync(final Observer message)
