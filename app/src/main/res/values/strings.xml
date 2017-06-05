@@ -70,4 +70,15 @@
     <string name="activity_pdf_viewer_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_pdf_viewer_toolbar_logo_title">Status Hukum</string>
     <string name="content_detail_button_update">Update</string>
+    <string name="global_content_description">Desc</string>
+    <string name="conten_setting_header_data_title">Data</string>
+    <string name="content_setting_header_social_title">Sosial Media</string>
+    <string name="content_setting_tv_facebook_label">Facebook</string>
+    <string name="content_setting_tv_facebook_label_desc">Kirimkan saran melewati Facebook</string>
+    <string name="content_setting_tv_twitter_label">Twitter</string>
+    <string name="content_setting_tv_twitter_label_desc">Kirimkan saran melewati Twitter</string>
+    <string name="content_setting_tv_instagram_label">Instagram</string>
+    <string name="content_setting_tv_instagram_label_desc">Kirimkan saran melewati Instagram</string>
+    <string name="content_setting_tv_gplus_label">Google Plus</string>
+    <string name="content_setting_tv_gplus_label_desc">Kirimkan saran melewati Google Plus</string>
 </resources>

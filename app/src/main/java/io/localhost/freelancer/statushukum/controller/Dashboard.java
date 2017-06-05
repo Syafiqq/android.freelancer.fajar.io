@@ -1,6 +1,7 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,11 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.util.Setting;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constitution.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
 {
@@ -45,7 +48,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         if(savedInstanceState == null)
         {
             Fragment fragment = null;
-            Class fragmentClass = null;
+            Class fragmentClass;
             fragmentClass = Constitution.class;
             try
             {
@@ -58,6 +61,100 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
+        }
+    }
+
+    @Override
+    protected void onStart()
+    {
+        final View socialFacebook = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_facebook);
+        final View socialTwitter = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_twitter);
+        final View socialInstagram = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_instagram);
+        final View socialGPlus = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_google_plus);
+        socialFacebook.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Dashboard.this.onFacebookSocialPressed(v);
+            }
+        });
+        socialTwitter.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Dashboard.this.onTwitterSocialPressed(v);
+            }
+        });
+        socialInstagram.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Dashboard.this.onInstagramSocialPressed(v);
+            }
+        });
+        socialGPlus.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Dashboard.this.onGPlusSocialPressed(v);
+            }
+        });
+        super.onStart();
+    }
+
+    private void onGPlusSocialPressed(View view)
+    {
+        try
+        {
+            this.onBackPressed();
+            super.startActivity(Setting.getInstance(this).social.gPlus.getGPlusIntent(this));
+        }
+        catch(ActivityNotFoundException e)
+        {
+            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onInstagramSocialPressed(View view)
+    {
+        try
+        {
+            this.onBackPressed();
+            super.startActivity(Setting.getInstance(this).social.instagram.getInstagramIntent(this));
+        }
+        catch(ActivityNotFoundException e)
+        {
+            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onTwitterSocialPressed(View view)
+    {
+        try
+        {
+            this.onBackPressed();
+            super.startActivity(Setting.getInstance(this).social.twitter.getTwitterIntent(this));
+        }
+        catch(ActivityNotFoundException e)
+        {
+            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onFacebookSocialPressed(View view)
+    {
+        try
+        {
+            this.onBackPressed();
+            super.startActivity(Setting.getInstance(this).social.facebook.getFacebookIntent(this));
+        }
+        catch(ActivityNotFoundException e)
+        {
+            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -131,12 +228,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         Dashboard.this.progressBar.dismiss();
                     }
                 }, Dashboard.this);
-                return true;
-            }
-            case R.id.nav_menu_dashboard_mailto:
-            {
-                this.onBackPressed();
-                io.localhost.freelancer.statushukum.model.util.Setting.sendFeedback(Dashboard.this);
                 return true;
             }
         }

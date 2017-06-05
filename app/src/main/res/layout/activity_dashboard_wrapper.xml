@@ -21,6 +21,84 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_dashboard"
-        app:menu="@menu/nav_header_dashboard_drawer"/>
+        app:menu="@menu/nav_header_dashboard_drawer">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:padding="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="4">
+
+                <ImageButton
+                    android:id="@+id/activity_dashboard_wrapper_imagebutton_social_facebook"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/global_content_description"
+                    android:src="@drawable/ic_facebook_black_24"/>
+
+                <LinearLayout
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grey_700"
+                    android:orientation="horizontal">
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/activity_dashboard_wrapper_imagebutton_social_twitter"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/global_content_description"
+                    android:src="@drawable/ic_twitter_black_24"/>
+
+                <LinearLayout
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grey_700"
+                    android:orientation="horizontal">
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/activity_dashboard_wrapper_imagebutton_social_instagram"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/global_content_description"
+                    android:src="@drawable/ic_instagram_black_24"/>
+
+                <LinearLayout
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/grey_700"
+                    android:orientation="horizontal">
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/activity_dashboard_wrapper_imagebutton_social_google_plus"
+                    style="@style/Widget.AppCompat.ImageButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="?android:selectableItemBackground"
+                    android:contentDescription="@string/global_content_description"
+                    android:src="@drawable/ic_google_plus_black_24"/>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

@@ -23,6 +23,9 @@ android {
                 cppFlags "-frtti -fexceptions"
             }
         }
+        jackOptions {
+            enabled true
+        }
         signingConfig signingConfigs.release
     }
     buildTypes {
