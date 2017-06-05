@@ -9735,7 +9735,7 @@
         "description": "PERUBAHAN/PENAMBAHAN UU NO.7 TH.1960 TENTANG STATISTIK (LN TH.' 60 NO.109)",
         "status": "Menjadi UU No.1 Prp Th.1965",
         "category": "1",
-        "reference": "http://www.peraturan.go.id/search/download/11e44c4feac322b093c4313232343435.html"
+        "reference": null
       },
       {
         "id": "1080",
@@ -14064,7 +14064,7 @@
         "description": "PENGADILAN HAK ASASI MANUSIA.",
         "status": "Dicabut dg UU No.26 Th.2000",
         "category": "1",
-        "reference": "http://peraturan.go.id/inc/view/11e44c4e290a1690b679313231323130.html"
+        "reference": null
       },
       {
         "id": "1561",
@@ -59278,7 +59278,7 @@
     "version": [
       {
         "id": "1",
-        "timestamp": "2017-06-02 06:22:44"
+        "timestamp": "2017-06-05 20:40:11"
       }
     ]
   }

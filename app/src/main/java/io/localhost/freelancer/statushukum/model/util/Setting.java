@@ -59,6 +59,7 @@ public class Setting
     private static Setting ourInstance;
 
     private final Context context;
+    public Social social;
     private Observer syncObserve;
 
     private Setting(Context context)
@@ -66,6 +67,7 @@ public class Setting
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
         this.context = context;
+        this.social = new Social();
     }
 
     public static Setting getInstance(final Context context)
