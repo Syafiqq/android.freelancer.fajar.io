@@ -81,4 +81,5 @@
     <string name="content_setting_tv_instagram_label_desc">Kirimkan saran melewati Instagram</string>
     <string name="content_setting_tv_gplus_label">Google Plus</string>
     <string name="content_setting_tv_gplus_label_desc">Kirimkan saran melewati Google Plus</string>
+    <string name="global_social_app_chooser_title">Pilih aplikasi untuk melanjutkan</string>
 </resources>
