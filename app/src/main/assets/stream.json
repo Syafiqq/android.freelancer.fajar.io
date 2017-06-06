@@ -40,7 +40,7 @@
         "year": "1946",
         "no": "UU No. 1 Tahun 1946",
         "description": "PERATURAN HUKUM PIDANA",
-        "status": "Dinyatakan berlaku dan diubah dg UU No.73 Th.1958; <br>Ps 209, 210, 387, 388, 415 s/d 420, 423, 425 & 435 Dicabut dg UU No.20 Th.2001; <br>Ps 297 & Ps 324 dicabut UU No.21 Th.2007",
+        "status": "Dinyatakan berlaku dan diubah dg UU No.73 Th.1958; Ps 209, 210, 387, 388, 415 s/d 420, 423, 425 & 435 Dicabut dg UU No.20 Th.2001; Ps 297 & Ps 324 dicabut UU No.21 Th.2007",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/46uu001.pdf"
       },
@@ -58,7 +58,7 @@
         "year": "1946",
         "no": "UU No. 3 Tahun 1946",
         "description": "WARGA NEGARA DAN PENDUDUK NEGARA INDONESIA",
-        "status": "Diubah dg UU No.6 Th.1947; <br>Diubah dg UU No.8 Th.1947",
+        "status": "Diubah dg UU No.6 Th.1947; Diubah dg UU No.8 Th.1947",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/46uu003.pdf"
       },
@@ -7634,7 +7634,7 @@
       {
         "id": "846",
         "year": "1960",
-        "no": "Penpres No. 6 Tahun 1999",
+        "no": "Penpres No. 6 Tahun 1960",
         "description": "TUGAS DAN KEBIJAKSANAAN TATA KERJA BANK INDONESIA",
         "status": "Menjadi UU No.6 Pnps Th.1960",
         "category": "1",
@@ -10794,8 +10794,8 @@
         "id": "1197",
         "year": "1970",
         "no": "UU No. 14 Tahun 1970",
-        "description": "KETENTUAN2POKOK KEKUASAAN KEHAKIMAN",
-        "status": "Diubah dg UU No.35 Th.1999 Dicabut dg UU No.4 Th.2004",
+        "description": "KETENTUAN-KETENTUAN POKOK KEKUASAAN KEHAKIMAN",
+        "status": "Diubah dg UU No.35 Th.1999, Dicabut dg UU No.4 Th.2004",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/70uu014.pdf"
       },
@@ -13828,7 +13828,7 @@
         "year": "1999",
         "no": "UU No. 31 Tahun 1999",
         "description": "PEMBERANTASAN TINDAK PIDANA KORUPSI.",
-        "status": "Diubah dg UU No.20 Th.2001 Psl 27 dicabut dg UU No.30 Th.2002",
+        "status": "Diubah dg UU No.20 Th.2001, Psl 27 dicabut dg UU No.30 Th.2002",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/99uu031.pdf"
       },
@@ -16051,7 +16051,7 @@
         "year": "2006",
         "no": "UU No. 23 Tahun 2006",
         "description": "ADMINISTRASI KEPENDUDUKAN.",
-        "status": "Mencabut Buku I BabII dan Bab IIIKUHP (BWI, Staatblad 1847:23),",
+        "status": "Mencabut Buku I BabII dan Bab IIIKUHP (BWI, Staatblad 1847:23);",
         "category": "1",
         "reference": "http://www.dpr.go.id/dokjdih/document/uu/UU_2006_23.pdf"
       },
@@ -16446,7 +16446,7 @@
         "id": "1825",
         "year": "2007",
         "no": "UU No. 42 Tahun 2007",
-        "description": "PENGESAHAN PERJANJIAN EKSTRADISI ANTARA REPUBLIK INDONESIA DAN REPUBLIK KOREA (TREATY ON EXTRADITION BETWEEN THE REPUBLIC OF INDONESIA AND THE REPUBLIC OF KOREA),",
+        "description": "PENGESAHAN PERJANJIAN EKSTRADISI ANTARA REPUBLIK INDONESIA DAN REPUBLIK KOREA (TREATY ON EXTRADITION BETWEEN THE REPUBLIC OF INDONESIA AND THE REPUBLIC OF KOREA);",
         "status": null,
         "category": "1",
         "reference": "http://www.dpr.go.id/dokjdih/document/uu/UU_2007_42.pdf"
@@ -17230,7 +17230,7 @@
         "year": "2009",
         "no": "UU No. 18 Tahun 2009",
         "description": "PETERNAKAN DAN KESEHATAN HEWAN",
-        "status": "Mencabut beberapa hal pada stdblad No.432 Th.1912,No.486 Th.1914,No.163 Th.1925,No.451 Th.1926,No.569 Th.1926,No.52 Th.1928,No.614 & No.715 Th.1936, No.512 Th.1937 & No.513 Th.1937; <br>Diubah dg UU No.41 Th.2014",
+        "status": "Mencabut beberapa hal pada stdblad No.432 Th.1912,No.486 Th.1914,No.163 Th.1925,No.451 Th.1926,No.569 Th.1926,No.52 Th.1928,No.614 & No.715 Th.1936, No.512 Th.1937 & No.513 Th.1937; Diubah dg UU No.41 Th.2014",
         "category": "1",
         "reference": "http://www.dpr.go.id/dokjdih/document/uu/UU_2009_18.pdf"
       },
@@ -18499,7 +18499,7 @@
         "year": "2014",
         "no": "UU No. 17 Tahun 2014",
         "description": "MAJELIS PERMUSYAWARATAN RAKYAT, DEWAN PERWAKILAN RAKYAT, DEWAN PERWAKILAN DAERAH, DAN DEWAN PERWAKILAN RAKYAT DAERAH",
-        "status": "Ps 1 angka 4, 314 s/d 412, 418 s/d 421 Dicabut dg UU No.23 Th.2014; <br>Diubah dg UU No.42 Th.2014",
+        "status": "Ps 1 angka 4, 314 s/d 412, 418 s/d 421 Dicabut dg UU No.23 Th.2014; Diubah dg UU No.42 Th.2014",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/14uu017.pdf"
       },
@@ -18553,7 +18553,7 @@
         "year": "2014",
         "no": "UU No. 23 Tahun 2014",
         "description": "PEMERINTAHAN DAERAH",
-        "status": "Diubah dg Perpu No.2 Th.2014; <br>Diubah dg UU No.9 Th.2015",
+        "status": "Diubah dg Perpu No.2 Th.2014; Diubah dg UU No.9 Th.2015",
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/14uu023.pdf"
       },
@@ -18786,7 +18786,7 @@
         "id": "2085",
         "year": "2015",
         "no": "UU No. 5 Tahun 2015",
-        "description": "PENGESAHAN PERJANJIAN EKSTRADISI ANTARA REPUBLIK INDONESIA DAN REPUBLIK SOSIALIS VIET NAM (EXTRADITION TREATY BETWEEN THE REPUBLIC OF INDONESIA AND THE SOCIALIST REPUBLIC OF VIET NAM),",
+        "description": "PENGESAHAN PERJANJIAN EKSTRADISI ANTARA REPUBLIK INDONESIA DAN REPUBLIK SOSIALIS VIET NAM (EXTRADITION TREATY BETWEEN THE REPUBLIC OF INDONESIA AND THE SOCIALIST REPUBLIC OF VIET NAM);",
         "status": null,
         "category": "1",
         "reference": "http://www.bphn.go.id/data/documents/15uu005.pdf"
@@ -26113,7 +26113,7 @@
         "year": "1960",
         "no": "PP No. 46 Tahun 1960",
         "description": "PEMBERIAN TUNJANGAN KEPADA JANDA DAN ANAK YATIM/YATIM PIATU DARI VETERAN PEJUANG KEMERDEKAAN RI. (LN NO. 144 & TLN NO.2096)",
-        "status": "Ps.6 (2), Ps.7cDicabut dg PP No.15 Th.1964",
+        "status": "Ps.6 (2); Ps.7cDicabut dg PP No.15 Th.1964",
         "category": "2",
         "reference": "http://www.bphn.go.id/data/documents/60pp046.pdf"
       },
@@ -59277,8 +59277,8 @@
     ],
     "version": [
       {
-        "id": "1",
-        "timestamp": "2017-06-05 20:40:11"
+        "id": "2",
+        "timestamp": "2017-06-06 07:49:12"
       }
     ]
   }

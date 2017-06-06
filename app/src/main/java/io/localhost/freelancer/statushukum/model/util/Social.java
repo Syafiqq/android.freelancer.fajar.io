@@ -5,10 +5,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.List;
+
+import io.localhost.freelancer.statushukum.R;
 
 /**
  * This <StatusHukum> project created by :
@@ -27,9 +32,9 @@ public class Social
 
     public Social()
     {
-        this.facebook = new Facebook("https://www.facebook.com/582966285239620/", "582966285239620");
+        this.facebook = new Facebook("https://www.facebook.com/statushukum/", "statushukum");
         this.twitter = new Twitter("https://twitter.com/status_hukum");
-        this.instagram = new Instagram("https://www.instagram.com/statushukum/");
+        this.instagram = new Instagram("https://www.instagram.com/statushukum/", "statushukum");
         this.gPlus = new GPlus("https://plus.google.com/u/0/102250368241027727812/");
     }
 
@@ -56,38 +61,93 @@ public class Social
             this.user = user;
         }
 
-        public String getFacebookPageURL(Context context)
+        private List<Intent> getFacebookApp(Context context)
         {
-            return this.getFacebookPageURL(this.url, this.user, context);
-        }
-
-        public String getFacebookPageURL(String facebookUrl, String pageName, Context context)
-        {
+            final List<Intent> intents = new LinkedList<>();
             PackageManager packageManager = context.getPackageManager();
             try
             {
+                final String url;
                 int versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode;
                 if(versionCode >= 3002850)
                 { //newer versions of fb app
-                    return "fb://facewebmodal/f?href=" + facebookUrl;
+                    url = "fb://facewebmodal/f?href=" + this.url;
                 }
                 else
                 { //older versions of fb app
-                    return "fb://page/" + pageName;
+                    url = "fb://page/" + this.user;
+                }
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+                if(!resolveInfoList.isEmpty())
+                {
+                    for(final ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                    }
+                    for(ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        if(resolveInfo.activityInfo.packageName.contains("facebook"))
+                        {
+                            final String packageName = resolveInfo.activityInfo.packageName;
+                            Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            target.setPackage(packageName);
+                            intents.add(target);
+                        }
+                    }
                 }
             }
-            catch(PackageManager.NameNotFoundException e)
+            catch(PackageManager.NameNotFoundException ignored)
             {
-                return facebookUrl; //normal web url
+
             }
+            return intents;
+        }
+
+        private List<Intent> getDefaultFacebook(Context context)
+        {
+            final List<Intent> intents = new LinkedList<>();
+            final String url = this.url;
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+            if(!resolveInfoList.isEmpty())
+            {
+                for(final ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                }
+                for(ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    if(!resolveInfo.activityInfo.packageName.contains("facebook"))
+                    {
+                        final String packageName = resolveInfo.activityInfo.packageName;
+                        Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        target.setPackage(packageName);
+                        intents.add(target);
+                    }
+                }
+            }
+            return intents;
         }
 
         public Intent getFacebookIntent(Context context)
         {
-            final Intent intent = new Intent(Intent.ACTION_VIEW);
-            String facebookUrl = this.getFacebookPageURL(context);
-            intent.setData(Uri.parse(facebookUrl));
-            return intent;
+            final List<Intent> intents = new LinkedList<>();
+            intents.addAll(this.getFacebookApp(context));
+            intents.addAll(this.getDefaultFacebook(context));
+            if(!intents.isEmpty())
+            {
+                final Intent chooser = Intent.createChooser(intents.remove(0), context.getResources().getString(R.string.global_social_app_chooser_title));
+                if(!intents.isEmpty())
+                {
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
+                }
+                return chooser;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -100,68 +160,181 @@ public class Social
             this.url = url;
         }
 
-        public String getTwitterPageURL(Context context)
+        private List<Intent> getTwitterApp(Context context)
         {
-            return this.getTwitterPageURL(this.url, context);
+            final List<Intent> intents = new LinkedList<>();
+            PackageManager packageManager = context.getPackageManager();
+            try
+            {
+                final String url;
+                packageManager.getPackageInfo("com.twitter.android", PackageManager.GET_ACTIVITIES);
+                url = this.url;
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+                if(!resolveInfoList.isEmpty())
+                {
+                    for(final ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                    }
+                    for(ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        if(resolveInfo.activityInfo.packageName.contains("twitter"))
+                        {
+                            final String packageName = resolveInfo.activityInfo.packageName;
+                            Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            target.setPackage(packageName);
+                            intents.add(target);
+                        }
+                    }
+                }
+            }
+            catch(PackageManager.NameNotFoundException ignored)
+            {
+
+            }
+            return intents;
         }
 
-        public String getTwitterPageURL(String url, Context context)
+        private List<Intent> getDefaultTwitter(Context context)
         {
-            String tweetUrl = String.format("https://twitter.com/intent/tweet?url=%s", Social.urlEncode(url));
-            return tweetUrl;
+            final List<Intent> intents = new LinkedList<>();
+            final String url = this.url;
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("https://twitter.com/intent/tweet?url=%s", Social.urlEncode(url))));
+            final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+            if(!resolveInfoList.isEmpty())
+            {
+                for(final ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                }
+                for(ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    if(!resolveInfo.activityInfo.packageName.contains("twitter"))
+                    {
+                        final String packageName = resolveInfo.activityInfo.packageName;
+                        Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        target.setPackage(packageName);
+                        intents.add(target);
+                    }
+                }
+            }
+            return intents;
         }
 
         public Intent getTwitterIntent(Context context)
         {
-            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getTwitterPageURL(context)));
-
-            // Narrow down to official Twitter app, if available:
-            List<ResolveInfo> matches = context.getPackageManager().queryIntentActivities(intent, 0);
-            for(final ResolveInfo match : matches)
+            final List<Intent> intents = new LinkedList<>();
+            intents.addAll(this.getTwitterApp(context));
+            intents.addAll(this.getDefaultTwitter(context));
+            if(!intents.isEmpty())
             {
-                if(match.activityInfo.packageName.toLowerCase().startsWith("com.twitter"))
+                final Intent chooser = Intent.createChooser(intents.remove(0), context.getResources().getString(R.string.global_social_app_chooser_title));
+                if(!intents.isEmpty())
                 {
-                    intent.setPackage(match.activityInfo.packageName);
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
                 }
+                return chooser;
             }
-            return intent;
+            else
+            {
+                return null;
+            }
         }
     }
 
     public class Instagram
     {
-
         private final String url;
+        private final String user;
 
-        public Instagram(String url)
+        public Instagram(String url, String user)
         {
             this.url = url;
+            this.user = user;
         }
 
-        public String getInstagramPageURL(Context context)
+        private List<Intent> getInstagramApp(Context context)
         {
-            return this.getInstagramPageURL(this.url, context);
+            final List<Intent> intents = new LinkedList<>();
+            PackageManager packageManager = context.getPackageManager();
+            try
+            {
+                final String url;
+                packageManager.getPackageInfo("com.instagram.android", PackageManager.GET_ACTIVITIES);
+                url = "http://instagram.com/_u/" + this.user;
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+                if(!resolveInfoList.isEmpty())
+                {
+                    for(final ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                    }
+                    for(ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        if(resolveInfo.activityInfo.packageName.contains("instagram"))
+                        {
+                            final String packageName = resolveInfo.activityInfo.packageName;
+                            Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            target.setPackage(packageName);
+                            intents.add(target);
+                        }
+                    }
+                }
+            }
+            catch(PackageManager.NameNotFoundException ignored)
+            {
+
+            }
+            return intents;
         }
 
-        public String getInstagramPageURL(String url, Context context)
+        private List<Intent> getDefaultInstagram(Context context)
         {
-            return url;
+            final List<Intent> intents = new LinkedList<>();
+            final String url = this.url;
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+            if(!resolveInfoList.isEmpty())
+            {
+                for(final ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                }
+                for(ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    if(!resolveInfo.activityInfo.packageName.contains("instagram"))
+                    {
+                        final String packageName = resolveInfo.activityInfo.packageName;
+                        Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        target.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+                        target.setPackage(packageName);
+                        intents.add(target);
+                    }
+                }
+            }
+            return intents;
         }
 
         public Intent getInstagramIntent(Context context)
         {
-            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getInstagramPageURL(context)));
-
-            // Narrow down to official Instagram app, if available:
-            List<ResolveInfo> matches = context.getPackageManager().queryIntentActivities(intent, 0);
-            for(final ResolveInfo match : matches)
+            final List<Intent> intents = new LinkedList<>();
+            intents.addAll(this.getInstagramApp(context));
+            intents.addAll(this.getDefaultInstagram(context));
+            if(!intents.isEmpty())
             {
-                if(match.activityInfo.packageName.toLowerCase().startsWith("com.instagram.android"))
+                final Intent chooser = Intent.createChooser(intents.remove(0), context.getResources().getString(R.string.global_social_app_chooser_title));
+                if(!intents.isEmpty())
                 {
-                    intent.setPackage(match.activityInfo.packageName);
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
                 }
+                return chooser;
             }
-            return intent;
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -174,30 +347,87 @@ public class Social
             this.url = url;
         }
 
-        public String getGPlusPageURL(Context context)
+        private List<Intent> getGPlusApp(Context context)
         {
-            return this.getGPlusPageURL(this.url, context);
+            final List<Intent> intents = new LinkedList<>();
+            PackageManager packageManager = context.getPackageManager();
+            try
+            {
+                final String url;
+                packageManager.getPackageInfo("com.google.android.apps.plus", PackageManager.GET_ACTIVITIES);
+                url = this.url;
+                final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+                if(!resolveInfoList.isEmpty())
+                {
+                    for(final ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                    }
+                    for(ResolveInfo resolveInfo : resolveInfoList)
+                    {
+                        if(resolveInfo.activityInfo.packageName.contains("plus"))
+                        {
+                            final String packageName = resolveInfo.activityInfo.packageName;
+                            Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                            target.setPackage(packageName);
+                            intents.add(target);
+                        }
+                    }
+                }
+            }
+            catch(PackageManager.NameNotFoundException ignored)
+            {
+
+            }
+            return intents;
         }
 
-        public String getGPlusPageURL(String url, Context context)
+        private List<Intent> getDefaultGPlus(Context context)
         {
-            return url;
+            final List<Intent> intents = new LinkedList<>();
+            final String url = this.url;
+            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
+            if(!resolveInfoList.isEmpty())
+            {
+                for(final ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
+                }
+                for(ResolveInfo resolveInfo : resolveInfoList)
+                {
+                    if(!resolveInfo.activityInfo.packageName.contains("plus"))
+                    {
+                        final String packageName = resolveInfo.activityInfo.packageName;
+                        Intent target = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        target.putExtra(Intent.EXTRA_STREAM, Uri.parse(url));
+                        target.setPackage(packageName);
+                        intents.add(target);
+                    }
+                }
+            }
+            return intents;
         }
 
         public Intent getGPlusIntent(Context context)
         {
-            final Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(this.getGPlusPageURL(context)));
-
-            // Narrow down to official GPlus app, if available:
-            List<ResolveInfo> matches = context.getPackageManager().queryIntentActivities(intent, 0);
-            for(final ResolveInfo match : matches)
+            final List<Intent> intents = new LinkedList<>();
+            intents.addAll(this.getGPlusApp(context));
+            intents.addAll(this.getDefaultGPlus(context));
+            if(!intents.isEmpty())
             {
-                if(match.activityInfo.packageName.toLowerCase().startsWith("com.google.android.apps.plus"))
+                final Intent chooser = Intent.createChooser(intents.remove(0), context.getResources().getString(R.string.global_social_app_chooser_title));
+                if(!intents.isEmpty())
                 {
-                    intent.setPackage(match.activityInfo.packageName);
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
                 }
+                return chooser;
             }
-            return intent;
+            else
+            {
+                return null;
+            }
         }
     }
 }
