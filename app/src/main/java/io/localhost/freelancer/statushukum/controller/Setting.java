@@ -101,7 +101,7 @@ public class Setting extends AppCompatActivity
         {
             super.startActivity(io.localhost.freelancer.statushukum.model.util.Setting.getInstance(this).social.gPlus.getGPlusIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -113,7 +113,7 @@ public class Setting extends AppCompatActivity
         {
             super.startActivity(io.localhost.freelancer.statushukum.model.util.Setting.getInstance(this).social.instagram.getInstagramIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -125,7 +125,7 @@ public class Setting extends AppCompatActivity
         {
             super.startActivity(io.localhost.freelancer.statushukum.model.util.Setting.getInstance(this).social.twitter.getTwitterIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -137,7 +137,7 @@ public class Setting extends AppCompatActivity
         {
             super.startActivity(io.localhost.freelancer.statushukum.model.util.Setting.getInstance(this).social.facebook.getFacebookIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }

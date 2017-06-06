@@ -113,7 +113,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             this.onBackPressed();
             super.startActivity(Setting.getInstance(this).social.gPlus.getGPlusIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -126,7 +126,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             this.onBackPressed();
             super.startActivity(Setting.getInstance(this).social.instagram.getInstagramIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -139,7 +139,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             this.onBackPressed();
             super.startActivity(Setting.getInstance(this).social.twitter.getTwitterIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
@@ -152,7 +152,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             this.onBackPressed();
             super.startActivity(Setting.getInstance(this).social.facebook.getFacebookIntent(this));
         }
-        catch(ActivityNotFoundException e)
+        catch(ActivityNotFoundException | NullPointerException e)
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
