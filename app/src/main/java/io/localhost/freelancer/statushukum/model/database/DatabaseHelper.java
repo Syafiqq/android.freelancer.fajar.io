@@ -37,7 +37,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private static final String DATABASE_NAME = "status_hukum.mcrypt";
     private static final char COMMA_SEPARATOR = ',';
     private static final char WHITESPACE = ' ';
