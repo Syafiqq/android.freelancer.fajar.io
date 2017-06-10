@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply from: "$project.rootDir/script-git-version.gradle"
 
 android {
     signingConfigs {
@@ -15,8 +16,8 @@ android {
         applicationId "io.localhost.freelancer.statushukum"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 10
-        versionName '1.8.1'
+        versionCode gitVersionCode
+        versionName gitVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
