@@ -16,28 +16,12 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/content_setting_linearlayout_fanspage_root"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/conten_setting_header_data_title"
-                android:textAppearance="@style/TextAppearance.AppCompat"
-                android:textSize="18sp"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/black"
-                android:orientation="horizontal">
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -90,95 +74,4 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/content_setting_linearlayout_fanspage_root"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="@string/global_content_follow_label"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            android:textSize="18sp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="4">
-
-            <ImageButton
-                android:id="@+id/content_setting_ib_social_facebook"
-                style="@style/Widget.AppCompat.ImageButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="?android:selectableItemBackground"
-                android:contentDescription="@string/global_content_description"
-                android:src="@drawable/ic_facebook_black_24"/>
-
-            <LinearLayout
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/grey_700"
-                android:orientation="horizontal">
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/content_setting_ib_social_twitter"
-                style="@style/Widget.AppCompat.ImageButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:selectableItemBackground"
-                android:contentDescription="@string/global_content_description"
-                android:src="@drawable/ic_twitter_black_24"/>
-
-            <LinearLayout
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/grey_700"
-                android:orientation="horizontal">
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/content_setting_ib_social_instagram"
-                style="@style/Widget.AppCompat.ImageButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:selectableItemBackground"
-                android:contentDescription="@string/global_content_description"
-                android:src="@drawable/ic_instagram_black_24"/>
-
-            <LinearLayout
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/grey_700"
-                android:orientation="horizontal">
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/content_setting_ib_social_gplus"
-                style="@style/Widget.AppCompat.ImageButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?android:selectableItemBackground"
-                android:contentDescription="@string/global_content_description"
-                android:src="@drawable/ic_google_plus_black_24"/>
-        </LinearLayout>
-    </LinearLayout>
-
 </RelativeLayout>
