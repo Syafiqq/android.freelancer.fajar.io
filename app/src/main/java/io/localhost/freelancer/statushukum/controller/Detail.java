@@ -23,7 +23,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.jetbrains.annotations.NotNull;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
@@ -262,7 +261,7 @@ public class Detail extends AppCompatActivity
         }.execute();
     }
 
-    private void checkFileStatus(@NotNull final ME_Data dbResultData)
+    private void checkFileStatus(final ME_Data dbResultData)
     {
         this.filename = dbResultData.getNo().trim().replaceAll(" ", "_");
         this.filename = filename.replaceAll("[\\p{Punct}&&[^_]]+", "");

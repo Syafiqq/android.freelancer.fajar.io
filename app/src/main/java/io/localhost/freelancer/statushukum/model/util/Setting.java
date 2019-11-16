@@ -15,7 +15,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -314,7 +313,6 @@ public class Setting
             this.syncObserve.update(null, SYNC_FAILED);
             return;
         }
-        @NotNull
         final JsonObjectRequest request = new JsonObjectRequest
                 (
                         Request.Method.GET,
@@ -358,7 +356,6 @@ public class Setting
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError
             {
-                @NotNull
                 final Map<String, String> headers = new LinkedHashMap<>(super.getHeaders());
                 headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 headers.put("X-Requested-With", "XMLHttpRequest");
@@ -396,7 +393,6 @@ public class Setting
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
         String url = NetworkConstants.API_SITE_URL + "/api/latest";
-        @NotNull
         final JsonObjectRequest request = new JsonObjectRequest
                 (
                         Request.Method.GET,
@@ -440,7 +436,6 @@ public class Setting
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError
             {
-                @NotNull
                 final Map<String, String> headers = new LinkedHashMap<>(super.getHeaders());
                 headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 headers.put("X-Requested-With", "XMLHttpRequest");

@@ -22,7 +22,6 @@ public class NetworkConstants
         NetworkConstants.API_SITE_URL = "http://freelancer.fajar.io";
     }
 
-    @org.jetbrains.annotations.Contract(pure = true)
     public static String getURL(@NonNull String domain, @NonNull String path, @Nullable String data)
     {
         return domain + path + (data == null ? "" : "?" + data);
