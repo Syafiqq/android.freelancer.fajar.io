@@ -1,7 +1,7 @@
 package io.localhost.freelancer.statushukum.networking;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This <TestOAuth_001> project in package <id.ac.ub.filkom.se.kcv.testoauth_001.model.networking> created by :
