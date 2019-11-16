@@ -319,6 +319,7 @@ public class Setting
                 (
                         Request.Method.GET,
                         url,
+                        new JSONObject(),
                         new Response.Listener<JSONObject>()
                         {
                             @Override
@@ -400,6 +401,7 @@ public class Setting
                 (
                         Request.Method.GET,
                         url,
+                        new JSONObject(),
                         new Response.Listener<JSONObject>()
                         {
                             @Override
