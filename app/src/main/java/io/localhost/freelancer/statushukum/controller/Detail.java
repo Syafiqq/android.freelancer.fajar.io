@@ -1,15 +1,21 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.ActionBar;
@@ -23,9 +29,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,6 +66,9 @@ public class Detail extends AppCompatActivity
     private long downloadID;
     private String path;
     private String filename;
+
+    private HashMap<String, Runnable> mPendingPermissionRequests = new HashMap<>();
+    private static final int PENDING_PERMISSION_REQUESTS = 0;
 
     private BroadcastReceiver downloadReceiver = new BroadcastReceiver()
     {
@@ -206,6 +218,7 @@ public class Detail extends AppCompatActivity
         super.finish();
     }
 
+    @SuppressLint("StaticFieldLeak")
     @SuppressWarnings("ConstantConditions")
     private void setDetail()
     {
@@ -281,22 +294,12 @@ public class Detail extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    final Uri uri = Uri.parse(dbResultData.getReference());
-                    final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request(uri);
-
-                    //Setting title of request
-                    request.setTitle("Download");
-
-                    //Setting description of request
-                    request.setDescription("Mohon Tunggu");
-
-                    //Set the local destination for the downloaded file to a path within the application's external files directory
-                    request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%s_tmp.pdf", finalFilename));
-
-                    //Enqueue download and save the referenceId
-                    Detail.this.download.setEnabled(false);
-                    Detail.this.downloadID = downloadManager.enqueue(request);
+                    newPermissionRequester(
+                            Detail.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,             // permission to request
+                            "Kami membutuhkan permission tersebut untuk menyimpan file",  // explanation to user
+                            () -> doDownload(dbResultData.getReference(), finalFilename)
+                    ).run();
                 }
             });
             Detail.this.download.setVisibility(View.VISIBLE);
@@ -310,6 +313,25 @@ public class Detail extends AppCompatActivity
         {
             this.checkOfflineData();
         }
+    }
+
+    private void doDownload(String url, String filename) {
+        final Uri uri = Uri.parse(url);
+        final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        //Setting title of request
+        request.setTitle("Download");
+
+        //Setting description of request
+        request.setDescription("Mohon Tunggu");
+
+        //Set the local destination for the downloaded file to a path within the application's external files directory
+        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%s_tmp.pdf", filename));
+
+        //Enqueue download and save the referenceId
+        Detail.this.download.setEnabled(false);
+        Detail.this.downloadID = downloadManager.enqueue(request);
     }
 
     private void checkOfflineData()
@@ -371,5 +393,44 @@ public class Detail extends AppCompatActivity
         this.setDetail();
 
         super.onPostResume();
+    }
+
+    private Runnable newPermissionRequester(Activity activity, String permission, String explanation, Runnable task) {
+        return () -> {
+            if (ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED) {
+                task.run();
+                return;
+            }
+
+            Runnable requestPermission = () -> {
+                ActivityCompat.requestPermissions(this, new String[] {permission}, PENDING_PERMISSION_REQUESTS);
+                mPendingPermissionRequests.put(permission, task);
+            };
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                // Show an explanation to the user *asynchronously* -- don't block this thread waiting for the user's
+                // response! After the user sees the explanation, try again to request the permission.
+                Snackbar.make(getWindow().getDecorView().getRootView(), explanation, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.request, v -> requestPermission.run())
+                        .show();
+            } else {
+                // No explanation needed, we can request the permission.
+                requestPermission.run();
+            }
+        };
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PENDING_PERMISSION_REQUESTS) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mPendingPermissionRequests.containsKey(permission)) {
+                    // permission was granted, yay! Do the task you need to do.
+                    mPendingPermissionRequests.remove(permission).run();
+                }
+            }
+        }
     }
 }
