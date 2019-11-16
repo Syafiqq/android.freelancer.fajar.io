@@ -89,10 +89,10 @@ public class Constitution extends Fragment
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                if((query.trim().length() > 0) && (!Constitution.this.latestQuery.contentEquals(query)))
+                if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
                 {
-                    Constitution.this.latestQuery = query;
-                    Constitution.this.doSearch(query);
+                    latestQuery = query;
+                    doSearch(query);
                 }
                 return false;
             }
@@ -100,7 +100,7 @@ public class Constitution extends Fragment
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                Constitution.this.searchAdapter.getFilter().filter(newText);
+                searchAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -112,13 +112,13 @@ public class Constitution extends Fragment
                 System.out.println(isOnFocus);
                 if(isOnFocus)
                 {
-                    Constitution.this.yearListView.setVisibility(View.GONE);
-                    Constitution.this.searchListView.setVisibility(View.VISIBLE);
+                    yearListView.setVisibility(View.GONE);
+                    searchListView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    Constitution.this.yearListView.setVisibility(View.VISIBLE);
-                    Constitution.this.searchListView.setVisibility(View.GONE);
+                    yearListView.setVisibility(View.VISIBLE);
+                    searchListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -170,20 +170,20 @@ public class Constitution extends Fragment
                         }
                     }
                 }
-                Constitution.this.searchList.clear();
-                Constitution.this.searchList.addAll(dbResultData);
-                Constitution.this.searchAdapter.update(dbResultData);
+                searchList.clear();
+                searchList.addAll(dbResultData);
+                searchAdapter.update(dbResultData);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                if(Constitution.this.searchList.size() == 0)
+                if(searchList.size() == 0)
                 {
                     Toast.makeText(Constitution.super.getContext(), Constitution.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
-                Constitution.this.searchAdapter.notifyDataSetChanged();
+                searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -219,16 +219,16 @@ public class Constitution extends Fragment
             {
                 final MDM_Data modelData = MDM_Data.getInstance(Constitution.super.getContext());
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
-                Constitution.this.yearList.clear();
-                Constitution.this.yearList.addAll(dbResult);
-                Constitution.this.yearAdapter.update(dbResult);
+                yearList.clear();
+                yearList.addAll(dbResult);
+                yearAdapter.update(dbResult);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                Constitution.this.yearAdapter.notifyDataSetChanged();
+                yearAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();

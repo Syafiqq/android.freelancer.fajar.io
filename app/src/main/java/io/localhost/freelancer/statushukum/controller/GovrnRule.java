@@ -90,10 +90,10 @@ public class GovrnRule extends Fragment
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                if((query.trim().length() > 0) && (!GovrnRule.this.latestQuery.contentEquals(query)))
+                if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
                 {
-                    GovrnRule.this.latestQuery = query;
-                    GovrnRule.this.doSearch(query);
+                    latestQuery = query;
+                    doSearch(query);
                 }
                 return false;
             }
@@ -101,7 +101,7 @@ public class GovrnRule extends Fragment
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                GovrnRule.this.searchAdapter.getFilter().filter(newText);
+                searchAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -113,13 +113,13 @@ public class GovrnRule extends Fragment
                 System.out.println(isOnFocus);
                 if(isOnFocus)
                 {
-                    GovrnRule.this.yearListView.setVisibility(View.GONE);
-                    GovrnRule.this.searchListView.setVisibility(View.VISIBLE);
+                    yearListView.setVisibility(View.GONE);
+                    searchListView.setVisibility(View.VISIBLE);
                 }
                 else
                 {
-                    GovrnRule.this.yearListView.setVisibility(View.VISIBLE);
-                    GovrnRule.this.searchListView.setVisibility(View.GONE);
+                    yearListView.setVisibility(View.VISIBLE);
+                    searchListView.setVisibility(View.GONE);
                 }
             }
         });
@@ -171,20 +171,20 @@ public class GovrnRule extends Fragment
                         }
                     }
                 }
-                GovrnRule.this.searchList.clear();
-                GovrnRule.this.searchList.addAll(dbResultData);
-                GovrnRule.this.searchAdapter.update(dbResultData);
+                searchList.clear();
+                searchList.addAll(dbResultData);
+                searchAdapter.update(dbResultData);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                if(GovrnRule.this.searchList.size() == 0)
+                if(searchList.size() == 0)
                 {
                     Toast.makeText(GovrnRule.super.getContext(), GovrnRule.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
-                GovrnRule.this.searchAdapter.notifyDataSetChanged();
+                searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -220,16 +220,16 @@ public class GovrnRule extends Fragment
             {
                 final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
-                GovrnRule.this.yearList.clear();
-                GovrnRule.this.yearList.addAll(dbResult);
-                GovrnRule.this.yearAdapter.update(dbResult);
+                yearList.clear();
+                yearList.addAll(dbResult);
+                yearAdapter.update(dbResult);
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid)
             {
-                GovrnRule.this.yearAdapter.notifyDataSetChanged();
+                yearAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
         }.execute();
