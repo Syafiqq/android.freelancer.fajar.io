@@ -125,6 +125,12 @@ public class Detail extends AppCompatActivity
         this.setDetail();
     }
 
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(downloadReceiver);
+        super.onDestroy();
+    }
+
     private void setProperty()
     {
         this.no = (HtmlTextView) super.findViewById(R.id.content_detail_htv_no);
