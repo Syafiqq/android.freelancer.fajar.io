@@ -69,9 +69,9 @@ public class Constitution extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        this.root = inflater.inflate(R.layout.fragment_constitution, container, false);
-        this.setProperty();
-        this.listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_constitution);
+        root = inflater.inflate(R.layout.fragment_constitution, container, false);
+        setProperty();
+        listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_constitution);
         return root;
     }
 
@@ -79,12 +79,12 @@ public class Constitution extends Fragment
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
 
-        this.setSearchListAdapter();
-        this.setYearListAdapter();
+        setSearchListAdapter();
+        setYearListAdapter();
 
-        this.search = (SearchView) this.root.findViewById(R.id.content_constitution_search_filter);
-        this.latestQuery = this.search.getQuery().toString();
-        this.search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        search = (SearchView) root.findViewById(R.id.content_constitution_search_filter);
+        latestQuery = search.getQuery().toString();
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
@@ -104,7 +104,7 @@ public class Constitution extends Fragment
                 return false;
             }
         });
-        this.search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
+        search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
         {
             @Override
             public void onFocusChange(View view, boolean isOnFocus)
@@ -128,21 +128,21 @@ public class Constitution extends Fragment
     {
         Log.d(CLASS_NAME, CLASS_PATH + ".setSearchListAdapter");
 
-        if(this.searchList == null)
+        if(searchList == null)
         {
-            this.searchList = new LinkedList<>();
+            searchList = new LinkedList<>();
         }
         else
         {
-            this.searchList.clear();
+            searchList.clear();
         }
-        this.searchListView = (RecyclerView) this.root.findViewById(R.id.content_constitution_recycle_view_container_search);
-        this.searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), super.getContext(), CATEGORY);
-        this.searchAdapter.setFilter(new SearchFilter(this.searchAdapter, this.searchList));
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
-        this.searchListView.setLayoutManager(mLayoutManager);
-        this.searchListView.setItemAnimator(new DefaultItemAnimator());
-        this.searchListView.setAdapter(this.searchAdapter);
+        searchListView = (RecyclerView) root.findViewById(R.id.content_constitution_recycle_view_container_search);
+        searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), getContext(), CATEGORY);
+        searchAdapter.setFilter(new SearchFilter(searchAdapter, searchList));
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        searchListView.setLayoutManager(mLayoutManager);
+        searchListView.setItemAnimator(new DefaultItemAnimator());
+        searchListView.setAdapter(searchAdapter);
     }
 
     private void doSearch(final String query)
@@ -191,20 +191,20 @@ public class Constitution extends Fragment
 
     private void setYearListAdapter()
     {
-        if(this.yearList == null)
+        if(yearList == null)
         {
-            this.yearList = new LinkedList<>();
+            yearList = new LinkedList<>();
         }
         else
         {
-            this.yearList.clear();
+            yearList.clear();
         }
-        this.yearListView = (RecyclerView) this.root.findViewById(R.id.content_constitution_recycle_view_container_year);
-        this.yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), super.getContext(), CATEGORY);
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(super.getContext());
-        this.yearListView.setLayoutManager(mLayoutManager);
-        this.yearListView.setItemAnimator(new DefaultItemAnimator());
-        this.yearListView.setAdapter(this.yearAdapter);
+        yearListView = (RecyclerView) root.findViewById(R.id.content_constitution_recycle_view_container_year);
+        yearAdapter = new CountPerYearAdapter(new ArrayList<MDM_Data.CountPerYear>(0), getContext(), CATEGORY);
+        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        yearListView.setLayoutManager(mLayoutManager);
+        yearListView.setItemAnimator(new DefaultItemAnimator());
+        yearListView.setAdapter(yearAdapter);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -239,7 +239,7 @@ public class Constitution extends Fragment
     {
         super.onResume();
 
-        this.setYearList();
+        setYearList();
     }
 
     @Override
