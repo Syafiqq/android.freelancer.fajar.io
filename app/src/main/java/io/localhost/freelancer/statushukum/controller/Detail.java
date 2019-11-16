@@ -70,11 +70,15 @@ public class Detail extends AppCompatActivity
 
             if(referenceId == Detail.this.downloadID)
             {
-
-                Toast.makeText(Detail.this, "File Berhasil Diunduh", Toast.LENGTH_SHORT).show();
                 final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename + "_tmp");
                 final File oldFile = new File(path);
                 final File newFile = new File(tmpPath);
+                if(!newFile.exists()){
+                    Toast.makeText(Detail.this, "File gagal diunduh", Toast.LENGTH_SHORT).show();
+                    Detail.this.download.setEnabled(true);
+                    return;
+                }
+
                 if(oldFile.exists())
                 {
                     oldFile.delete();
@@ -82,6 +86,7 @@ public class Detail extends AppCompatActivity
                 newFile.renameTo(oldFile);
                 Detail.this.download.setEnabled(true);
                 Detail.this.checkOfflineData();
+                Toast.makeText(Detail.this, "File Berhasil Diunduh", Toast.LENGTH_SHORT).show();
             }
         }
     };
