@@ -95,7 +95,7 @@ public class Detail extends AppCompatActivity
             if(referenceId == Detail.this.downloadID && fileMapper.containsKey(String.valueOf(referenceId)))
             {
                 DownloadHolder holder = fileMapper.remove(String.valueOf(referenceId));
-                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, holder.downloadFilename);
+                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/tmp/%s", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, holder.downloadFilename);
                 final File oldFile = new File(holder.realFilename);
                 final File newFile = new File(tmpPath);
                 if(!newFile.exists()){
@@ -302,7 +302,7 @@ public class Detail extends AppCompatActivity
     {
         this.filename = dbResultData.getNo().trim().replaceAll(" ", "_");
         this.filename = filename.replaceAll("[\\p{Punct}&&[^_]]+", "");
-        this.path = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename);
+        this.path = String.format(Locale.getDefault(), "%s/%s/reference/%s", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename);
         final File dlc = new File(path);
 
         if(!dbResultData.getReference().equalsIgnoreCase("null"))
@@ -317,7 +317,7 @@ public class Detail extends AppCompatActivity
                             Detail.this,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE,             // permission to request
                             "Kami membutuhkan permission tersebut untuk menyimpan file",  // explanation to user
-                            () -> doDownload(dbResultData.getReference(), finalFilename)
+                            () -> doDownload(dbResultData.getReference(), path)
                     ).run();
                 }
             });
@@ -347,7 +347,7 @@ public class Detail extends AppCompatActivity
         String _filename = generateRandomString(32);
 
         //Set the local destination for the downloaded file to a path within the application's external files directory
-        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", _filename);
+        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference/tmp", _filename);
 
         //Enqueue download and save the referenceId
         Detail.this.download.setEnabled(false);
