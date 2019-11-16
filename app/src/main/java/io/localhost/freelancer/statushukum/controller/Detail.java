@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
@@ -49,6 +50,16 @@ import io.localhost.freelancer.statushukum.model.util.ME_TagAdapter;
 import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
+
+class DownloadHolder {
+    public String realFilename;
+    public String downloadFilename;
+
+    public DownloadHolder(String realFilename, String downloadFilename) {
+        this.realFilename = realFilename;
+        this.downloadFilename = downloadFilename;
+    }
+}
 
 public class Detail extends AppCompatActivity
 {
@@ -67,6 +78,7 @@ public class Detail extends AppCompatActivity
     private String path;
     private String filename;
 
+    private HashMap<String, DownloadHolder> fileMapper = new HashMap<>();
     private HashMap<String, Runnable> mPendingPermissionRequests = new HashMap<>();
     private static final int PENDING_PERMISSION_REQUESTS = 0;
 
@@ -80,10 +92,11 @@ public class Detail extends AppCompatActivity
             //check if the broadcast message is for our Enqueued download
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
-            if(referenceId == Detail.this.downloadID)
+            if(referenceId == Detail.this.downloadID && fileMapper.containsKey(String.valueOf(referenceId)))
             {
-                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename + "_tmp");
-                final File oldFile = new File(path);
+                DownloadHolder holder = fileMapper.remove(String.valueOf(referenceId));
+                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, holder.downloadFilename);
+                final File oldFile = new File(holder.realFilename);
                 final File newFile = new File(tmpPath);
                 if(!newFile.exists()){
                     Toast.makeText(Detail.this, "File gagal diunduh", Toast.LENGTH_SHORT).show();
@@ -331,13 +344,15 @@ public class Detail extends AppCompatActivity
 
         //Setting description of request
         request.setDescription("Mohon Tunggu");
+        String _filename = generateRandomString(32);
 
         //Set the local destination for the downloaded file to a path within the application's external files directory
-        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%s_tmp.pdf", filename));
+        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", _filename);
 
         //Enqueue download and save the referenceId
         Detail.this.download.setEnabled(false);
         Detail.this.downloadID = downloadManager.enqueue(request);
+        fileMapper.put(String.valueOf(downloadID), new DownloadHolder(filename, _filename));
     }
 
     private void checkOfflineData()
@@ -438,5 +453,20 @@ public class Detail extends AppCompatActivity
                 }
             }
         }
+    }
+
+    private String generateRandomString(int length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = length;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        String generatedString = buffer.toString();
+        return generatedString;
     }
 }
