@@ -73,7 +73,7 @@ public class GovrnRule extends Fragment
         this.root = inflater.inflate(R.layout.fragment_govrn_rule, container, false);
         this.setProperty();
         this.listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_govrn_rule);
-        return this.root;
+        return root;
     }
 
     private void setProperty()
@@ -155,9 +155,9 @@ public class GovrnRule extends Fragment
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
-                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(GovrnRule.super.getContext());
-                final MDM_Tag modelTag = MDM_Tag.getInstance(GovrnRule.super.getContext());
+                final MDM_Data modelData = MDM_Data.getInstance(getContext());
+                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(getContext());
+                final MDM_Tag modelTag = MDM_Tag.getInstance(getContext());
                 final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
@@ -182,7 +182,7 @@ public class GovrnRule extends Fragment
             {
                 if(searchList.size() == 0)
                 {
-                    Toast.makeText(GovrnRule.super.getContext(), GovrnRule.super.getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
                 searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
@@ -218,7 +218,7 @@ public class GovrnRule extends Fragment
             @Override
             protected Void doInBackground(Void... voids)
             {
-                final MDM_Data modelData = MDM_Data.getInstance(GovrnRule.super.getContext());
+                final MDM_Data modelData = MDM_Data.getInstance(getContext());
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
                 yearList.clear();
                 yearList.addAll(dbResult);
@@ -247,7 +247,7 @@ public class GovrnRule extends Fragment
     public void onAttach(Context context)
     {
         super.onAttach(context);
-        if(context instanceof Constitution.OnFragmentInteractionListener)
+        if(context instanceof OnFragmentInteractionListener)
         {
             listener = (OnFragmentInteractionListener) context;
         }
