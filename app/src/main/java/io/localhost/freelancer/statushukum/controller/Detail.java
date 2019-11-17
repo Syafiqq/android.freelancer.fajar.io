@@ -1,20 +1,26 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +29,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.jetbrains.annotations.NotNull;
+import com.google.android.material.snackbar.Snackbar;
+
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
@@ -41,6 +50,16 @@ import io.localhost.freelancer.statushukum.model.util.ME_TagAdapter;
 import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
 import me.kaede.tagview.TagView;
+
+class DownloadHolder {
+    public String realFilename;
+    public String downloadFilename;
+
+    public DownloadHolder(String realFilename, String downloadFilename) {
+        this.realFilename = realFilename;
+        this.downloadFilename = downloadFilename;
+    }
+}
 
 public class Detail extends AppCompatActivity
 {
@@ -59,6 +78,10 @@ public class Detail extends AppCompatActivity
     private String path;
     private String filename;
 
+    private HashMap<String, DownloadHolder> fileMapper = new HashMap<>();
+    private HashMap<String, Runnable> mPendingPermissionRequests = new HashMap<>();
+    private static final int PENDING_PERMISSION_REQUESTS = 0;
+
     private BroadcastReceiver downloadReceiver = new BroadcastReceiver()
     {
 
@@ -69,13 +92,18 @@ public class Detail extends AppCompatActivity
             //check if the broadcast message is for our Enqueued download
             long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
 
-            if(referenceId == Detail.this.downloadID)
+            if(referenceId == Detail.this.downloadID && fileMapper.containsKey(String.valueOf(referenceId)))
             {
-
-                Toast.makeText(Detail.this, "File Berhasil Diunduh", Toast.LENGTH_SHORT).show();
-                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename + "_tmp");
-                final File oldFile = new File(path);
+                DownloadHolder holder = fileMapper.remove(String.valueOf(referenceId));
+                final String tmpPath = String.format(Locale.getDefault(), "%s/%s/reference/tmp/%s", Detail.super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, holder.downloadFilename);
+                final File oldFile = new File(holder.realFilename);
                 final File newFile = new File(tmpPath);
+                if(!newFile.exists()){
+                    Toast.makeText(Detail.this, "File gagal diunduh", Toast.LENGTH_SHORT).show();
+                    Detail.this.download.setEnabled(true);
+                    return;
+                }
+
                 if(oldFile.exists())
                 {
                     oldFile.delete();
@@ -83,6 +111,7 @@ public class Detail extends AppCompatActivity
                 newFile.renameTo(oldFile);
                 Detail.this.download.setEnabled(true);
                 Detail.this.checkOfflineData();
+                Toast.makeText(Detail.this, "File Berhasil Diunduh", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -107,6 +136,12 @@ public class Detail extends AppCompatActivity
         this.setToolbar();
         this.setProperty();
         this.setDetail();
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(downloadReceiver);
+        super.onDestroy();
     }
 
     private void setProperty()
@@ -202,6 +237,7 @@ public class Detail extends AppCompatActivity
         super.finish();
     }
 
+    @SuppressLint("StaticFieldLeak")
     @SuppressWarnings("ConstantConditions")
     private void setDetail()
     {
@@ -262,11 +298,11 @@ public class Detail extends AppCompatActivity
         }.execute();
     }
 
-    private void checkFileStatus(@NotNull final ME_Data dbResultData)
+    private void checkFileStatus(final ME_Data dbResultData)
     {
         this.filename = dbResultData.getNo().trim().replaceAll(" ", "_");
         this.filename = filename.replaceAll("[\\p{Punct}&&[^_]]+", "");
-        this.path = String.format(Locale.getDefault(), "%s/%s/reference/%s.pdf", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename);
+        this.path = String.format(Locale.getDefault(), "%s/%s/reference/%s", super.getExternalFilesDir("").toString(), Environment.DIRECTORY_DOWNLOADS, filename);
         final File dlc = new File(path);
 
         if(!dbResultData.getReference().equalsIgnoreCase("null"))
@@ -277,22 +313,12 @@ public class Detail extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    final Uri uri = Uri.parse(dbResultData.getReference());
-                    final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request(uri);
-
-                    //Setting title of request
-                    request.setTitle("Download");
-
-                    //Setting description of request
-                    request.setDescription("Mohon Tunggu");
-
-                    //Set the local destination for the downloaded file to a path within the application's external files directory
-                    request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference", String.format(Locale.getDefault(), "%s_tmp.pdf", finalFilename));
-
-                    //Enqueue download and save the referenceId
-                    Detail.this.download.setEnabled(false);
-                    Detail.this.downloadID = downloadManager.enqueue(request);
+                    newPermissionRequester(
+                            Detail.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,             // permission to request
+                            "Kami membutuhkan permission tersebut untuk menyimpan file",  // explanation to user
+                            () -> doDownload(dbResultData.getReference(), path)
+                    ).run();
                 }
             });
             Detail.this.download.setVisibility(View.VISIBLE);
@@ -306,6 +332,27 @@ public class Detail extends AppCompatActivity
         {
             this.checkOfflineData();
         }
+    }
+
+    private void doDownload(String url, String filename) {
+        final Uri uri = Uri.parse(url);
+        final DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+
+        //Setting title of request
+        request.setTitle("Download");
+
+        //Setting description of request
+        request.setDescription("Mohon Tunggu");
+        String _filename = generateRandomString(32);
+
+        //Set the local destination for the downloaded file to a path within the application's external files directory
+        request.setDestinationInExternalFilesDir(Detail.this, Environment.DIRECTORY_DOWNLOADS + "/reference/tmp", _filename);
+
+        //Enqueue download and save the referenceId
+        Detail.this.download.setEnabled(false);
+        Detail.this.downloadID = downloadManager.enqueue(request);
+        fileMapper.put(String.valueOf(downloadID), new DownloadHolder(filename, _filename));
     }
 
     private void checkOfflineData()
@@ -367,5 +414,59 @@ public class Detail extends AppCompatActivity
         this.setDetail();
 
         super.onPostResume();
+    }
+
+    private Runnable newPermissionRequester(Activity activity, String permission, String explanation, Runnable task) {
+        return () -> {
+            if (ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED) {
+                task.run();
+                return;
+            }
+
+            Runnable requestPermission = () -> {
+                ActivityCompat.requestPermissions(this, new String[] {permission}, PENDING_PERMISSION_REQUESTS);
+                mPendingPermissionRequests.put(permission, task);
+            };
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                // Show an explanation to the user *asynchronously* -- don't block this thread waiting for the user's
+                // response! After the user sees the explanation, try again to request the permission.
+                Snackbar.make(getWindow().getDecorView().getRootView(), explanation, Snackbar.LENGTH_LONG)
+                        .setAction(R.string.request, v -> requestPermission.run())
+                        .show();
+            } else {
+                // No explanation needed, we can request the permission.
+                requestPermission.run();
+            }
+        };
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PENDING_PERMISSION_REQUESTS) {
+            for (int i = 0; i < permissions.length; i++) {
+                String permission = permissions[i];
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mPendingPermissionRequests.containsKey(permission)) {
+                    // permission was granted, yay! Do the task you need to do.
+                    mPendingPermissionRequests.remove(permission).run();
+                }
+            }
+        }
+    }
+
+    private String generateRandomString(int length) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = length;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        String generatedString = buffer.toString();
+        return generatedString;
     }
 }

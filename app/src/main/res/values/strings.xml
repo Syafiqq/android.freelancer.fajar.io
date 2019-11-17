@@ -56,8 +56,12 @@
     <string name="nav_header_dashboard_logo_desc">Logo Desc</string>
     <string name="nav_header_dashboard_drawer_group_rule">Peraturan</string>
     <string name="nav_header_dashboard_drawer_group_technical">Teknis</string>
-    <string name="nav_header_dashboard_drawer_rule_constitution">Undang-Undang/Perpu</string>
-    <string name="nav_header_dashboard_drawer_rule_govrn_rule">Peraturan Pemeritah</string>
+    <string name="nav_header_dashboard_drawer_rule_tap_mpr">TAP MPR</string>
+    <string name="nav_header_dashboard_drawer_rule_uu">UU</string>
+    <string name="nav_header_dashboard_drawer_rule_uu_darurat">UU DARURAT</string>
+    <string name="nav_header_dashboard_drawer_rule_perpu">PERPU</string>
+    <string name="nav_header_dashboard_drawer_rule_pp">PP</string>
+    <string name="nav_header_dashboard_drawer_rule_perpres">PERPRES</string>
     <string name="nav_header_dashboard_drawer_technical_setting">Pengaturan</string>
     <string name="activity_govrn_rule_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_govrn_rule_toolbar_logo_title">Peraturan Pemerintah</string>
@@ -83,4 +87,5 @@
     <string name="content_setting_tv_gplus_label_desc">Kirimkan saran melewati Google Plus</string>
     <string name="global_social_app_chooser_title">Pilih aplikasi untuk melanjutkan</string>
     <string name="global_content_follow_label">Follow us on:</string>
+    <string name="request">Request</string>
 </resources>

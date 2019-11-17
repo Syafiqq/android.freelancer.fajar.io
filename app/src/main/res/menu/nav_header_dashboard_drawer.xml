@@ -4,13 +4,29 @@
     <item android:title="@string/nav_header_dashboard_drawer_group_rule">
         <menu>
             <item
-                android:id="@+id/nav_menu_dashboard_rule_constitution"
+                android:id="@+id/nav_menu_dashboard_rule_tap_mpr"
                 android:icon="@drawable/ic_scale_balance_black_24"
-                android:title="@string/nav_header_dashboard_drawer_rule_constitution"/>
+                android:title="@string/nav_header_dashboard_drawer_rule_tap_mpr"/>
             <item
-                android:id="@+id/nav_menu_dashboard_rule_govrn_rule"
+                android:id="@+id/nav_menu_dashboard_rule_uu"
                 android:icon="@drawable/ic_scale_balance_black_24"
-                android:title="@string/nav_header_dashboard_drawer_rule_govrn_rule"/>
+                android:title="@string/nav_header_dashboard_drawer_rule_uu"/>
+            <item
+                android:id="@+id/nav_menu_dashboard_rule_uu_darurat"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_dashboard_drawer_rule_uu_darurat"/>
+            <item
+                android:id="@+id/nav_menu_dashboard_rule_perpu"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_dashboard_drawer_rule_perpu"/>
+            <item
+                android:id="@+id/nav_menu_dashboard_rule_pp"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_dashboard_drawer_rule_pp"/>
+            <item
+                android:id="@+id/nav_menu_dashboard_rule_perpres"
+                android:icon="@drawable/ic_scale_balance_black_24"
+                android:title="@string/nav_header_dashboard_drawer_rule_perpres"/>
         </menu>
     </item>
 

@@ -15,3 +15,26 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# For volley https://github.com/google/volley/blob/master/consumer-proguard-rules.pro
+-keepclassmembers,allowshrinking,allowobfuscation class com.android.volley.NetworkDispatcher {
+    void processRequest();
+}
+-keepclassmembers,allowshrinking,allowobfuscation class com.android.volley.CacheDispatcher {
+    void processRequest();
+}
+
+# https://github.com/krschultz/android-proguard-snippets/blob/master/libraries/proguard-joda-time.pro
+-dontwarn org.joda.convert.**
+-dontwarn org.joda.time.**
+-keep class org.joda.time.** { *; }
+-keep interface org.joda.time.** { *; }
+
+# html-textview
+# iconics https://github.com/mikepenz/Android-Iconics#proguard
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}
+
+# android-pdf-viewer https://github.com/barteksc/AndroidPdfViewer#proguard
+-keep class com.shockwave.**

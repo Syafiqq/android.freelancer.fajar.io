@@ -9,35 +9,30 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import androidx.annotation.NonNull;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.firebase.entity.VersionEntity;
 import io.localhost.freelancer.statushukum.model.database.DatabaseHelper;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
-import io.localhost.freelancer.statushukum.networking.NetworkConstants;
-import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.util> created by :
@@ -91,7 +86,7 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized void doSync(final Observer clbk, final Activity activity)
+    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, final Activity activity)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
         new AsyncTask<Void, Void, Void>()
@@ -116,11 +111,15 @@ public class Setting
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
                                     {
                                         Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                        if(onFailed != null)
+                                            onFailed.run();
                                     }
                                     break;
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
                                     {
                                         Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                        if(onSuccess != null)
+                                            onSuccess.run();
                                     }
                                     break;
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
@@ -129,7 +128,8 @@ public class Setting
                                     }
                                     break;
                                 }
-                                clbk.update(null, null);
+                                if(onComplete != null)
+                                    onComplete.run();
                             }
                         });
                     }
@@ -159,51 +159,47 @@ public class Setting
             @Override
             public void delegate(Object... data)
             {
-                if(data[0] instanceof JSONObject)
+                if(data[0] instanceof VersionEntity)
                 {
-                    try
+                    Setting.this.getDBVersion((VersionEntity) data[0], new TaskDelegatable()
                     {
-                        Setting.this.getDBVersion(LocalDateTime.parse(((JSONObject) data[0]).getString("timestamp"), timeStampFormat), new TaskDelegatable()
+                        @Override
+                        public void delegate(Object... data)
                         {
-                            @Override
-                            public void delegate(Object... data)
+                            Setting.this.getStreamData((VersionEntity) data[0], (LocalDateTime) data[1], new TaskDelegatable()
                             {
-                                Setting.this.getStreamData((LocalDateTime) data[0], (LocalDateTime) data[1], new TaskDelegatable()
+                                @Override
+                                public void delegate(final Object... data)
                                 {
-                                    @Override
-                                    public void delegate(final Object... data)
+                                    new AsyncTask<Void, Void, Void>()
                                     {
-                                        new AsyncTask<Void, Void, Void>()
-                                        {
 
-                                            @Override
-                                            protected Void doInBackground(Void... params)
-                                            {
-                                                MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
-                                                dataModel.deleteAll();
-                                                Setting.this.insertData((JSONArray) data[0]);
-                                                MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
-                                                tagModel.deleteAll();
-                                                Setting.this.insertTag((JSONArray) data[1]);
-                                                MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
-                                                dataTagModel.deleteAll();
-                                                Setting.this.insertDataTag((JSONArray) data[2]);
-                                                MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
-                                                versionModel.deleteAll();
-                                                Setting.this.insertVersion((JSONArray) data[3]);
-                                                Setting.this.syncObserve.update(null, SYNC_SUCCESS);
-                                                return null;
-                                            }
-                                        }.execute();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                    catch(JSONException e)
-                    {
-                        e.printStackTrace();
-                    }
+                                        @Override
+                                        protected Void doInBackground(Void... params)
+                                        {
+                                            MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                                            dataModel.deleteAll();
+                                            Setting.this.insertData((JSONArray) data[0]);
+                                            MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                                            tagModel.deleteAll();
+                                            Setting.this.insertTag((JSONArray) data[1]);
+                                            MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                                            dataTagModel.deleteAll();
+                                            Setting.this.insertDataTag((JSONArray) data[2]);
+                                            MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
+                                            versionModel.deleteAll();
+                                            Setting.this.insertVersion((JSONArray) data[3]);
+                                            Setting.this.syncObserve.update(null, SYNC_SUCCESS);
+                                            return null;
+                                        }
+                                    }.execute();
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Setting.this.syncObserve.update(null, SYNC_FAILED);
                 }
             }
         });
@@ -295,82 +291,46 @@ public class Setting
         }
     }
 
-    private synchronized void getStreamData(final LocalDateTime serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
+    private synchronized void getStreamData(final VersionEntity serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
-        if(serverVersion.isEqual(dbVersion))
+        LocalDateTime _serverVersion = LocalDateTime.parse(serverVersion.timestamp, timeStampFormat);
+        if(_serverVersion.isEqual(dbVersion))
         {
             Setting.this.syncObserve.update(null, SYNC_EQUAL);
             return;
         }
-        String url = null;
-        try
-        {
-            url = NetworkConstants.API_SITE_URL + "/api/stream?from=" + URLEncoder.encode(dbVersion.toString(timeStampFormat), "UTF-8") + "&to=" + URLEncoder.encode(serverVersion.toString(timeStampFormat), "UTF-8");
-        }
-        catch(UnsupportedEncodingException ignored)
-        {
-            Log.i(CLASS_NAME, "UnsupportedEncodingException");
-            this.syncObserve.update(null, SYNC_FAILED);
-            return;
-        }
-        @NotNull
-        final JsonObjectRequest request = new JsonObjectRequest
-                (
-                        Request.Method.GET,
-                        url,
-                        new Response.Listener<JSONObject>()
+        StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
+
+        final long ONE_MEGABYTE = 10 * 1024 * 1024;
+        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+            try {
+                JSONObject response = new JSONObject(new String(bytes));
+                if(response.has("data"))
+                {
+                    try
+                    {
+                        response = response.getJSONObject("data");
+                        if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
                         {
-                            @Override
-                            public void onResponse(JSONObject response)
-                            {
-                                if(response.has("data"))
-                                {
-                                    try
-                                    {
-                                        response = response.getJSONObject("data");
-                                        if(response.has("data") && response.has("tag") && response.has("datatag"))
-                                        {
-                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                                            return;
-                                        }
-                                    }
-                                    catch(JSONException ignored)
-                                    {
-                                        Log.i(CLASS_NAME, "JSONException");
-                                    }
-                                }
-                                Setting.this.syncObserve.update(null, SYNC_FAILED);
-                            }
-                        },
-                        new Response.ErrorListener()
-                        {
-                            @Override
-                            public void onErrorResponse(VolleyError ignored)
-                            {
-                                Log.i(CLASS_NAME, "onErrorResponse");
-                                Setting.this.syncObserve.update(null, SYNC_FAILED);
-                            }
+                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                            return;
                         }
-                )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                @NotNull
-                final Map<String, String> headers = new LinkedHashMap<>(super.getHeaders());
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                headers.put("X-Requested-With", "XMLHttpRequest");
-                headers.put("X-Request-Access-Certificate", "cb2f4b3f8af65c661f71bef52cb80f4fd2590c0c7e45810573e93d4645cf0b8eca978af15b953dfbc5db2dda33ad66e02477f647e32b5b72a467e3b9f63bcb7e");
-                return headers;
+                    }
+                    catch(JSONException ignored)
+                    {
+                        Log.i(CLASS_NAME, "JSONException");
+                    }
+                }
+            } catch (JSONException ignored) {
             }
-        };
-
-        NetworkRequestQueue.getInstance(this.context).addToRequestQueue(request);
-
+            Setting.this.syncObserve.update(null, SYNC_FAILED);
+        }).addOnFailureListener(exception -> {
+            Setting.this.syncObserve.update(null, SYNC_FAILED);
+        });
     }
 
-    private synchronized void getDBVersion(LocalDateTime serverVersion, TaskDelegatable delegatable)
+    private synchronized void getDBVersion(VersionEntity serverVersion, TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
         if(serverVersion == null)
@@ -394,60 +354,31 @@ public class Setting
     private synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
-        String url = NetworkConstants.API_SITE_URL + "/api/latest";
-        @NotNull
-        final JsonObjectRequest request = new JsonObjectRequest
-                (
-                        Request.Method.GET,
-                        url,
-                        new Response.Listener<JSONObject>()
-                        {
-                            @Override
-                            public void onResponse(JSONObject response)
-                            {
-                                if(response.has("data"))
-                                {
-                                    try
-                                    {
-                                        response = response.getJSONObject("data");
-                                        if(response.has("timestamp"))
-                                        {
-                                            delegatable.delegate(response);
-                                            return;
-                                        }
-                                    }
-                                    catch(JSONException ignored)
-                                    {
-                                        Log.i(CLASS_NAME, "JSONException");
-                                    }
-                                }
-                                Setting.this.syncObserve.update(null, SYNC_FAILED);
-                            }
-                        },
-                        new Response.ErrorListener()
-                        {
-                            @Override
-                            public void onErrorResponse(VolleyError ignored)
-                            {
-                                Log.i(CLASS_NAME, "onErrorResponse");
-                                Setting.this.syncObserve.update(null, SYNC_FAILED);
-                            }
-                        }
-                )
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError
-            {
-                @NotNull
-                final Map<String, String> headers = new LinkedHashMap<>(super.getHeaders());
-                headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                headers.put("X-Requested-With", "XMLHttpRequest");
-                headers.put("X-Request-Access-Certificate", "cb2f4b3f8af65c661f71bef52cb80f4fd2590c0c7e45810573e93d4645cf0b8eca978af15b953dfbc5db2dda33ad66e02477f647e32b5b72a467e3b9f63bcb7e");
-                return headers;
-            }
-        };
 
-        NetworkRequestQueue.getInstance(this.context).addToRequestQueue(request);
+        FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() > 0)
+                {
+                    VersionEntity serverVersion = dataSnapshot.getChildren().iterator().next().getValue(VersionEntity.class);
+                    if(serverVersion != null)
+                    {
+                        delegatable.delegate(serverVersion);
+                        return;
+                    }
+                    Setting.this.syncObserve.update(null, SYNC_FAILED);
+                }
+                else {
+                    Setting.this.syncObserve.update(null, SYNC_FAILED);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(CLASS_NAME, "onErrorResponse");
+                Setting.this.syncObserve.update(null, SYNC_FAILED);
+            }
+        });
     }
 
     private interface TaskDelegatable
