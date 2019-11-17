@@ -13,6 +13,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +37,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public Toolbar toolbar;
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
+    private Law fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,12 +51,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Fragment fragment = null;
             Class fragmentClass;
             fragmentClass = Law.class;
             try
             {
-                fragment = (Fragment) fragmentClass.newInstance();
+                fragment = (Law) fragmentClass.newInstance();
             }
             catch(Exception e)
             {
@@ -131,6 +133,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new Handler().postDelayed(() -> {
+            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_constitution);
+        }, 1000);
     }
 
     private void onTwitterSocialPressed(View view)

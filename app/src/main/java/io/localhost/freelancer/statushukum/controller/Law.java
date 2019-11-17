@@ -143,6 +143,7 @@ public class Law extends Fragment
         if(isLoading == loading) return;
         contentRoot.setVisibility(loading ? View.GONE : View.VISIBLE);
         progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        isLoading = loading;
     }
 
     private void setSearchListAdapter()
@@ -236,6 +237,11 @@ public class Law extends Fragment
         new AsyncTask<Void, Void, Void>()
         {
             @Override
+            protected void onPreExecute() {
+                setLoading(true);
+            }
+
+            @Override
             protected Void doInBackground(Void... voids)
             {
                 final MDM_Data modelData = MDM_Data.getInstance(getContext());
@@ -250,6 +256,7 @@ public class Law extends Fragment
             protected void onPostExecute(Void aVoid)
             {
                 yearAdapter.notifyDataSetChanged();
+                setLoading(false);
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -259,7 +266,12 @@ public class Law extends Fragment
     public void onResume()
     {
         super.onResume();
+    }
 
+    public synchronized void updateCategory(int category, int title) {
+        if(CATEGORY == category) return;
+        CATEGORY = category;
+        listener.onFragmentChangeForTitle(title);
         setYearList();
     }
 
