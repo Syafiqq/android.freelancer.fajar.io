@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,6 +50,9 @@ public class Law extends Fragment
     private View root;
 
     private OnFragmentInteractionListener listener;
+    private View contentRoot;
+    private View progress;
+    private boolean isLoading = false;
 
     public Law()
     {
@@ -71,15 +77,23 @@ public class Law extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        root = inflater.inflate(R.layout.fragment_constitution, container, false);
+        return inflater.inflate(R.layout.fragment_constitution, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        root = view;
+        contentRoot = view.findViewById(R.id.content_root);
+        progress = view.findViewById(R.id.content_progress);
         setProperty();
-        return root;
+        super.onViewCreated(view, savedInstanceState);
     }
 
     private void setProperty()
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
 
+        setLoading(true);
         setSearchListAdapter();
         setYearListAdapter();
 
@@ -123,6 +137,12 @@ public class Law extends Fragment
                 }
             }
         });
+    }
+
+    private void setLoading(boolean loading) {
+        if(isLoading == loading) return;
+        contentRoot.setVisibility(loading ? View.GONE : View.VISIBLE);
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
     }
 
     private void setSearchListAdapter()
