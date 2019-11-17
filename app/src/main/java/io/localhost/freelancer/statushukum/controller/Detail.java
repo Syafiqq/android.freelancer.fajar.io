@@ -386,16 +386,9 @@ public class Detail extends AppCompatActivity
                     }
                     try
                     {
-                        if(intent.resolveActivity(getPackageManager()) != null)
-                        {
-                            startActivity(intent);
-                        }
-                        else
-                        {
-                            final Intent viewer = new Intent(Detail.this, PDFViewer.class);
-                            viewer.putExtra(PDFViewer.EXTRA_URI, path);
-                            Detail.super.startActivity(viewer);
-                        }
+                        final Intent viewer = new Intent(Detail.this, PDFViewer.class);
+                        viewer.putExtra(PDFViewer.EXTRA_URI, path);
+                        Detail.super.startActivity(viewer);
                     }
                     catch(Exception ignored)
                     {
