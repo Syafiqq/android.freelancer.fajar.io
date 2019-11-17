@@ -1,5 +1,6 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,11 +29,12 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
+@SuppressLint("StaticFieldLeak")
 public class Law extends Fragment
 {
     public static final String CLASS_NAME = "Law";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
-    public static final int CATEGORY = 1;
+    public static int CATEGORY = -1;
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
