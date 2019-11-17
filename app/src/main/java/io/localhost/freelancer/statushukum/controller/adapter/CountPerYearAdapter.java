@@ -37,7 +37,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context context;
-    private final int category;
+    private int category;
 
     public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
     {
@@ -83,6 +83,10 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public int getItemCount()
     {
         return this.countPerYear.size();
+    }
+
+    public void setCategory(int category) {
+        this.category = category;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener

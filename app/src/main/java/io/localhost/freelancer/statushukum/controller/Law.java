@@ -275,6 +275,7 @@ public class Law extends Fragment
     public synchronized void updateCategory(int category, int title) {
         if(CATEGORY == category) return;
         CATEGORY = category;
+        yearAdapter.setCategory(CATEGORY);
         listener.onFragmentChangeForTitle(title);
         setYearList();
     }

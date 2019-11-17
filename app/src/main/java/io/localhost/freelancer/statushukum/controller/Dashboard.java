@@ -65,6 +65,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
         }
+
+        new Handler().postDelayed(() -> {
+            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+        }, 1000);
     }
 
     @Override
@@ -133,14 +137,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        new Handler().postDelayed(() -> {
-            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-        }, 1000);
     }
 
     private void onTwitterSocialPressed(View view)
