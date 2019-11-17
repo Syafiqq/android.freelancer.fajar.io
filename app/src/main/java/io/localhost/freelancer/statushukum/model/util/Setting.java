@@ -302,7 +302,7 @@ public class Setting
         }
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
-        final long ONE_MEGABYTE = 1024 * 1024;
+        final long ONE_MEGABYTE = 10 * 1024 * 1024;
         islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
             try {
                 JSONObject response = new JSONObject(new String(bytes));
