@@ -139,7 +139,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     protected void onResume() {
         super.onResume();
         new Handler().postDelayed(() -> {
-            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_constitution);
+            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
         }, 1000);
     }
 
@@ -216,12 +216,30 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
-            case R.id.nav_menu_dashboard_rule_constitution:
+            case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
+                fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
             }
             break;
-            case R.id.nav_menu_dashboard_rule_govrn_rule:
+            case R.id.nav_menu_dashboard_rule_uu:
             {
+                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu);
+            }
+            case R.id.nav_menu_dashboard_rule_uu_darurat:
+            {
+                fragment.updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
+            }
+            case R.id.nav_menu_dashboard_rule_perpu:
+            {
+                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_perpu);
+            }
+            case R.id.nav_menu_dashboard_rule_pp:
+            {
+                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_pp);
+            }
+            case R.id.nav_menu_dashboard_rule_perpres:
+            {
+                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_perpres);
             }
             break;
             case R.id.nav_menu_dashboard_sync:
