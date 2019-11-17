@@ -137,6 +137,14 @@ public class Law extends Fragment
                 }
             }
         });
+        View searchRoot = root.findViewById(R.id.search_root);
+        searchRoot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search.setIconified(false);
+                search.performClick();
+            }
+        });
     }
 
     private void setLoading(boolean loading) {
