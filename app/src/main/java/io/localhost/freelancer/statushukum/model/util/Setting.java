@@ -328,7 +328,7 @@ public class Setting
                                     try
                                     {
                                         response = response.getJSONObject("data");
-                                        if(response.has("data") && response.has("tag") && response.has("datatag"))
+                                        if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
                                         {
                                             delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
                                             return;
