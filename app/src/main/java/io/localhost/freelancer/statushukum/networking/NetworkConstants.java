@@ -1,7 +1,7 @@
 package io.localhost.freelancer.statushukum.networking;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This <TestOAuth_001> project in package <id.ac.ub.filkom.se.kcv.testoauth_001.model.networking> created by :
@@ -22,7 +22,6 @@ public class NetworkConstants
         NetworkConstants.API_SITE_URL = "http://status-hukum.esy.es/";
     }
 
-    @org.jetbrains.annotations.Contract(pure = true)
     public static String getURL(@NonNull String domain, @NonNull String path, @Nullable String data)
     {
         return domain + path + (data == null ? "" : "?" + data);

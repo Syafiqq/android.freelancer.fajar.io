@@ -1,10 +1,10 @@
 package io.localhost.freelancer.statushukum.controller;
 
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -42,14 +42,11 @@ public class Setting extends AppCompatActivity
                 if(progress.getVisibility() == View.GONE)
                 {
                     progress.setVisibility(View.VISIBLE);
-                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
-                    {
-                        @Override
-                        public void update(Observable o, Object arg)
-                        {
-                            progress.setVisibility(View.GONE);
-                        }
-                    }, Setting.this);
+                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                            null,
+                            null,
+                            () -> progress.setVisibility(View.GONE),
+                            Setting.this);
                 }
             }
         });

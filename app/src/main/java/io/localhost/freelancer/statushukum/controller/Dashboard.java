@@ -3,16 +3,18 @@ package io.localhost.freelancer.statushukum.controller;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -25,7 +27,7 @@ import java.util.Observer;
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constitution.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Law.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
@@ -34,6 +36,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public Toolbar toolbar;
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
+    private Law fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,12 +50,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Fragment fragment = null;
             Class fragmentClass;
-            fragmentClass = Constitution.class;
+            fragmentClass = Law.class;
             try
             {
-                fragment = (Fragment) fragmentClass.newInstance();
+                fragment = (Law) fragmentClass.newInstance();
             }
             catch(Exception e)
             {
@@ -62,6 +64,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
         }
+
+        new Handler().postDelayed(() -> {
+            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+        }, 1000);
     }
 
     @Override
@@ -205,14 +211,34 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
-            case R.id.nav_menu_dashboard_rule_constitution:
+            case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
-                this.changeLayout(Constitution.class);
+                fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
             }
             break;
-            case R.id.nav_menu_dashboard_rule_govrn_rule:
+            case R.id.nav_menu_dashboard_rule_uu:
             {
-                this.changeLayout(GovrnRule.class);
+                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_uu_darurat:
+            {
+                fragment.updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_perpu:
+            {
+                fragment.updateCategory(4, R.string.nav_header_dashboard_drawer_rule_perpu);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_pp:
+            {
+                fragment.updateCategory(5, R.string.nav_header_dashboard_drawer_rule_pp);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_perpres:
+            {
+                fragment.updateCategory(6, R.string.nav_header_dashboard_drawer_rule_perpres);
             }
             break;
             case R.id.nav_menu_dashboard_sync:
@@ -220,14 +246,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 this.onBackPressed();
 
                 this.progressBar.show();
-                io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
-                {
-                    @Override
-                    public void update(Observable o, Object arg)
-                    {
-                        Dashboard.this.progressBar.dismiss();
-                    }
-                }, Dashboard.this);
+                io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                        () -> new Handler().postDelayed(() -> fragment.updateCategory(), 500),
+                        null,
+                        () -> Dashboard.this.progressBar.dismiss(),
+                        Dashboard.this);
                 return true;
             }
         }

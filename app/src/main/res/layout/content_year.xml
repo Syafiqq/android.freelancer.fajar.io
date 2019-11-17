@@ -15,7 +15,7 @@
     tools:context="io.localhost.freelancer.statushukum.controller.Year"
     tools:showIn="@layout/activity_year">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/content_year_recycle_view_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
