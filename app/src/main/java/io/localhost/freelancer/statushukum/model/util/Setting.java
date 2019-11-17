@@ -86,7 +86,7 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized void doSync(final Observer clbk, final Activity activity)
+    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, final Activity activity)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
         new AsyncTask<Void, Void, Void>()
@@ -111,11 +111,15 @@ public class Setting
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
                                     {
                                         Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                                        if(onFailed != null)
+                                            onFailed.run();
                                     }
                                     break;
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
                                     {
                                         Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                                        if(onSuccess != null)
+                                            onSuccess.run();
                                     }
                                     break;
                                     case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
@@ -124,7 +128,8 @@ public class Setting
                                     }
                                     break;
                                 }
-                                clbk.update(null, null);
+                                if(onComplete != null)
+                                    onComplete.run();
                             }
                         });
                     }

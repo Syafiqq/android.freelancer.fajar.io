@@ -247,14 +247,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 this.onBackPressed();
 
                 this.progressBar.show();
-                io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
-                {
-                    @Override
-                    public void update(Observable o, Object arg)
-                    {
-                        Dashboard.this.progressBar.dismiss();
-                    }
-                }, Dashboard.this);
+                io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                        () -> new Handler().postDelayed(() -> fragment.updateCategory(), 500),
+                        null,
+                        () -> Dashboard.this.progressBar.dismiss(),
+                        Dashboard.this);
                 return true;
             }
         }

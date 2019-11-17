@@ -43,14 +43,11 @@ public class Setting extends AppCompatActivity
                 if(progress.getVisibility() == View.GONE)
                 {
                     progress.setVisibility(View.VISIBLE);
-                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(new Observer()
-                    {
-                        @Override
-                        public void update(Observable o, Object arg)
-                        {
-                            progress.setVisibility(View.GONE);
-                        }
-                    }, Setting.this);
+                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                            null,
+                            null,
+                            () -> progress.setVisibility(View.GONE),
+                            Setting.this);
                 }
             }
         });
