@@ -88,7 +88,7 @@ public class Setting
 
     public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, final Activity activity)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+
         new AsyncTask<Void, Void, Void>()
         {
             private Observer callback;
@@ -293,7 +293,7 @@ public class Setting
 
     private synchronized void getStreamData(final VersionEntity serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
+
         LocalDateTime _serverVersion = LocalDateTime.parse(serverVersion.timestamp, timeStampFormat);
         if(_serverVersion.isEqual(dbVersion))
         {
@@ -319,7 +319,7 @@ public class Setting
                     }
                     catch(JSONException ignored)
                     {
-                        Log.i(CLASS_NAME, "JSONException");
+
                     }
                 }
             } catch (JSONException ignored) {
@@ -353,7 +353,7 @@ public class Setting
 
     private synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
+
 
         FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -375,7 +375,7 @@ public class Setting
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i(CLASS_NAME, "onErrorResponse");
+
                 Setting.this.syncObserve.update(null, SYNC_FAILED);
             }
         });
