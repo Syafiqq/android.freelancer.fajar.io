@@ -32,7 +32,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -358,7 +361,6 @@ public class Detail extends AppCompatActivity
     {
         if(this.path != null)
         {
-            final File dlc = new File(path);
             Detail.this.open.setVisibility(View.VISIBLE);
             Detail.this.download.setVisibility(View.VISIBLE);
             Detail.this.open.setOnClickListener(new View.OnClickListener()
@@ -366,32 +368,26 @@ public class Detail extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    Intent intent;
-                    if(Build.VERSION.SDK_INT < 24)
-                    {
-                        intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.fromFile(dlc), "application/pdf");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    }
-                    else
-                    {
-                        intent = new Intent();
-                        intent.setAction(Intent.ACTION_VIEW);
-                        Uri pdfURI = FileProvider.getUriForFile(Detail.this, Detail.super.getApplicationContext().getPackageName() + ".provider", dlc);
-                        intent.putExtra(Intent.EXTRA_STREAM, pdfURI);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        intent.setType("application/pdf");
-                    }
                     try
                     {
+                        InputStream iStream = getContentResolver().openInputStream(Uri.fromFile(new File(path)));
+                        if(iStream == null) {
+                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        byte[] inputData = getBytes(iStream);
+                        if(inputData == null) {
+                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         final Intent viewer = new Intent(Detail.this, PDFViewer.class);
-                        viewer.putExtra(PDFViewer.EXTRA_URI, path);
+                        viewer.putExtra(PDFViewer.EXTRA_URI, inputData);
                         Detail.super.startActivity(viewer);
                     }
-                    catch(Exception ignored)
+                    catch(Exception e)
                     {
+
+                        Toast.makeText(Detail.this, "Cannot parse file", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -459,5 +455,20 @@ public class Detail extends AppCompatActivity
         }
         String generatedString = buffer.toString();
         return generatedString;
+    }
+
+    public byte[] getBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            byteBuffer.write(buffer, 0, len);
+        }
+        byte[] tmp = byteBuffer.toByteArray();
+        inputStream.close();
+        byteBuffer.close();
+        return tmp;
     }
 }
