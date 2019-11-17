@@ -26,7 +26,7 @@ import java.util.Observer;
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Constitution.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Law.OnFragmentInteractionListener, GovrnRule.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
@@ -50,7 +50,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             Fragment fragment = null;
             Class fragmentClass;
-            fragmentClass = Constitution.class;
+            fragmentClass = Law.class;
             try
             {
                 fragment = (Fragment) fragmentClass.newInstance();
@@ -208,7 +208,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             case R.id.nav_menu_dashboard_rule_constitution:
             {
-                this.changeLayout(Constitution.class);
+                this.changeLayout(Law.class);
             }
             break;
             case R.id.nav_menu_dashboard_rule_govrn_rule:

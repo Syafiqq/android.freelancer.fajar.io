@@ -28,10 +28,10 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
-public class Constitution extends Fragment
+public class Law extends Fragment
 {
-    public static final String CLASS_NAME = "Constitution";
-    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Constitution";
+    public static final String CLASS_NAME = "Law";
+    public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
     public static final int CATEGORY = 1;
 
     private CountPerYearAdapter yearAdapter;
@@ -46,14 +46,14 @@ public class Constitution extends Fragment
 
     private OnFragmentInteractionListener listener;
 
-    public Constitution()
+    public Law()
     {
         // Required empty public constructor
     }
 
-    public static Constitution newInstance()
+    public static Law newInstance()
     {
-        Constitution fragment = new Constitution();
+        Law fragment = new Law();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
