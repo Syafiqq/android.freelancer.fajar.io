@@ -73,7 +73,6 @@ public class Law extends Fragment
     {
         root = inflater.inflate(R.layout.fragment_constitution, container, false);
         setProperty();
-        listener.onFragmentChangeForTitle(R.string.nav_header_dashboard_drawer_rule_constitution);
         return root;
     }
 
