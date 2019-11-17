@@ -225,18 +225,22 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             {
                 fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu);
             }
+            break;
             case R.id.nav_menu_dashboard_rule_uu_darurat:
             {
                 fragment.updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
             }
+            break;
             case R.id.nav_menu_dashboard_rule_perpu:
             {
                 fragment.updateCategory(4, R.string.nav_header_dashboard_drawer_rule_perpu);
             }
+            break;
             case R.id.nav_menu_dashboard_rule_pp:
             {
                 fragment.updateCategory(5, R.string.nav_header_dashboard_drawer_rule_pp);
             }
+            break;
             case R.id.nav_menu_dashboard_rule_perpres:
             {
                 fragment.updateCategory(6, R.string.nav_header_dashboard_drawer_rule_perpres);

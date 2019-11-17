@@ -244,6 +244,10 @@ public class Law extends Fragment
             @Override
             protected Void doInBackground(Void... voids)
             {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
                 final MDM_Data modelData = MDM_Data.getInstance(getContext());
                 final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
                 yearList.clear();
