@@ -388,6 +388,7 @@ public class Detail extends AppCompatActivity
                     catch(Exception e)
                     {
                         Log.e("ErrorPDF", e.getMessage());
+                        Toast.makeText(Detail.this, "Cannot parse file", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
