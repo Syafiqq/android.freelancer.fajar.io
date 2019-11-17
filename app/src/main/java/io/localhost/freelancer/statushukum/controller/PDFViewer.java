@@ -10,10 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.github.barteksc.pdfviewer.PDFView;
-
-import java.io.File;
 
 import io.localhost.freelancer.statushukum.R;
 
@@ -21,11 +20,11 @@ public class PDFViewer extends AppCompatActivity
 {
     public static final String CLASS_NAME = "PDFViewer";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.PDFViewer";
-    public static final String EXTRA_URI = "uri";
+    public static final String EXTRA_URI = "data";
 
 
     private PDFView view;
-    private String uri;
+    private byte[] data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -34,7 +33,7 @@ public class PDFViewer extends AppCompatActivity
         setContentView(R.layout.activity_pdf_viewer);
 
         final Intent intent = getIntent();
-        this.uri = intent.getStringExtra(PDFViewer.EXTRA_URI);
+        this.data = intent.getByteArrayExtra(PDFViewer.EXTRA_URI);
 
         this.setToolbar();
         this.setProperty();
@@ -43,10 +42,9 @@ public class PDFViewer extends AppCompatActivity
 
     private void setPDF()
     {
-        final File dlc = new File(this.uri);
-        if(dlc.exists())
+        if(data != null)
         {
-            this.view.fromFile(dlc)
+            this.view.fromBytes(data)
                      .enableSwipe(true) // allows to block changing pages using swipe
                      .swipeHorizontal(false)
                      .enableDoubletap(true)
@@ -56,6 +54,8 @@ public class PDFViewer extends AppCompatActivity
                      .scrollHandle(null)
                      .enableAntialiasing(true) // improve rendering a little bit on low-res screens
                      .load();
+        } else {
+            Toast.makeText(this, "Cannot open file", Toast.LENGTH_SHORT).show();
         }
     }
 
