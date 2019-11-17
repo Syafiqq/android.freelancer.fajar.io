@@ -193,7 +193,9 @@ public class Setting
                         }
                     });
                 }
-                Setting.this.syncObserve.update(null, SYNC_FAILED);
+                else {
+                    Setting.this.syncObserve.update(null, SYNC_FAILED);
+                }
             }
         });
     }
