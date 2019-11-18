@@ -30,7 +30,7 @@ public class TapMprTest {
     public void test_it_should_get_list_of_tap_mpr() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        String url = generateUrl();
+        String url = generateUrl(null);
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
         JsonObjectRequest request = new JsonObjectRequest
@@ -48,7 +48,7 @@ public class TapMprTest {
         }
     }
 
-    private String generateUrl() {
+    private String generateUrl(String offset) {
         //":///v0/appCjxqN70qCRThpX/TAP%20MPR"
         Uri.Builder builder = new Uri.Builder();
         builder.scheme("https")
@@ -62,6 +62,9 @@ public class TapMprTest {
                 .appendQueryParameter("fields", "DOWNLOAD")
                 .appendQueryParameter("view", "Grid view")
                 .appendQueryParameter("api_key", "keypy7sFHBs2xvvSe");
+        if(offset != null) {
+            builder.appendQueryParameter("offset", offset);
+        }
         return builder.build().toString();
     }
 }
