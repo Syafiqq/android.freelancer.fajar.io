@@ -11,6 +11,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,38 @@ public class TapMprTest {
         } catch (ExecutionException e) {
             // exception handling
         }
+    }
+
+
+    @Test
+    public void test_it_should_get_list_of_tap_mpr_recursively() throws Exception {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
+        callRequestRecursive(context, null);
+    }
+
+    private void callRequestRecursive(Context context, String offset) {
+        String url = generateUrl(offset);
+
+        RequestFuture<JSONObject> future = RequestFuture.newFuture();
+        JsonObjectRequest request = new JsonObjectRequest
+                (Request.Method.GET, url, null, future, future);
+
+        VolleyUtil.getInstance(context).addToRequestQueue(request);
+
+        try {
+            JSONObject response = future.get(); // this will block
+            if(response.has("offset")){
+                callRequestRecursive(context, response.getString("offset"));
+            }
+        } catch (InterruptedException e) {
+            int a = 10;
+        } catch (ExecutionException e) {
+            int a = 10;
+        } catch (JSONException e) {
+            int a = 10;
+        }
+
     }
 
     private String generateUrl(String offset) {
