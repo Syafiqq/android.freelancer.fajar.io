@@ -69,6 +69,7 @@ public class TapMprTest {
         try {
             JSONObject response = future.get(); // this will block
             if(response.has("offset")){
+                Thread.sleep(250);
                 callRequestRecursive(context, response.getString("offset"));
             }
         } catch (InterruptedException e) {
