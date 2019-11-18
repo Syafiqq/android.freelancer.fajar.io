@@ -2,6 +2,7 @@ package io.localhost.freelancer.statushukum.airtable.hukumpro;
 
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -11,13 +12,19 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.RequestFuture;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.networking.VolleyUtil;
 
 /**
@@ -27,6 +34,7 @@ import io.localhost.freelancer.statushukum.networking.VolleyUtil;
  */
 @RunWith(AndroidJUnit4.class)
 public class TapMprTest {
+    private Pattern yearPattern = Pattern.compile("Tahun ([0-9]{4})", Pattern.CASE_INSENSITIVE);
     @Test
     public void test_it_should_get_list_of_tap_mpr() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -54,10 +62,12 @@ public class TapMprTest {
     public void test_it_should_get_list_of_tap_mpr_recursively() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        callRequestRecursive(context, null);
+        LinkedList<ME_Data> list = new LinkedList<>();
+        callRequestRecursive(context, null, list);
+        list = list;
     }
 
-    private void callRequestRecursive(Context context, String offset) {
+    private void callRequestRecursive(Context context, String offset, List<ME_Data> collector) {
         String url = generateUrl(offset);
 
         RequestFuture<JSONObject> future = RequestFuture.newFuture();
@@ -68,9 +78,33 @@ public class TapMprTest {
 
         try {
             JSONObject response = future.get(); // this will block
+            if(response.has("records")){
+                JSONArray records = response.optJSONArray("records");
+                if(records != null)
+                    for (int i = -1, is = records.length(); ++i < is;) {
+                        JSONObject record = records.optJSONObject(i);
+                        if(record != null) {
+                            JSONObject fields = record.optJSONObject("fields");
+                            if(fields != null) {
+                                String rawYear = parseSingle(fields.optString("NOMOR", ""), yearPattern);
+                                int year = parseInt(rawYear, -1);
+                                if(year == -1) continue;
+                                collector.add(new ME_Data(
+                                        0,
+                                        year,
+                                        sanitizeString(fields.optString("NOMOR")),
+                                        sanitizeString(fields.optString("TENTANG")),
+                                        sanitizeString(fields.optString("STATUS")),
+                                        1,
+                                        sanitizeString(fields.optString("DOWNLOAD"))
+                                ));
+                            }
+                        }
+                    }
+            }
             if(response.has("offset")){
-                Thread.sleep(250);
-                callRequestRecursive(context, response.getString("offset"));
+                Thread.sleep(400);
+                callRequestRecursive(context, response.getString("offset"), collector);
             }
         } catch (InterruptedException e) {
             int a = 10;
@@ -100,5 +134,36 @@ public class TapMprTest {
             builder.appendQueryParameter("offset", offset);
         }
         return builder.build().toString();
+    }
+
+    private String parseSingle(String value, Pattern pattern) {
+        final Matcher m = pattern.matcher(value);
+
+        if (m.find()) {
+            try {
+                return m.group(1);
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    private int parseInt(String s, int defaultVal) {
+        try {
+            return Integer.parseInt(s);
+        } catch (Exception ignored) {
+            return defaultVal;
+        }
+    }
+
+    private String sanitizeString(String s) {
+        if(s == null)
+            return null;
+        else {
+            String t = s.trim();
+            if(TextUtils.isEmpty(t))
+                return null;
+            return t;
+        }
     }
 }
