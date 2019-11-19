@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import io.localhost.freelancer.statushukum.model.converter.JsonObjectToMeData;
 import io.localhost.freelancer.statushukum.model.proceeder.AirTableResponseProceeder;
 
-public class AirtableDataFetcherTask extends AsyncTask<Void, Void, AirtableDataFetcherTask> {
+public class AirtableDataFetcherTask {
     private RequestQueue queue;
     private List<JSONObject> data;
     private Exception ex;
@@ -30,16 +30,14 @@ public class AirtableDataFetcherTask extends AsyncTask<Void, Void, AirtableDataF
         this.queue = queue;
     }
 
-    @Override
     protected void onPreExecute() {
         data = new LinkedList<>();
         converter = new JsonObjectToMeData(0);
         proceeder = new AirTableResponseProceeder(converter, data);
     }
 
-    @Override
     protected AirtableDataFetcherTask doInBackground(Void... voids) {
-        String[] tables = {"TAP MPR", "UU", "UU DARURAT", "PERPU", "PP", "PERPRES"};
+        String[] tables = {"TAP MPR"};
         for (int i = 0; i < tables.length; i++) {
             String table = tables[i];
             LinkedList<JSONObject> tempStorage = new LinkedList<>();
@@ -116,5 +114,9 @@ public class AirtableDataFetcherTask extends AsyncTask<Void, Void, AirtableDataF
             builder.appendQueryParameter("offset", offset);
         }
         return builder.build().toString();
+    }
+
+    private boolean isCancelled() {
+        return false;
     }
 }
