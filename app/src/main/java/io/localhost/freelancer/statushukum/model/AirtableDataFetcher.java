@@ -1,7 +1,6 @@
 package io.localhost.freelancer.statushukum.model;
 
 import android.net.Uri;
-import android.os.AsyncTask;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,14 +18,14 @@ import java.util.concurrent.ExecutionException;
 import io.localhost.freelancer.statushukum.model.converter.JsonObjectToMeData;
 import io.localhost.freelancer.statushukum.model.proceeder.AirTableResponseProceeder;
 
-public class AirtableDataFetcherTask {
+public class AirtableDataFetcher {
     private RequestQueue queue;
     private List<JSONObject> data;
     private Exception ex;
     private JsonObjectToMeData converter;
     private AirTableResponseProceeder proceeder;
 
-    public AirtableDataFetcherTask(RequestQueue queue) {
+    public AirtableDataFetcher(RequestQueue queue) {
         this.queue = queue;
     }
 
@@ -36,7 +35,7 @@ public class AirtableDataFetcherTask {
         proceeder = new AirTableResponseProceeder(converter, data);
     }
 
-    public AirtableDataFetcherTask doInBackground(Void... voids) {
+    public AirtableDataFetcher doInBackground(Void... voids) {
         String[] tables = {"TAP MPR"};
         for (int i = 0; i < tables.length; i++) {
             String table = tables[i];
