@@ -22,7 +22,7 @@ public class AirtableDataFetcher {
     private final InteractionListener listener;
     private RequestQueue queue;
     private List<JSONObject> data;
-    private Exception ex;
+    public Exception ex;
     private JsonObjectToMeData converter;
     private AirTableResponseProceeder proceeder;
 
