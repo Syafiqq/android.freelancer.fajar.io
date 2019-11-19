@@ -26,6 +26,7 @@ public class JsonObjectToMeData implements GenericJsonObjectConverter<ME_Data> {
 
     @Override
     public ME_Data to(JSONObject object) {
+        if(object == null) return null;
         String rawYear = StringHelper.captureSingleValue(object.optString("NOMOR", ""), yearPattern);
         int year = IntegerHelper.parseIntOrDefault(rawYear, -1);
         if (year == -1) return null;
