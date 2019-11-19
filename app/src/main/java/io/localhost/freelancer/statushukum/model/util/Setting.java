@@ -28,11 +28,14 @@ import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.firebase.entity.VersionEntity;
+import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
+import io.localhost.freelancer.statushukum.model.AirtableDataFetcherTask;
 import io.localhost.freelancer.statushukum.model.database.DatabaseHelper;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
+import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.util> created by :
@@ -154,55 +157,23 @@ public class Setting
     public synchronized void doSync(final Observer message)
     {
         this.syncObserve = message;
-        this.getServerVersion(new TaskDelegatable()
-        {
+        new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
             @Override
-            public void delegate(Object... data)
-            {
-                if(data[0] instanceof VersionEntity)
-                {
-                    Setting.this.getDBVersion((VersionEntity) data[0], new TaskDelegatable()
-                    {
-                        @Override
-                        public void delegate(Object... data)
-                        {
-                            Setting.this.getStreamData((VersionEntity) data[0], (LocalDateTime) data[1], new TaskDelegatable()
-                            {
-                                @Override
-                                public void delegate(final Object... data)
-                                {
-                                    new AsyncTask<Void, Void, Void>()
-                                    {
-
-                                        @Override
-                                        protected Void doInBackground(Void... params)
-                                        {
-                                            MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
-                                            dataModel.deleteAll();
-                                            Setting.this.insertData((JSONArray) data[0]);
-                                            MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
-                                            tagModel.deleteAll();
-                                            Setting.this.insertTag((JSONArray) data[1]);
-                                            MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
-                                            dataTagModel.deleteAll();
-                                            Setting.this.insertDataTag((JSONArray) data[2]);
-                                            MDM_Version versionModel = MDM_Version.getInstance(Setting.this.context);
-                                            versionModel.deleteAll();
-                                            Setting.this.insertVersion((JSONArray) data[3]);
-                                            Setting.this.syncObserve.update(null, SYNC_SUCCESS);
-                                            return null;
-                                        }
-                                    }.execute();
-                                }
-                            });
-                        }
-                    });
-                }
-                else {
+            protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
+                if(airtableDataFetcher == null || this.isCancelled() || airtableDataFetcher.ex != null){
                     Setting.this.syncObserve.update(null, SYNC_FAILED);
+                } else {
+                    MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                    dataModel.deleteAll();
+                    Setting.this.insertData(airtableDataFetcher.getData());
+                    MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                    tagModel.deleteAll();
+                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                    dataTagModel.deleteAll();
+                    Setting.this.syncObserve.update(null, SYNC_SUCCESS);
                 }
             }
-        });
+        }.execute();
     }
 
     private void insertVersion(JSONArray version)
