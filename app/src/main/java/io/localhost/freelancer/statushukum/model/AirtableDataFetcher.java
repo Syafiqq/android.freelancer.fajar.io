@@ -19,14 +19,16 @@ import io.localhost.freelancer.statushukum.model.converter.JsonObjectToMeData;
 import io.localhost.freelancer.statushukum.model.proceeder.AirTableResponseProceeder;
 
 public class AirtableDataFetcher {
+    private final InteractionListener listener;
     private RequestQueue queue;
     private List<JSONObject> data;
     private Exception ex;
     private JsonObjectToMeData converter;
     private AirTableResponseProceeder proceeder;
 
-    public AirtableDataFetcher(RequestQueue queue) {
+    public AirtableDataFetcher(RequestQueue queue, InteractionListener listener) {
         this.queue = queue;
+        this.listener = listener;
     }
 
     public void onPreExecute() {
@@ -47,13 +49,13 @@ public class AirtableDataFetcher {
             for (int r1 = 0; r1 < 3; r1++) {
                 tempStorage.clear();
 
-                if (this.isCancelled()) return this;
+                if (this.listener.isCancelled()) return this;
                 try {
                     callRequestRecursive(table, null);
                     Thread.sleep(400);
                     break;
                 } catch (Exception e) {
-                    if(isCancelled()) {
+                    if(this.listener.isCancelled()) {
                         return this;
                     }
                     if (r1 == 2) {
@@ -88,6 +90,8 @@ public class AirtableDataFetcher {
         proceeder.proceed(response);
         if (response.has("offset")) {
             Thread.sleep(400);
+            if(this.listener.isCancelled())
+                throw new InterruptedException();
             callRequestRecursive(table, response.getString("offset"));
         }
     }
@@ -115,7 +119,7 @@ public class AirtableDataFetcher {
         return builder.build().toString();
     }
 
-    private boolean isCancelled() {
-        return false;
+    static interface InteractionListener {
+        boolean isCancelled();
     }
 }
