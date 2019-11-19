@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import com.android.volley.RequestQueue;
 
 public class AirtableDataFetcherTask extends AsyncTask<Void, Void, AirtableDataFetcher> implements AirtableDataFetcher.InteractionListener {
-    AirtableDataFetcher fetcher;
+    private AirtableDataFetcher fetcher;
 
     public AirtableDataFetcherTask(RequestQueue queue) {
         fetcher = new AirtableDataFetcher(queue, this);
