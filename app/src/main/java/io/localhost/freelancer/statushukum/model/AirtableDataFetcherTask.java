@@ -37,7 +37,7 @@ public class AirtableDataFetcherTask {
     }
 
     public AirtableDataFetcherTask doInBackground(Void... voids) {
-        String[] tables = {"TAP MPR", "UU", "UU DARURAT", "PERPU", "PP", "PERPRES"};
+        String[] tables = {"TAP MPR"};
         for (int i = 0; i < tables.length; i++) {
             String table = tables[i];
             LinkedList<JSONObject> tempStorage = new LinkedList<>();
