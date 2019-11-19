@@ -160,7 +160,7 @@ public class Setting
         new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
             @Override
             protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
-                if(airtableDataFetcher == null || this.isCancelled()){
+                if(airtableDataFetcher == null || this.isCancelled() || airtableDataFetcher.ex != null){
                     Setting.this.syncObserve.update(null, SYNC_FAILED);
                 } else {
                     MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
