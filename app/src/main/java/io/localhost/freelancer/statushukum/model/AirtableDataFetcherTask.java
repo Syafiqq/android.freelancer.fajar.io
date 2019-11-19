@@ -30,14 +30,14 @@ public class AirtableDataFetcherTask {
         this.queue = queue;
     }
 
-    protected void onPreExecute() {
+    public void onPreExecute() {
         data = new LinkedList<>();
         converter = new JsonObjectToMeData(0);
         proceeder = new AirTableResponseProceeder(converter, data);
     }
 
-    protected AirtableDataFetcherTask doInBackground(Void... voids) {
-        String[] tables = {"TAP MPR"};
+    public AirtableDataFetcherTask doInBackground(Void... voids) {
+        String[] tables = {"TAP MPR", "UU", "UU DARURAT", "PERPU", "PP", "PERPRES"};
         for (int i = 0; i < tables.length; i++) {
             String table = tables[i];
             LinkedList<JSONObject> tempStorage = new LinkedList<>();
