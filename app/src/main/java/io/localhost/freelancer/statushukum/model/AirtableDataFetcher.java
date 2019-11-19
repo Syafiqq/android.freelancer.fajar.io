@@ -119,7 +119,7 @@ public class AirtableDataFetcher {
         return builder.build().toString();
     }
 
-    static interface InteractionListener {
+    public static interface InteractionListener {
         boolean isCancelled();
     }
 }
