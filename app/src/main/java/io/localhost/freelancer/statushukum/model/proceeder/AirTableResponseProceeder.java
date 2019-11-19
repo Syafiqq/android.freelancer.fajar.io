@@ -9,6 +9,7 @@ import io.localhost.freelancer.statushukum.model.converter.GenericJsonObjectConv
 
 public class AirTableResponseProceeder implements GenericProceeder<JSONObject> {
     private GenericJsonObjectConverter<? extends JSONObject> objectConverter;
+
     private List<JSONObject> collector;
 
     public AirTableResponseProceeder(GenericJsonObjectConverter<? extends JSONObject> objectConverter, List<JSONObject> collector) {
@@ -22,6 +23,14 @@ public class AirTableResponseProceeder implements GenericProceeder<JSONObject> {
 
     public void setObjectConverter(GenericJsonObjectConverter<? extends JSONObject> objectConverter) {
         this.objectConverter = objectConverter;
+    }
+
+    public List<JSONObject> getCollector() {
+        return collector;
+    }
+
+    public void setCollector(List<JSONObject> collector) {
+        this.collector = collector;
     }
 
     @Override
