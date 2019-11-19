@@ -51,6 +51,7 @@ public class Setting
     public static final int SYNC_FAILED = 0;
     public static final int SYNC_SUCCESS = 1;
     public static final int SYNC_EQUAL = 2;
+    public static final int SYNC_CANCELLED = 3;
 
 
     public static final DateTimeFormatter timeStampFormat = DateTimeFormat.forPattern(DatabaseHelper.TIMESTAMP_FORMAT);
@@ -130,6 +131,11 @@ public class Setting
                                         Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
                                     }
                                     break;
+                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_CANCELLED:
+                                    {
+                                        Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
                                 }
                                 if(onComplete != null)
                                     onComplete.run();
@@ -160,8 +166,11 @@ public class Setting
         new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
             @Override
             protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
-                if(airtableDataFetcher == null || this.isCancelled() || airtableDataFetcher.ex != null){
-                    Setting.this.syncObserve.update(null, SYNC_FAILED);
+                if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
+                    if (this.isCancelled())
+                        Setting.this.syncObserve.update(null, SYNC_CANCELLED);
+                    else
+                        Setting.this.syncObserve.update(null, SYNC_FAILED);
                 } else {
                     MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
                     dataModel.deleteAll();
