@@ -22,7 +22,7 @@ public class TapMprViaFetcher {
     @Test
     public void test_it_should_get_list_of_tap_mpr() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        AirtableDataFetcher x = new AirtableDataFetcher(VolleyUtil.getInstance(context).getRequestQueue());
+        AirtableDataFetcher x = new AirtableDataFetcher(VolleyUtil.getInstance(context).getRequestQueue(), () -> false);
         x.onPreExecute();
         x.doInBackground();
     }
