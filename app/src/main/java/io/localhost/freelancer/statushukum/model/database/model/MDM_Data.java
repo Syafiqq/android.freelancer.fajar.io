@@ -335,7 +335,7 @@ public class MDM_Data extends DatabaseModel
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
@@ -347,11 +347,10 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
                         Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
-                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf("%" + query + "%"), String.valueOf(category)});
+                new String[] {String.valueOf("%" + query + "%")});
 
         final List<MetadataSearchable> records = new ArrayList<>();
         if(cursor.moveToFirst())
