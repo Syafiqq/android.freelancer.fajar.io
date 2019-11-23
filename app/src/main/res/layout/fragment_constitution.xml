@@ -24,27 +24,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/search_root"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:background="@drawable/card"
-            android:orientation="horizontal"
-            android:paddingBottom="8dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            android:paddingTop="8dp"
-            >
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/content_constitution_search_filter"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-
-        </LinearLayout>
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content_constitution_recycle_view_container_year"
             android:layout_width="match_parent"

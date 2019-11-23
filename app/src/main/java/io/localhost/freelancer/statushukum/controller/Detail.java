@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.artifex.mupdf.viewer.DocumentActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -370,19 +371,15 @@ public class Detail extends AppCompatActivity
                 {
                     try
                     {
-                        InputStream iStream = getContentResolver().openInputStream(Uri.fromFile(new File(path)));
-                        if(iStream == null) {
-                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        byte[] inputData = getBytes(iStream);
-                        if(inputData == null) {
-                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        final Intent viewer = new Intent(Detail.this, PDFViewer.class);
-                        viewer.putExtra(PDFViewer.EXTRA_URI, inputData);
-                        Detail.super.startActivity(viewer);
+                        //File newFile = new File(path);
+                        //Uri uri = FileProvider.getUriForFile(Detail.this, getApplicationContext().getPackageName() + ".provider", newFile);
+                        Uri uri = Uri.fromFile(new File(path));
+                        Detail.this.grantUriPermission(getApplicationContext().getPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        Intent intent = new Intent(Detail.this, DocumentActivity.class);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        intent.setData(uri);
+                        startActivity(intent);
                     }
                     catch(Exception e)
                     {

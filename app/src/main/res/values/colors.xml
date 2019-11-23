@@ -5,16 +5,10 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="red_a700">#D50000</color>
-    <color name="green_a700">#00C853</color>
-    <color name="grey_200">#EEEEEE</color>
     <color name="transparent">#00000000</color>
     <!-- card colors -->
     <color name="card_background">#ffffff</color>
     <color name="card_shadow_1">#d4d4d4</color>
     <color name="card_shadow_2">#dddddd</color>
-    <color name="card_detailing">#eee</color>
     <color name="grey_700">#616161</color>
-    <color name="divider">#727272</color>
-    <color name="grey_600">#757575</color>
 </resources>
