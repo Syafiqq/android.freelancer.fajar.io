@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.artifex.mupdf.viewer.DocumentActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.sufficientlysecure.htmltextview.HtmlTextView;
@@ -371,19 +372,11 @@ public class Detail extends AppCompatActivity
                 {
                     try
                     {
-                        InputStream iStream = getContentResolver().openInputStream(Uri.fromFile(new File(path)));
-                        if(iStream == null) {
-                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        byte[] inputData = getBytes(iStream);
-                        if(inputData == null) {
-                            Toast.makeText(Detail.this, "Cannot open file", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        final Intent viewer = new Intent(Detail.this, PDFViewer.class);
-                        viewer.putExtra(PDFViewer.EXTRA_URI, inputData);
-                        Detail.super.startActivity(viewer);
+                        Uri uri = Uri.fromFile(new File(path));
+                        Intent intent = new Intent(Detail.this, DocumentActivity.class);
+                        intent.setAction(Intent.ACTION_VIEW);
+                        intent.setData(uri);
+                        startActivity(intent);
                     }
                     catch(Exception e)
                     {
