@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -27,13 +30,14 @@ import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter;
 import io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter;
 import io.localhost.freelancer.statushukum.controller.filter.SearchFilter;
+import io.localhost.freelancer.statushukum.model.contract.ProvideSearch;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
 @SuppressLint("StaticFieldLeak")
-public class Law extends Fragment
+public class Law extends Fragment implements ProvideSearch
 {
     public static final String CLASS_NAME = "Law";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
@@ -41,7 +45,6 @@ public class Law extends Fragment
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
-    private SearchView search;
     private String latestQuery;
     private RecyclerView yearListView;
     private RecyclerView searchListView;
@@ -77,7 +80,38 @@ public class Law extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_constitution, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.fragment_law_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+
+        if(searchView != null) {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+            {
+                @Override
+                public boolean onQueryTextSubmit(String query)
+                {
+                    return Law.this.onQueryTextSubmit(query);
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText)
+                {
+                    return Law.this.onQueryTextChange(newText);
+                }
+            });
+            searchView.setOnQueryTextFocusChangeListener((view, isOnFocus) -> Law.this.onSearchFocusChanged(isOnFocus));
+        }
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -96,55 +130,7 @@ public class Law extends Fragment
         setLoading(true);
         setSearchListAdapter();
         setYearListAdapter();
-
-        search = (SearchView) root.findViewById(R.id.content_constitution_search_filter);
-        latestQuery = search.getQuery().toString();
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-        {
-            @Override
-            public boolean onQueryTextSubmit(String query)
-            {
-                if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
-                {
-                    latestQuery = query;
-                    doSearch(query);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText)
-            {
-                searchAdapter.getFilter().filter(newText);
-                return false;
-            }
-        });
-        search.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener()
-        {
-            @Override
-            public void onFocusChange(View view, boolean isOnFocus)
-            {
-                System.out.println(isOnFocus);
-                if(isOnFocus)
-                {
-                    yearListView.setVisibility(View.GONE);
-                    searchListView.setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    yearListView.setVisibility(View.VISIBLE);
-                    searchListView.setVisibility(View.GONE);
-                }
-            }
-        });
-        View searchRoot = root.findViewById(R.id.search_root);
-        searchRoot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search.setIconified(false);
-                search.performClick();
-            }
-        });
+        latestQuery = "";
     }
 
     private void setLoading(boolean loading) {
@@ -212,7 +198,10 @@ public class Law extends Fragment
                 if(searchList.size() == 0)
                 {
                     Toast.makeText(getContext(), getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                yearListView.setVisibility(View.GONE);
+                searchListView.setVisibility(View.VISIBLE);
                 searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
@@ -312,6 +301,30 @@ public class Law extends Fragment
     {
         super.onDetach();
         listener = null;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
+        {
+            latestQuery = query;
+            doSearch(query);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        searchAdapter.getFilter().filter(newText);
+        return false;
+    }
+
+    @Override
+    public void onSearchFocusChanged(boolean isOnFocus) {
+        if (!isOnFocus) {
+            yearListView.setVisibility(View.VISIBLE);
+            searchListView.setVisibility(View.GONE);
+        }
     }
 
     public interface OnFragmentInteractionListener
