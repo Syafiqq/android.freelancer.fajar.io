@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -77,7 +80,38 @@ public class Law extends Fragment implements ProvideSearch
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_constitution, container, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.fragment_law_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = null;
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+
+        if(searchView != null) {
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+            {
+                @Override
+                public boolean onQueryTextSubmit(String query)
+                {
+                    return Law.this.onQueryTextSubmit(query);
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText)
+                {
+                    return Law.this.onQueryTextChange(newText);
+                }
+            });
+            searchView.setOnQueryTextFocusChangeListener((view, isOnFocus) -> Law.this.onSearchFocusChanged(isOnFocus));
+        }
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -164,7 +198,10 @@ public class Law extends Fragment implements ProvideSearch
                 if(searchList.size() == 0)
                 {
                     Toast.makeText(getContext(), getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                yearListView.setVisibility(View.GONE);
+                searchListView.setVisibility(View.VISIBLE);
                 searchAdapter.notifyDataSetChanged();
                 super.onPostExecute(aVoid);
             }
@@ -284,13 +321,7 @@ public class Law extends Fragment implements ProvideSearch
 
     @Override
     public void onSearchFocusChanged(boolean isOnFocus) {
-        if(isOnFocus)
-        {
-            yearListView.setVisibility(View.GONE);
-            searchListView.setVisibility(View.VISIBLE);
-        }
-        else
-        {
+        if (!isOnFocus) {
             yearListView.setVisibility(View.VISIBLE);
             searchListView.setVisibility(View.GONE);
         }
