@@ -23,9 +23,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 
@@ -40,7 +37,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public Toolbar toolbar;
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
-    private Law fragment;
+    private String className;
+    private Fragment fragment;
+    private int curIndex;
+    private int curString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,13 +55,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         if(savedInstanceState == null)
         {
             fragment = Law.newInstance();
+            className = Law.CLASS_NAME;
 
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, Law.CLASS_NAME).commit();
         }
 
         new Handler().postDelayed(() -> {
-            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+            updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr).run();
         }, 1000);
     }
 
@@ -213,36 +214,36 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             case R.id.nav_menu_dashboard_search:
             {
-                changeLayout(SearchFragment.class);
+                changeLayout(SearchFragment.class, null);
             }
             case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
-                fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+                changeLayout(Law.class, updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr));
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu:
             {
-                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu);
+                changeLayout(Law.class, updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu));
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu_darurat:
             {
-                fragment.updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
+                changeLayout(Law.class, updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat));
             }
             break;
             case R.id.nav_menu_dashboard_rule_perpu:
             {
-                fragment.updateCategory(4, R.string.nav_header_dashboard_drawer_rule_perpu);
+                changeLayout(Law.class, updateCategory(4, R.string.nav_header_dashboard_drawer_rule_perpu));
             }
             break;
             case R.id.nav_menu_dashboard_rule_pp:
             {
-                fragment.updateCategory(5, R.string.nav_header_dashboard_drawer_rule_pp);
+                changeLayout(Law.class, updateCategory(5, R.string.nav_header_dashboard_drawer_rule_pp));
             }
             break;
             case R.id.nav_menu_dashboard_rule_perpres:
             {
-                fragment.updateCategory(6, R.string.nav_header_dashboard_drawer_rule_perpres);
+                changeLayout(Law.class, updateCategory(6, R.string.nav_header_dashboard_drawer_rule_perpres));
             }
             break;
             case R.id.nav_menu_dashboard_sync:
@@ -251,7 +252,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
                 this.progressBar.show();
                 io.localhost.freelancer.statushukum.model.util.Setting.doSync(
-                        () -> new Handler().postDelayed(() -> fragment.updateCategory(), 500),
+                        () -> new Handler().postDelayed(() -> changeLayout(Law.class, updateCategory(curIndex, curString)), 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
                         Dashboard.this);
@@ -263,16 +264,34 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         return true;
     }
 
-    private void changeLayout(Class<? extends Fragment> fragmentClass)
+    private Runnable updateCategory(int i, int v) {
+        if(!className.equals(Law.CLASS_NAME)) return null;
+        curIndex =  i;
+        curString = v;
+        return () -> ((Law) fragment).updateCategory(i, v);
+    }
+
+    private void changeLayout(Class<? extends Fragment> fragmentClass, Runnable then)
     {
         try
         {
             final FragmentManager fragmentManager = getSupportFragmentManager();
             final Fragment oldFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
-            if(oldFragment == null || !oldFragment.isVisible())
+
+            if(oldFragment == null || !className.equals(fragmentClass.getName()))
             {
                 final Fragment newFragment = fragmentClass.newInstance();
+                fragment = newFragment;
+                className = fragmentClass.getName();
                 fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, newFragment, fragmentClass.getName()).commit();
+                if(then != null) {
+                    (new Handler()).postDelayed(then, 1000);
+                }
+            }
+            else {
+                if(then != null) {
+                    (new Handler()).postDelayed(then, 10);
+                }
             }
         }
         catch(Exception e)
