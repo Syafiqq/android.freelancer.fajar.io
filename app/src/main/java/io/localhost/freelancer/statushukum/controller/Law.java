@@ -33,7 +33,6 @@ public class Law extends Fragment
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
-    private String latestQuery;
     private RecyclerView yearListView;
     private View root;
 
@@ -83,7 +82,6 @@ public class Law extends Fragment
 
         setLoading(true);
         setYearListAdapter();
-        latestQuery = "";
     }
 
     private void setLoading(boolean loading) {
