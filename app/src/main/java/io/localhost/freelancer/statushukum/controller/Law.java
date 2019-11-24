@@ -11,33 +11,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter;
-import io.localhost.freelancer.statushukum.controller.adapter.SearchAdapter;
-import io.localhost.freelancer.statushukum.controller.filter.SearchFilter;
-import io.localhost.freelancer.statushukum.model.contract.ProvideSearch;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
-import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
-import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
-import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
 
 @SuppressLint("StaticFieldLeak")
-public class Law extends Fragment implements ProvideSearch
+public class Law extends Fragment
 {
     public static final String CLASS_NAME = "Law";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
@@ -47,9 +35,6 @@ public class Law extends Fragment implements ProvideSearch
     private List<MDM_Data.CountPerYear> yearList;
     private String latestQuery;
     private RecyclerView yearListView;
-    private RecyclerView searchListView;
-    private SearchAdapter searchAdapter;
-    private List<MDM_Data.MetadataSearchable> searchList;
     private View root;
 
     private OnFragmentInteractionListener listener;
@@ -80,38 +65,7 @@ public class Law extends Fragment implements ProvideSearch
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_constitution, container, false);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        menu.clear();
-        inflater.inflate(R.menu.fragment_law_menu, menu);
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = null;
-        if (searchItem != null) {
-            searchView = (SearchView) searchItem.getActionView();
-        }
-
-        if(searchView != null) {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
-            {
-                @Override
-                public boolean onQueryTextSubmit(String query)
-                {
-                    return Law.this.onQueryTextSubmit(query);
-                }
-
-                @Override
-                public boolean onQueryTextChange(String newText)
-                {
-                    return Law.this.onQueryTextChange(newText);
-                }
-            });
-            searchView.setOnQueryTextFocusChangeListener((view, isOnFocus) -> Law.this.onSearchFocusChanged(isOnFocus));
-        }
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -128,7 +82,6 @@ public class Law extends Fragment implements ProvideSearch
         Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
 
         setLoading(true);
-        setSearchListAdapter();
         setYearListAdapter();
         latestQuery = "";
     }
@@ -138,74 +91,6 @@ public class Law extends Fragment implements ProvideSearch
         contentRoot.setVisibility(loading ? View.GONE : View.VISIBLE);
         progress.setVisibility(loading ? View.VISIBLE : View.GONE);
         isLoading = loading;
-    }
-
-    private void setSearchListAdapter()
-    {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setSearchListAdapter");
-
-        if(searchList == null)
-        {
-            searchList = new LinkedList<>();
-        }
-        else
-        {
-            searchList.clear();
-        }
-        searchListView = (RecyclerView) root.findViewById(R.id.content_constitution_recycle_view_container_search);
-        searchAdapter = new SearchAdapter(new ArrayList<MDM_Data.MetadataSearchable>(0), getContext(), CATEGORY);
-        searchAdapter.setFilter(new SearchFilter(searchAdapter, searchList));
-        final RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        searchListView.setLayoutManager(mLayoutManager);
-        searchListView.setItemAnimator(new DefaultItemAnimator());
-        searchListView.setAdapter(searchAdapter);
-    }
-
-    private void doSearch(final String query)
-    {
-        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
-
-        new AsyncTask<Void, Void, Void>()
-        {
-            @Override
-            protected Void doInBackground(Void... voids)
-            {
-                final MDM_Data modelData = MDM_Data.getInstance(getContext());
-                final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(getContext());
-                final MDM_Tag modelTag = MDM_Tag.getInstance(getContext());
-                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
-                final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
-                for(final MDM_Data.MetadataSearchable result : dbResultData)
-                {
-                    if(result.getTagSize() > 0)
-                    {
-                        final List<Integer> dbResultTagID = modelDataTag.getTagFromDataID(result.getId());
-                        for(int tagId : dbResultTagID)
-                        {
-                            result.add(dbResultTag.get(tagId));
-                        }
-                    }
-                }
-                searchList.clear();
-                searchList.addAll(dbResultData);
-                searchAdapter.update(dbResultData);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-                if(searchList.size() == 0)
-                {
-                    Toast.makeText(getContext(), getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                yearListView.setVisibility(View.GONE);
-                searchListView.setVisibility(View.VISIBLE);
-                searchAdapter.notifyDataSetChanged();
-                super.onPostExecute(aVoid);
-            }
-        }.execute();
     }
 
     private void setYearListAdapter()
@@ -301,30 +186,6 @@ public class Law extends Fragment implements ProvideSearch
     {
         super.onDetach();
         listener = null;
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
-        {
-            latestQuery = query;
-            doSearch(query);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        searchAdapter.getFilter().filter(newText);
-        return false;
-    }
-
-    @Override
-    public void onSearchFocusChanged(boolean isOnFocus) {
-        if (!isOnFocus) {
-            yearListView.setVisibility(View.VISIBLE);
-            searchListView.setVisibility(View.GONE);
-        }
     }
 
     public interface OnFragmentInteractionListener

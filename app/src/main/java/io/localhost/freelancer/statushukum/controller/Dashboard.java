@@ -52,16 +52,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Class fragmentClass;
-            fragmentClass = Law.class;
-            try
-            {
-                fragment = (Law) fragmentClass.newInstance();
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+            fragment = Law.newInstance();
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
