@@ -266,7 +266,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     private Runnable updateCategory(int i, int v) {
-        if(!className.equals(Law.CLASS_PATH)) return null;
         curIndex =  i;
         curString = v;
         return () -> ((Law) fragment).updateCategory(i, v);
@@ -286,7 +285,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 className = fragmentClass.getName();
                 fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, newFragment, fragmentClass.getName()).commit();
                 if(then != null) {
-                    (new Handler()).postDelayed(then, 1000);
+                    (new Handler()).postDelayed(then, 1500);
                 }
             }
             else {
