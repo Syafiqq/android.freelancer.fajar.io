@@ -55,10 +55,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         if(savedInstanceState == null)
         {
             fragment = Law.newInstance();
-            className = Law.CLASS_NAME;
+            className = Law.CLASS_PATH;
 
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, Law.CLASS_NAME).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH).commit();
         }
 
         new Handler().postDelayed(() -> {
@@ -216,6 +216,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             {
                 changeLayout(SearchFragment.class, null);
             }
+            break;
             case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
                 changeLayout(Law.class, updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr));
@@ -265,7 +266,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     private Runnable updateCategory(int i, int v) {
-        if(!className.equals(Law.CLASS_NAME)) return null;
+        if(!className.equals(Law.CLASS_PATH)) return null;
         curIndex =  i;
         curString = v;
         return () -> ((Law) fragment).updateCategory(i, v);
