@@ -29,7 +29,9 @@ import java.util.Observer;
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Law.OnFragmentInteractionListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        Law.OnFragmentInteractionListener,
+        SearchFragment.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
@@ -209,6 +211,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
+            case R.id.nav_menu_dashboard_search:
+            {
+                changeLayout(SearchFragment.class);
+            }
             case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
                 fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
