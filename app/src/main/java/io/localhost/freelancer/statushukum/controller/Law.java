@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +31,7 @@ public class Law extends Fragment
 {
     public static final String CLASS_NAME = "Law";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
-    public static int CATEGORY = -1;
+    public int CATEGORY = -1;
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -46,10 +48,12 @@ public class Law extends Fragment
         // Required empty public constructor
     }
 
-    public static Law newInstance()
+    public static Law newInstance(int category, int title)
     {
         Law fragment = new Law();
         Bundle args = new Bundle();
+        args.putInt("category", category);
+        args.putInt("title", title);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,6 +77,10 @@ public class Law extends Fragment
         contentRoot = view.findViewById(R.id.content_root);
         progress = view.findViewById(R.id.content_progress);
         setProperty();
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            new Handler().postDelayed(() -> updateCategory(bundle.getInt("category", -1), bundle.getInt("title", R.string.activity_dashboard_toolbar_logo_title)), 250);
+        }
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -152,11 +160,15 @@ public class Law extends Fragment
         super.onResume();
     }
 
-    public synchronized void updateCategory(int category, int title) {
+    public synchronized void updateCategoryAndTitle(int category, int title) {
         if(CATEGORY == category) return;
         CATEGORY = category;
         yearAdapter.setCategory(CATEGORY);
         listener.onFragmentChangeForTitle(title);
+    }
+
+    public synchronized void updateCategory(int category, int title) {
+        updateCategoryAndTitle(category, title);
         updateCategory();
     }
 
