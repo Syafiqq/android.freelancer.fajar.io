@@ -243,53 +243,17 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 this.onBackPressed();
 
                 this.progressBar.show();
-                /*io.localhost.freelancer.statushukum.model.util.Setting.doSync(
-                        () -> new Handler().postDelayed(() -> UpdateLawContent(curIndex, curString)), 500),
+                io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                        () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
-                        Dashboard.this);*/
+                        Dashboard.this);
                 return true;
             }
         }
 
         this.onBackPressed();
         return true;
-    }
-
-    /*private Runnable updateCategory(int i, int v) {
-        curIndex =  i;
-        curString = v;
-        return () -> ((Law) fragment).updateCategory(i, v);
-    }*/
-
-    private void changeLayout(Class<? extends Fragment> fragmentClass, Runnable then)
-    {
-        /*try
-        {
-            final FragmentManager fragmentManager = getSupportFragmentManager();
-            final Fragment oldFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
-
-            if(oldFragment == null || !className.equals(fragmentClass.getName()))
-            {
-                final Fragment newFragment = fragmentClass.newInstance();
-                //fragment = newFragment;
-                //className = fragmentClass.getName();
-                fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, newFragment, fragmentClass.getName()).commit();
-                if(then != null) {
-                    (new Handler()).postDelayed(then, 1500);
-                }
-            }
-            else {
-                if(then != null) {
-                    (new Handler()).postDelayed(then, 10);
-                }
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }*/
-
     }
 
     private void setToolbar()
@@ -305,6 +269,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             actionBar.setDisplayShowTitleEnabled(false);
             this.toolbar.setContentInsetStartWithNavigation(4);
         }
+    }
+
+    private void updateContent() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
+        if(fragment instanceof Law)
+            ((Law) fragment).updateCategory();
+        else if(fragment instanceof SearchFragment)
+            ((SearchFragment) fragment).updateContent();
     }
 
     private void updateLawContent(int category, int title) {

@@ -49,6 +49,7 @@ public class SearchFragment extends Fragment
     private OnFragmentInteractionListener listener;
     private View contentRoot;
     private View progress;
+    private boolean isLoading = false;
 
     public SearchFragment()
     {
@@ -83,6 +84,14 @@ public class SearchFragment extends Fragment
         progress = view.findViewById(R.id.content_progress);
         setProperty();
         super.onViewCreated(view, savedInstanceState);
+    }
+
+
+    private void setLoading(boolean loading) {
+        if(isLoading == loading) return;
+        searchListView.setVisibility(loading ? View.GONE : View.VISIBLE);
+        progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+        isLoading = loading;
     }
 
     private void setProperty()
@@ -159,6 +168,12 @@ public class SearchFragment extends Fragment
         new AsyncTask<Void, Void, Void>()
         {
             @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                setLoading(true);
+            }
+
+            @Override
             protected Void doInBackground(Void... voids)
             {
                 final MDM_Data modelData = MDM_Data.getInstance(getContext());
@@ -191,6 +206,7 @@ public class SearchFragment extends Fragment
                     Toast.makeText(getContext(), getResources().getString(R.string.activity_search_info_search_empty), Toast.LENGTH_SHORT).show();
                 }
                 searchAdapter.notifyDataSetChanged();
+                setLoading(false);
                 super.onPostExecute(aVoid);
             }
         }.execute();
@@ -223,6 +239,10 @@ public class SearchFragment extends Fragment
     {
         super.onDetach();
         listener = null;
+    }
+
+    public synchronized void updateContent() {
+        doSearch(latestQuery);
     }
 
     public interface OnFragmentInteractionListener
