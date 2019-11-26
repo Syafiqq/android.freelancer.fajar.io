@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_menu_dashboard_search"
+            android:icon="@drawable/ic_search"
+            android:title="@string/content_setting_s_search"/>
+    </group>
 
     <item android:title="@string/nav_header_dashboard_drawer_group_rule">
         <menu>
