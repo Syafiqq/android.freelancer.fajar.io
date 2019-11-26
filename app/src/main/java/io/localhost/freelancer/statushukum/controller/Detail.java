@@ -49,6 +49,7 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.localhost.freelancer.statushukum.model.util.HtmlUtil;
 import io.localhost.freelancer.statushukum.model.util.ME_TagAdapter;
 import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
@@ -271,9 +272,9 @@ public class Detail extends AppCompatActivity
                 Detail.this.tag.removeAllTags();
                 if(this.dbResultData != null)
                 {
-                    Detail.this.no.setHtml(this.dbResultData.getNo());
-                    Detail.this.description.setHtml(this.dbResultData.getDescription().equalsIgnoreCase("null") ? "-" : this.dbResultData.getDescription());
-                    Detail.this.status.setHtml(this.dbResultData.getStatus().equalsIgnoreCase("null") ? "-" : this.dbResultData.getStatus());
+                    Detail.this.no.setHtml(HtmlUtil.sanitizeHtml(this.dbResultData.getNo()));
+                    Detail.this.description.setHtml(HtmlUtil.sanitizeHtml(this.dbResultData.getDescription()));
+                    Detail.this.status.setHtml(HtmlUtil.sanitizeHtml(this.dbResultData.getStatus()));
                     Detail.this.checkFileStatus(dbResultData);
                     if(!dbResultTagID.isEmpty())
                     {

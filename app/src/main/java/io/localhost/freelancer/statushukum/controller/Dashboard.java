@@ -22,13 +22,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 
-public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Law.OnFragmentInteractionListener
+public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        Law.OnFragmentInteractionListener,
+        SearchFragment.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Dashboard";
@@ -37,7 +36,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public Toolbar toolbar;
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
-    private Law fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,24 +49,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Class fragmentClass;
-            fragmentClass = Law.class;
-            try
-            {
-                fragment = (Law) fragmentClass.newInstance();
-            }
-            catch(Exception e)
-            {
-                e.printStackTrace();
-            }
+            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
         }
-
-        new Handler().postDelayed(() -> {
-            fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-        }, 1000);
     }
 
     @Override
@@ -217,34 +206,39 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
+            case R.id.nav_menu_dashboard_search:
+            {
+                updateSearchContent();
+            }
+            break;
             case R.id.nav_menu_dashboard_rule_tap_mpr:
             {
-                fragment.updateCategory(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu:
             {
-                fragment.updateCategory(2, R.string.nav_header_dashboard_drawer_rule_uu);
+                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_uu);
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu_darurat:
             {
-                fragment.updateCategory(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
+                updateLawContent(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
             }
             break;
             case R.id.nav_menu_dashboard_rule_perpu:
             {
-                fragment.updateCategory(4, R.string.nav_header_dashboard_drawer_rule_perpu);
+                updateLawContent(4, R.string.nav_header_dashboard_drawer_rule_perpu);
             }
             break;
             case R.id.nav_menu_dashboard_rule_pp:
             {
-                fragment.updateCategory(5, R.string.nav_header_dashboard_drawer_rule_pp);
+                updateLawContent(5, R.string.nav_header_dashboard_drawer_rule_pp);
             }
             break;
             case R.id.nav_menu_dashboard_rule_perpres:
             {
-                fragment.updateCategory(6, R.string.nav_header_dashboard_drawer_rule_perpres);
+                updateLawContent(6, R.string.nav_header_dashboard_drawer_rule_perpres);
             }
             break;
             case R.id.nav_menu_dashboard_sync:
@@ -253,7 +247,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
                 this.progressBar.show();
                 io.localhost.freelancer.statushukum.model.util.Setting.doSync(
-                        () -> new Handler().postDelayed(() -> fragment.updateCategory(), 500),
+                        () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
                         Dashboard.this);
@@ -263,25 +257,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         this.onBackPressed();
         return true;
-    }
-
-    private void changeLayout(Class<? extends Fragment> fragmentClass)
-    {
-        try
-        {
-            final FragmentManager fragmentManager = getSupportFragmentManager();
-            final Fragment oldFragment = fragmentManager.findFragmentByTag(fragmentClass.getName());
-            if(oldFragment == null || !oldFragment.isVisible())
-            {
-                final Fragment newFragment = fragmentClass.newInstance();
-                fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, newFragment, fragmentClass.getName()).commit();
-            }
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
     }
 
     private void setToolbar()
@@ -296,6 +271,55 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         {
             actionBar.setDisplayShowTitleEnabled(false);
             this.toolbar.setContentInsetStartWithNavigation(4);
+        }
+    }
+
+    private void updateContent() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
+        if(fragment instanceof Law)
+            ((Law) fragment).updateCategory();
+        else if(fragment instanceof SearchFragment)
+            ((SearchFragment) fragment).updateContent();
+    }
+
+    private void updateLawContent(int category, int title) {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
+        if(!(fragment instanceof Law)) {
+            fragment = getSupportFragmentManager().findFragmentByTag(Law.CLASS_PATH);
+            if(fragment == null) {
+                fragment = Law.newInstance(category, title);
+            } else {
+                ((Law) fragment).updateCategory(category, title);
+            }
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
+        }
+        else {
+            ((Law) fragment).updateCategory(category, title);
+        }
+    }
+
+    private void updateSearchContent() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
+        if(!(fragment instanceof SearchFragment)) {
+            fragment = getSupportFragmentManager().findFragmentByTag(SearchFragment.CLASS_PATH);
+            if(fragment == null) {
+                fragment = SearchFragment.newInstance();
+            } else {
+                ((SearchFragment) fragment).updateContent();
+            }
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, SearchFragment.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            ((SearchFragment) fragment).updateContent();
         }
     }
 

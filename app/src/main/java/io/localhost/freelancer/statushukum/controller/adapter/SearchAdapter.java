@@ -27,6 +27,7 @@ import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.Detail;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.localhost.freelancer.statushukum.model.util.HtmlUtil;
 import io.localhost.freelancer.statushukum.model.util.ME_TagAdapter;
 import me.kaede.tagview.OnTagClickListener;
 import me.kaede.tagview.Tag;
@@ -85,7 +86,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         holder.tag.removeAllTags();
 
         holder.no.setText(tmpMetadata.getNo());
-        holder.description.setHtml(StringUtils.abbreviate(tmpMetadata.getDescription(), 100));
+        holder.description.setHtml(HtmlUtil.sanitizeHtml(StringUtils.abbreviate(tmpMetadata.getDescription(), 100)));
         holder.task.setImageDrawable(new IconicsDrawable(this.context)
                 .icon(MaterialDesignIconic.Icon.gmi_receipt)
                 .color(ContextCompat.getColor(this.context, R.color.grey_700))
