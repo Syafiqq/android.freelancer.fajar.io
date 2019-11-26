@@ -53,7 +53,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 
@@ -289,7 +293,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 ((Law) fragment).updateCategory(category, title);
             }
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
         }
         else {
             ((Law) fragment).updateCategory(category, title);
@@ -302,9 +310,17 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             fragment = getSupportFragmentManager().findFragmentByTag(SearchFragment.CLASS_PATH);
             if(fragment == null) {
                 fragment = SearchFragment.newInstance();
+            } else {
+                ((SearchFragment) fragment).updateContent();
             }
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_dashboard_root, fragment, SearchFragment.CLASS_PATH).commit();
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content_dashboard_root, fragment, SearchFragment.CLASS_PATH)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            ((SearchFragment) fragment).updateContent();
         }
     }
 
