@@ -23,8 +23,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.util.Setting;
+import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         Law.OnFragmentInteractionListener,
@@ -247,10 +251,31 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 this.onBackPressed();
 
                 this.progressBar.show();
+                Observer update = new Observer() {
+                    Boolean isIndeterminate = null;
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        if(!(arg instanceof SyncMessage)) return;
+                        SyncMessage syncMessage = (SyncMessage) arg;
+                        if(isIndeterminate != syncMessage.isIndeterminate()) {
+                            isIndeterminate = syncMessage.isIndeterminate();
+                            if(isIndeterminate)
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            else
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                            progressBar.setIndeterminate(isIndeterminate);
+                        }
+
+                        progressBar.setMax(syncMessage.getMax());
+                        progressBar.setProgress(syncMessage.getCurrent());
+                        progressBar.setMessage(syncMessage.getMessage());
+                    }
+                };
                 io.localhost.freelancer.statushukum.model.util.Setting.doSync(
                         () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
+                        update,
                         Dashboard.this);
                 return true;
             }
