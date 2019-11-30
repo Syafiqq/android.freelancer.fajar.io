@@ -1,5 +1,6 @@
 package io.localhost.freelancer.statushukum.controller;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.ActionBar;
@@ -15,6 +16,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 
 public class Setting extends AppCompatActivity
@@ -45,6 +47,7 @@ public class Setting extends AppCompatActivity
             {
                 if(progress.getVisibility() == View.GONE)
                 {
+                    progressMessage.setVisibility(View.VISIBLE);
                     progress.setVisibility(View.VISIBLE);
 
                     Observer update = new Observer() {
@@ -52,25 +55,27 @@ public class Setting extends AppCompatActivity
                         @Override
                         public void update(Observable o, Object arg) {
                             if(!(arg instanceof SyncMessage)) return;
-                            runOnUiThread(() -> {
-                                SyncMessage syncMessage = (SyncMessage) arg;
-                                if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
-                                    isIndeterminate = syncMessage.isIndeterminate();
-                                    progress.setIndeterminate(isIndeterminate);
-                                }
+                            SyncMessage syncMessage = (SyncMessage) arg;
+                            if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
+                                isIndeterminate = syncMessage.isIndeterminate();
+                                progress.setIndeterminate(isIndeterminate);
+                            }
 
-                                progress.setMax(syncMessage.getMax());
-                                progress.setProgress(syncMessage.getCurrent());
-                                progressMessage.setText(syncMessage.getMessage());
-                            });
+                            progress.setMax(syncMessage.getMax());
+                            progress.setProgress(syncMessage.getCurrent());
+                            progressMessage.setText(syncMessage.getMessage());
                         }
                     };
-                    io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                    AsyncTask<Void, Object, AirtableDataFetcher> task = io.localhost.freelancer.statushukum.model.util.Setting.doSync(
                             null,
                             null,
-                            () -> progress.setVisibility(View.GONE),
+                            () -> {
+                                progress.setVisibility(View.GONE);
+                                progressMessage.setVisibility(View.GONE);
+                            },
                             update,
                             Setting.this);
+                    task.execute();
                 }
             }
         });
