@@ -141,7 +141,7 @@ public class Setting
 
                 subject = PublishSubject.create();
 
-                reactive =subject.throttleFirst(60L, TimeUnit.MILLISECONDS)
+                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(integer -> {
