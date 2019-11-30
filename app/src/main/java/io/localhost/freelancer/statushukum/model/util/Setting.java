@@ -90,7 +90,7 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized AsyncTask<Void, Void, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
+    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
 
@@ -128,20 +128,20 @@ public class Setting
                     if (onComplete != null)
                         onComplete.run();
                 });
-
-                syncMessage.setIndeterminate(true);
-                syncMessage.setMessage("Download Data");
-                onUpdate.update(null, syncMessage);
             }
 
             @Override
             protected AirtableDataFetcher doInBackground(Void... voids) {
+                syncMessage.setIndeterminate(true);
+                syncMessage.setMessage("Download Data");
+                publishProgress(syncMessage);
+
                 AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
                 if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
                     if (this.isCancelled())
-                        callback.update(null, SYNC_CANCELLED);
+                        publishProgress(SYNC_CANCELLED);
                     else
-                        callback.update(null, SYNC_FAILED);
+                        publishProgress(SYNC_FAILED);
                 } else {
                     MDM_Data dataModel = MDM_Data.getInstance(activity);
                     dataModel.deleteAll();
@@ -152,7 +152,7 @@ public class Setting
                     syncMessage.setMessage("Update Data");
                     syncMessage.setMax(data.length());
                     syncMessage.setCurrent(0);
-                    onUpdate.update(null, syncMessage);
+                    publishProgress(syncMessage);
 
                     for (int i = -1, is = data.length(); ++i < is; ) {
                         try {
@@ -162,7 +162,7 @@ public class Setting
                                 e.printStackTrace();
                             }
                             syncMessage.setCurrent(i + 1);
-                            onUpdate.update(null, syncMessage);
+                            publishProgress(syncMessage);
                             final JSONObject entry = data.getJSONObject(i);
                             dataModel.insert(
                                     entry.getInt("id"),
@@ -181,11 +181,22 @@ public class Setting
                     tagModel.deleteAll();
                     MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
                     dataTagModel.deleteAll();
-                    callback.update(null, SYNC_SUCCESS);
+                    publishProgress(SYNC_SUCCESS);
                 }
                 return airtableDataFetcher;
             }
-        }.execute();
+
+            @Override
+            protected void onProgressUpdate(Object... values) {
+                if(values == null || values.length <= 0) return;
+                else if(values[0] instanceof SyncMessage) {
+                    onUpdate.update(null, values[0]);
+                }
+                else if(values[0] instanceof Integer) {
+                    callback.update(null, values[0]);
+                }
+            }
+        };
     }
 
     public synchronized void doSync(Observer message, Observer onUpdate)
