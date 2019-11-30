@@ -23,7 +23,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Observable;
+
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
@@ -90,87 +90,60 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
+    public static synchronized AsyncTask<Void, Void, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-        new AsyncTask<Void, Void, Void>()
-        {
+
+        return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
+            SyncMessage syncMessage = new SyncMessage();
             private Observer callback;
-
-            @Override
-            protected void onPreExecute()
-            {
-                callback = (observable, o) -> activity.runOnUiThread(() -> {
-                    switch((Integer) o)
-                    {
-                        case Setting.SYNC_FAILED:
-                        {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                            if(onFailed != null)
-                                onFailed.run();
-                        }
-                        break;
-                        case Setting.SYNC_SUCCESS:
-                        {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                            if(onSuccess != null)
-                                onSuccess.run();
-                        }
-                        break;
-                        case Setting.SYNC_EQUAL:
-                        {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                        case Setting.SYNC_CANCELLED:
-                        {
-                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    }
-                    if(onComplete != null)
-                        onComplete.run();
-                });
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Void doInBackground(Void... voids)
-            {
-                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(activity).doSync(this.callback, onUpdate);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-            }
-        }.execute();
-    }
-
-    public synchronized void doSync(Observer message, Observer onUpdate)
-    {
-        SyncMessage syncMessage = new SyncMessage();
-        this.syncObserve = message;
-        new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
+
+                callback = (observable, o) -> activity.runOnUiThread(() -> {
+                    switch ((Integer) o) {
+                        case Setting.SYNC_FAILED: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                            if (onFailed != null)
+                                onFailed.run();
+                        }
+                        break;
+                        case Setting.SYNC_SUCCESS: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                            if (onSuccess != null)
+                                onSuccess.run();
+                        }
+                        break;
+                        case Setting.SYNC_EQUAL: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                        case Setting.SYNC_CANCELLED: {
+                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    }
+                    if (onComplete != null)
+                        onComplete.run();
+                });
+
                 syncMessage.setIndeterminate(true);
                 syncMessage.setMessage("Download Data");
                 onUpdate.update(null, syncMessage);
             }
 
             @Override
-            protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
+            protected AirtableDataFetcher doInBackground(Void... voids) {
+                AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
                 if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
                     if (this.isCancelled())
-                        Setting.this.syncObserve.update(null, SYNC_CANCELLED);
+                        callback.update(null, SYNC_CANCELLED);
                     else
-                        Setting.this.syncObserve.update(null, SYNC_FAILED);
+                        callback.update(null, SYNC_FAILED);
                 } else {
-                    MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                    MDM_Data dataModel = MDM_Data.getInstance(activity);
                     dataModel.deleteAll();
 
                     JSONArray data = airtableDataFetcher.getData();
@@ -181,10 +154,8 @@ public class Setting
                     syncMessage.setCurrent(0);
                     onUpdate.update(null, syncMessage);
 
-                    for(int i = -1, is = data.length(); ++i < is; )
-                    {
-                        try
-                        {
+                    for (int i = -1, is = data.length(); ++i < is; ) {
+                        try {
                             try {
                                 Thread.sleep(50);
                             } catch (InterruptedException e) {
@@ -201,21 +172,25 @@ public class Setting
                                     entry.getString("status"),
                                     entry.getInt("category"),
                                     entry.getString("reference"));
-                        }
-                        catch(JSONException ignored)
-                        {
+                        } catch (JSONException ignored) {
                             Log.i(CLASS_NAME, "JSONException");
                         }
                     }
 
-                    MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+                    MDM_Tag tagModel = MDM_Tag.getInstance(activity);
                     tagModel.deleteAll();
-                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
                     dataTagModel.deleteAll();
-                    Setting.this.syncObserve.update(null, SYNC_SUCCESS);
+                    callback.update(null, SYNC_SUCCESS);
                 }
+                return airtableDataFetcher;
             }
         }.execute();
+    }
+
+    public synchronized void doSync(Observer message, Observer onUpdate)
+    {
+
     }
 
     private void insertVersion(JSONArray version)
