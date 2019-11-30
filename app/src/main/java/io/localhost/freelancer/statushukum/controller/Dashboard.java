@@ -50,7 +50,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_uu);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager
@@ -212,14 +212,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 updateSearchContent();
             }
             break;
-            case R.id.nav_menu_dashboard_rule_tap_mpr:
-            {
-                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-            }
-            break;
             case R.id.nav_menu_dashboard_rule_uu:
             {
-                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_uu);
+                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_uu);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_tap_mpr:
+            {
+                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu_darurat:
