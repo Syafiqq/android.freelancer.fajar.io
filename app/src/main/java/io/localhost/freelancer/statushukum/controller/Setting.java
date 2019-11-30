@@ -40,15 +40,18 @@ public class Setting extends AppCompatActivity
         final ImageButton sync = (ImageButton) super.findViewById(R.id.content_setting_ib_sync);
         final ProgressBar progress = (ProgressBar) super.findViewById(R.id.content_setting_pb_progress);
         final TextView progressMessage = (TextView) super.findViewById(R.id.progress_message);
+        final TextView percent = (TextView) super.findViewById(R.id.tv_precent);
+        final TextView count = (TextView) super.findViewById(R.id.tv_count);
+        final View holderProgress = super.findViewById(R.id.progress_holder);
+        final View holderPercent = super.findViewById(R.id.percent_holder);
         sync.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                if(progress.getVisibility() == View.GONE)
+                if(holderProgress.getVisibility() == View.GONE)
                 {
-                    progressMessage.setVisibility(View.VISIBLE);
-                    progress.setVisibility(View.VISIBLE);
+                    holderProgress.setVisibility(View.VISIBLE);
 
                     Observer update = new Observer() {
                         Boolean isIndeterminate = null;
@@ -58,11 +61,20 @@ public class Setting extends AppCompatActivity
                             SyncMessage syncMessage = (SyncMessage) arg;
                             if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
                                 isIndeterminate = syncMessage.isIndeterminate();
+                                progress.setMax(syncMessage.getMax());
+                                progress.setProgress(0);
+                                progressMessage.setText(syncMessage.getMessage());
                                 progress.setIndeterminate(isIndeterminate);
+                                if(!isIndeterminate) {
+                                    holderPercent.setVisibility(View.VISIBLE);
+                                }
                             }
-
-                            progress.setMax(syncMessage.getMax());
                             progress.setProgress(syncMessage.getCurrent());
+                            if(syncMessage.getMax() != 0)
+                            {
+                                percent.setText((syncMessage.getCurrent() * 100 / syncMessage.getMax()) + " %");
+                                count.setText(String.format("%d/%d", syncMessage.getCurrent(), syncMessage.getMax()));
+                            }
                             progressMessage.setText(syncMessage.getMessage());
                         }
                     };
@@ -70,8 +82,8 @@ public class Setting extends AppCompatActivity
                             null,
                             null,
                             () -> {
-                                progress.setVisibility(View.GONE);
-                                progressMessage.setVisibility(View.GONE);
+                                holderProgress.setVisibility(View.GONE);
+                                holderPercent.setVisibility(View.GONE);
                             },
                             update,
                             Setting.this);

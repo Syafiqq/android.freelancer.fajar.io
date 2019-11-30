@@ -258,8 +258,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     public void update(Observable o, Object arg) {
                         if(!(arg instanceof SyncMessage)) return;
                         SyncMessage syncMessage = (SyncMessage) arg;
-                        Log.i(CLASS_NAME, syncMessage.getMessage() + " " + isIndeterminate + " " + syncMessage.isIndeterminate());
-
                         if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
                             progressBar.dismiss();
                             progressBar = new ProgressDialog(Dashboard.this);
