@@ -257,18 +257,22 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     public void update(Observable o, Object arg) {
                         if(!(arg instanceof SyncMessage)) return;
                         SyncMessage syncMessage = (SyncMessage) arg;
-                        if(isIndeterminate != syncMessage.isIndeterminate()) {
-                            isIndeterminate = syncMessage.isIndeterminate();
-                            if(isIndeterminate)
-                                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                            else
-                                progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                            progressBar.setIndeterminate(isIndeterminate);
-                        }
+                        runOnUiThread(() -> {
+                            Log.i(CLASS_NAME, syncMessage.getMessage());
 
-                        progressBar.setMax(syncMessage.getMax());
-                        progressBar.setProgress(syncMessage.getCurrent());
-                        progressBar.setMessage(syncMessage.getMessage());
+                            if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
+                                isIndeterminate = syncMessage.isIndeterminate();
+                                if(isIndeterminate)
+                                    progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                                else
+                                    progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                                progressBar.setIndeterminate(isIndeterminate);
+                            }
+
+                            progressBar.setMax(syncMessage.getMax());
+                            progressBar.setProgress(syncMessage.getCurrent());
+                            progressBar.setMessage(syncMessage.getMessage());
+                        });
                     }
                 };
                 io.localhost.freelancer.statushukum.model.util.Setting.doSync(

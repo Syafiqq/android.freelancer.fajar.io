@@ -90,7 +90,7 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, final Activity activity)
+    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
         new AsyncTask<Void, Void, Void>()
@@ -149,7 +149,7 @@ public class Setting
             @Override
             protected Void doInBackground(Void... voids)
             {
-                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(activity).doSync(this.callback);
+                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(activity).doSync(this.callback, onUpdate);
                 return null;
             }
 
@@ -160,10 +160,20 @@ public class Setting
         }.execute();
     }
 
-    public synchronized void doSync(final Observer message)
+    public synchronized void doSync(Observer message, Observer onUpdate)
     {
+        SyncMessage syncMessage = new SyncMessage();
         this.syncObserve = message;
         new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                syncMessage.setIndeterminate(true);
+                syncMessage.setMessage("Download Data");
+                onUpdate.update(null, syncMessage);
+            }
+
             @Override
             protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
                 if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
@@ -174,7 +184,42 @@ public class Setting
                 } else {
                     MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
                     dataModel.deleteAll();
-                    Setting.this.insertData(airtableDataFetcher.getData());
+
+                    JSONArray data = airtableDataFetcher.getData();
+
+                    syncMessage.setIndeterminate(false);
+                    syncMessage.setMessage("Update Data");
+                    syncMessage.setMax(data.length());
+                    syncMessage.setCurrent(0);
+                    onUpdate.update(null, syncMessage);
+
+                    for(int i = -1, is = data.length(); ++i < is; )
+                    {
+                        try
+                        {
+                            try {
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            syncMessage.setCurrent(i + 1);
+                            onUpdate.update(null, syncMessage);
+                            final JSONObject entry = data.getJSONObject(i);
+                            dataModel.insert(
+                                    entry.getInt("id"),
+                                    entry.getInt("year"),
+                                    entry.getString("no"),
+                                    entry.getString("description"),
+                                    entry.getString("status"),
+                                    entry.getInt("category"),
+                                    entry.getString("reference"));
+                        }
+                        catch(JSONException ignored)
+                        {
+                            Log.i(CLASS_NAME, "JSONException");
+                        }
+                    }
+
                     MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
                     tagModel.deleteAll();
                     MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);

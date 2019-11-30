@@ -9,11 +9,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 
 public class Setting extends AppCompatActivity
 {
@@ -35,6 +37,7 @@ public class Setting extends AppCompatActivity
     {
         final ImageButton sync = (ImageButton) super.findViewById(R.id.content_setting_ib_sync);
         final ProgressBar progress = (ProgressBar) super.findViewById(R.id.content_setting_pb_progress);
+        final TextView progressMessage = (TextView) super.findViewById(R.id.progress_message);
         sync.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -43,10 +46,30 @@ public class Setting extends AppCompatActivity
                 if(progress.getVisibility() == View.GONE)
                 {
                     progress.setVisibility(View.VISIBLE);
+
+                    Observer update = new Observer() {
+                        Boolean isIndeterminate = null;
+                        @Override
+                        public void update(Observable o, Object arg) {
+                            if(!(arg instanceof SyncMessage)) return;
+                            runOnUiThread(() -> {
+                                SyncMessage syncMessage = (SyncMessage) arg;
+                                if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
+                                    isIndeterminate = syncMessage.isIndeterminate();
+                                    progress.setIndeterminate(isIndeterminate);
+                                }
+
+                                progress.setMax(syncMessage.getMax());
+                                progress.setProgress(syncMessage.getCurrent());
+                                progressMessage.setText(syncMessage.getMessage());
+                            });
+                        }
+                    };
                     io.localhost.freelancer.statushukum.model.util.Setting.doSync(
                             null,
                             null,
                             () -> progress.setVisibility(View.GONE),
+                            update,
                             Setting.this);
                 }
             }

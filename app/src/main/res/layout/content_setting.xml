@@ -71,6 +71,11 @@
                 android:indeterminate="true"
                 android:visibility="gone"/>
 
+            <TextView
+                android:id="@+id/progress_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
 
         </LinearLayout>
     </ScrollView>
