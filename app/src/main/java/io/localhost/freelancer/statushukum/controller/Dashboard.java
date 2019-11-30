@@ -2,6 +2,7 @@ package io.localhost.freelancer.statushukum.controller;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
@@ -27,6 +28,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 
@@ -250,37 +252,42 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             {
                 this.onBackPressed();
 
-                this.progressBar.show();
                 Observer update = new Observer() {
                     Boolean isIndeterminate = null;
                     @Override
                     public void update(Observable o, Object arg) {
                         if(!(arg instanceof SyncMessage)) return;
                         SyncMessage syncMessage = (SyncMessage) arg;
-                        runOnUiThread(() -> {
-                            Log.i(CLASS_NAME, syncMessage.getMessage());
+                        Log.i(CLASS_NAME, syncMessage.getMessage() + " " + isIndeterminate + " " + syncMessage.isIndeterminate());
 
-                            if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
-                                isIndeterminate = syncMessage.isIndeterminate();
-                                if(isIndeterminate)
-                                    progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                                else
-                                    progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                                progressBar.setIndeterminate(isIndeterminate);
+                        if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
+                            progressBar.dismiss();
+                            progressBar = new ProgressDialog(Dashboard.this);
+                            isIndeterminate = syncMessage.isIndeterminate();
+                            if(isIndeterminate) {
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
                             }
+                            else {
+                                progressBar.setMax(syncMessage.getMax());
+                                progressBar.setProgress(0);
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 
-                            progressBar.setMax(syncMessage.getMax());
-                            progressBar.setProgress(syncMessage.getCurrent());
+                            }
                             progressBar.setMessage(syncMessage.getMessage());
-                        });
+                            progressBar.setIndeterminate(isIndeterminate);
+                            progressBar.show();
+                        }
+                        progressBar.setProgress(syncMessage.getCurrent());
+                        progressBar.setMessage(syncMessage.getMessage());
                     }
                 };
-                io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                AsyncTask<Void, Object, AirtableDataFetcher> task = Setting.doSync(
                         () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
                         update,
                         Dashboard.this);
+                task.execute();
                 return true;
             }
         }
