@@ -31,6 +31,7 @@ import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         Law.OnFragmentInteractionListener,
@@ -43,6 +44,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public Toolbar toolbar;
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
+
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -189,6 +192,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
@@ -284,7 +293,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
                         update,
-                        Dashboard.this);
+                        Dashboard.this,
+                        disposable);
                 task.execute();
                 return true;
             }

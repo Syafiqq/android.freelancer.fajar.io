@@ -18,11 +18,14 @@ import java.util.Observer;
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class Setting extends AppCompatActivity
 {
     public static final String CLASS_NAME = "Setting";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Setting";
+
+    private final CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,6 +36,12 @@ public class Setting extends AppCompatActivity
         setContentView(R.layout.activity_setting);
         this.setToolbar();
         this.registerComponent();
+    }
+
+    @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
     }
 
     private void registerComponent()
@@ -86,7 +95,8 @@ public class Setting extends AppCompatActivity
                                 holderPercent.setVisibility(View.GONE);
                             },
                             update,
-                            Setting.this);
+                            Setting.this,
+                            disposable);
                     task.execute();
                 }
             }

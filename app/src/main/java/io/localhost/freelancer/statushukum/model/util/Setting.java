@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.firebase.entity.VersionEntity;
@@ -36,6 +37,13 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
 import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.util> created by :
@@ -90,11 +98,13 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity)
+    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
 
         return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
+            private Disposable reactive;
+            private PublishSubject<Integer> subject;
             SyncMessage syncMessage = new SyncMessage();
             private Observer callback;
 
@@ -128,6 +138,22 @@ public class Setting
                     if (onComplete != null)
                         onComplete.run();
                 });
+
+                subject = PublishSubject.create();
+
+                reactive =subject.throttleFirst(60L, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(integer -> {
+                            try {
+                                if(syncMessage == null) return;
+                                syncMessage.setCurrent(integer);
+                                publishProgress(syncMessage);
+                            } catch (Exception ignored) {
+
+                            }
+                        });
+                disposable.add(reactive);
             }
 
             @Override
@@ -156,13 +182,7 @@ public class Setting
 
                     for (int i = -1, is = data.length(); ++i < is; ) {
                         try {
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            syncMessage.setCurrent(i + 1);
-                            publishProgress(syncMessage);
+                            subject.onNext(i + 1);
                             final JSONObject entry = data.getJSONObject(i);
                             dataModel.insert(
                                     entry.getInt("id"),
@@ -182,6 +202,7 @@ public class Setting
                     MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
                     dataTagModel.deleteAll();
                     publishProgress(SYNC_SUCCESS);
+                    reactive.dispose();
                 }
                 return airtableDataFetcher;
             }
