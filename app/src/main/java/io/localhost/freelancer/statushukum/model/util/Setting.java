@@ -100,49 +100,37 @@ public class Setting
             @Override
             protected void onPreExecute()
             {
-                callback = new Observer()
-                {
-                    @Override
-                    public void update(final Observable observable, final Object o)
+                callback = (observable, o) -> activity.runOnUiThread(() -> {
+                    switch((Integer) o)
                     {
-                        activity.runOnUiThread(new Runnable()
+                        case Setting.SYNC_FAILED:
                         {
-                            @Override
-                            public void run()
-                            {
-                                switch((Integer) o)
-                                {
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                        if(onFailed != null)
-                                            onFailed.run();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                        if(onSuccess != null)
-                                            onSuccess.run();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_CANCELLED:
-                                    {
-                                        Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                }
-                                if(onComplete != null)
-                                    onComplete.run();
-                            }
-                        });
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                            if(onFailed != null)
+                                onFailed.run();
+                        }
+                        break;
+                        case Setting.SYNC_SUCCESS:
+                        {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                            if(onSuccess != null)
+                                onSuccess.run();
+                        }
+                        break;
+                        case Setting.SYNC_EQUAL:
+                        {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                        case Setting.SYNC_CANCELLED:
+                        {
+                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
                     }
-                };
+                    if(onComplete != null)
+                        onComplete.run();
+                });
                 super.onPreExecute();
             }
 
