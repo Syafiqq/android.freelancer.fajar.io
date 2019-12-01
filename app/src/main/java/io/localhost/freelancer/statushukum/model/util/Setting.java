@@ -23,8 +23,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.util.Observable;
+
 import java.util.Observer;
+import java.util.concurrent.TimeUnit;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.firebase.entity.VersionEntity;
@@ -36,6 +37,13 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Version;
 import io.localhost.freelancer.statushukum.networking.NetworkRequestQueue;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * This <StatusHukum> project in package <io.localhost.freelancer.statushukum.model.util> created by :
@@ -90,99 +98,131 @@ public class Setting
         context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
     }
 
-    public static synchronized void doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, final Activity activity)
+    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
 
-        new AsyncTask<Void, Void, Void>()
-        {
+
+        return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
+            private Disposable reactive;
+            private PublishSubject<Integer> subject;
+            SyncMessage syncMessage = new SyncMessage();
             private Observer callback;
 
             @Override
-            protected void onPreExecute()
-            {
-                callback = new Observer()
-                {
-                    @Override
-                    public void update(final Observable observable, final Object o)
-                    {
-                        activity.runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                switch((Integer) o)
-                                {
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_FAILED:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                                        if(onFailed != null)
-                                            onFailed.run();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_SUCCESS:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                                        if(onSuccess != null)
-                                            onSuccess.run();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_EQUAL:
-                                    {
-                                        Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                    case io.localhost.freelancer.statushukum.model.util.Setting.SYNC_CANCELLED:
-                                    {
-                                        Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                }
-                                if(onComplete != null)
-                                    onComplete.run();
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+                callback = (observable, o) -> activity.runOnUiThread(() -> {
+                    switch ((Integer) o) {
+                        case Setting.SYNC_FAILED: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                            if (onFailed != null)
+                                onFailed.run();
+                        }
+                        break;
+                        case Setting.SYNC_SUCCESS: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                            if (onSuccess != null)
+                                onSuccess.run();
+                        }
+                        break;
+                        case Setting.SYNC_EQUAL: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                        case Setting.SYNC_CANCELLED: {
+                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    }
+                    if (onComplete != null)
+                        onComplete.run();
+                });
+
+                subject = PublishSubject.create();
+
+                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(integer -> {
+                            try {
+                                if(syncMessage == null) return;
+                                syncMessage.setCurrent(integer);
+                                publishProgress(syncMessage);
+                            } catch (Exception ignored) {
+
                             }
                         });
-                    }
-                };
-                super.onPreExecute();
+                disposable.add(reactive);
             }
 
             @Override
-            protected Void doInBackground(Void... voids)
-            {
-                io.localhost.freelancer.statushukum.model.util.Setting.getInstance(activity).doSync(this.callback);
-                return null;
-            }
+            protected AirtableDataFetcher doInBackground(Void... voids) {
+                syncMessage.setIndeterminate(true);
+                syncMessage.setMessage("Download Data");
+                publishProgress(syncMessage);
 
-            @Override
-            protected void onPostExecute(Void aVoid)
-            {
-            }
-        }.execute();
-    }
-
-    public synchronized void doSync(final Observer message)
-    {
-        this.syncObserve = message;
-        new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(context).getRequestQueue()) {
-            @Override
-            protected void onPostExecute(AirtableDataFetcher airtableDataFetcher) {
+                AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
                 if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
                     if (this.isCancelled())
-                        Setting.this.syncObserve.update(null, SYNC_CANCELLED);
+                        publishProgress(SYNC_CANCELLED);
                     else
-                        Setting.this.syncObserve.update(null, SYNC_FAILED);
+                        publishProgress(SYNC_FAILED);
                 } else {
-                    MDM_Data dataModel = MDM_Data.getInstance(Setting.this.context);
+                    MDM_Data dataModel = MDM_Data.getInstance(activity);
                     dataModel.deleteAll();
-                    Setting.this.insertData(airtableDataFetcher.getData());
-                    MDM_Tag tagModel = MDM_Tag.getInstance(Setting.this.context);
+
+                    JSONArray data = airtableDataFetcher.getData();
+
+                    syncMessage.setIndeterminate(false);
+                    syncMessage.setMessage("Update Data");
+                    syncMessage.setMax(data.length());
+                    syncMessage.setCurrent(0);
+                    publishProgress(syncMessage);
+
+                    for (int i = -1, is = data.length(); ++i < is; ) {
+                        try {
+                            subject.onNext(i + 1);
+                            final JSONObject entry = data.getJSONObject(i);
+                            dataModel.insert(
+                                    entry.getInt("id"),
+                                    entry.getInt("year"),
+                                    entry.getString("no"),
+                                    entry.getString("description"),
+                                    entry.getString("status"),
+                                    entry.getInt("category"),
+                                    entry.getString("reference"));
+                        } catch (JSONException ignored) {
+
+                        }
+                    }
+
+                    MDM_Tag tagModel = MDM_Tag.getInstance(activity);
                     tagModel.deleteAll();
-                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(Setting.this.context);
+                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
                     dataTagModel.deleteAll();
-                    Setting.this.syncObserve.update(null, SYNC_SUCCESS);
+                    publishProgress(SYNC_SUCCESS);
+                    reactive.dispose();
+                }
+                return airtableDataFetcher;
+            }
+
+            @Override
+            protected void onProgressUpdate(Object... values) {
+                if(values == null || values.length <= 0) return;
+                else if(values[0] instanceof SyncMessage) {
+                    onUpdate.update(null, values[0]);
+                }
+                else if(values[0] instanceof Integer) {
+                    callback.update(null, values[0]);
                 }
             }
-        }.execute();
+        };
+    }
+
+    public synchronized void doSync(Observer message, Observer onUpdate)
+    {
+
     }
 
     private void insertVersion(JSONArray version)

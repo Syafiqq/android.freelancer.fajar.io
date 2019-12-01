@@ -2,6 +2,7 @@ package io.localhost.freelancer.statushukum.controller;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.navigation.NavigationView;
@@ -22,8 +23,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import io.localhost.freelancer.statushukum.R;
+import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
 import io.localhost.freelancer.statushukum.model.util.Setting;
+import io.localhost.freelancer.statushukum.model.util.SyncMessage;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         Law.OnFragmentInteractionListener,
@@ -37,6 +44,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private TextView toolbarTitle;
     private ProgressDialog progressBar;
 
+    private final CompositeDisposable disposable = new CompositeDisposable();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -49,7 +58,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
+            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_uu);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager
@@ -182,6 +191,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
+    protected void onDestroy() {
+        disposable.dispose();
+        super.onDestroy();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
 
@@ -211,14 +226,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 updateSearchContent();
             }
             break;
-            case R.id.nav_menu_dashboard_rule_tap_mpr:
-            {
-                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-            }
-            break;
             case R.id.nav_menu_dashboard_rule_uu:
             {
-                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_uu);
+                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_uu);
+            }
+            break;
+            case R.id.nav_menu_dashboard_rule_tap_mpr:
+            {
+                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
             }
             break;
             case R.id.nav_menu_dashboard_rule_uu_darurat:
@@ -245,12 +260,41 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             {
                 this.onBackPressed();
 
-                this.progressBar.show();
-                io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                Observer update = new Observer() {
+                    Boolean isIndeterminate = null;
+                    @Override
+                    public void update(Observable o, Object arg) {
+                        if(!(arg instanceof SyncMessage)) return;
+                        SyncMessage syncMessage = (SyncMessage) arg;
+                        if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
+                            progressBar.dismiss();
+                            progressBar = new ProgressDialog(Dashboard.this);
+                            isIndeterminate = syncMessage.isIndeterminate();
+                            if(isIndeterminate) {
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            }
+                            else {
+                                progressBar.setMax(syncMessage.getMax());
+                                progressBar.setProgress(0);
+                                progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+
+                            }
+                            progressBar.setMessage(syncMessage.getMessage());
+                            progressBar.setIndeterminate(isIndeterminate);
+                            progressBar.show();
+                        }
+                        progressBar.setProgress(syncMessage.getCurrent());
+                        progressBar.setMessage(syncMessage.getMessage());
+                    }
+                };
+                AsyncTask<Void, Object, AirtableDataFetcher> task = Setting.doSync(
                         () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
-                        Dashboard.this);
+                        update,
+                        Dashboard.this,
+                        disposable);
+                task.execute();
                 return true;
             }
         }
