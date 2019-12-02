@@ -396,8 +396,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
-    public void onFragmentChangeForTitle(int string)
+    public void onFragmentChangeForTitle(String title)
     {
-        this.toolbarTitle.setText(super.getResources().getString(string));
+        this.toolbarTitle.setText(title);
+    }
+
+    @Override
+    public String getTitle(int title) {
+        return super.getResources().getString(title);
     }
 }
