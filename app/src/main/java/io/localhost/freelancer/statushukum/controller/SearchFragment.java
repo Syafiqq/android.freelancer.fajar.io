@@ -216,7 +216,7 @@ public class SearchFragment extends Fragment
     public void onResume()
     {
         super.onResume();
-        this.listener.onFragmentChangeForTitle(R.string.content_setting_s_search);
+        this.listener.onFragmentChangeForTitle(listener.getTitle(R.string.content_setting_s_search));
     }
 
     @Override
@@ -247,6 +247,7 @@ public class SearchFragment extends Fragment
 
     public interface OnFragmentInteractionListener
     {
-        void onFragmentChangeForTitle(int string);
+        String getTitle(int title);
+        void onFragmentChangeForTitle(String title);
     }
 }

@@ -41,6 +41,7 @@ public class Law extends Fragment
     private View contentRoot;
     private View progress;
     private boolean isLoading = false;
+    private String title;
 
     public Law()
     {
@@ -147,6 +148,7 @@ public class Law extends Fragment
             protected void onPostExecute(Void aVoid)
             {
                 yearAdapter.notifyDataSetChanged();
+                yearAdapter.setTitle(title);
                 setLoading(false);
                 super.onPostExecute(aVoid);
             }
@@ -163,7 +165,8 @@ public class Law extends Fragment
         if(CATEGORY == category) return;
         CATEGORY = category;
         yearAdapter.setCategory(CATEGORY);
-        listener.onFragmentChangeForTitle(title);
+        this.title = listener.getTitle(title);
+        listener.onFragmentChangeForTitle(this.title);
     }
 
     public synchronized void updateCategory(int category, int title) {
@@ -199,6 +202,7 @@ public class Law extends Fragment
 
     public interface OnFragmentInteractionListener
     {
-        void onFragmentChangeForTitle(int string);
+        String getTitle(int title);
+        void onFragmentChangeForTitle(String title);
     }
 }
