@@ -122,6 +122,7 @@ public class YearListAdapter extends RecyclerView.Adapter<YearListAdapter.ViewHo
                 final int     id      = tmpMetadata.getId();
                 final Intent  intent  = new Intent(context, Detail.class);
                 intent.putExtra(Detail.EXTRA_ID, id);
+                intent.putExtra(Detail.EXTRA_TITLE, holder.no.getText());
                 context.startActivity(intent);
             }
         };

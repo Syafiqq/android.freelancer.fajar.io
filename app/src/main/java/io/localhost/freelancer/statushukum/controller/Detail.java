@@ -71,6 +71,7 @@ public class Detail extends AppCompatActivity
     public static final String CLASS_NAME = "Detail";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Detail";
     public static final String EXTRA_ID = "id";
+    public static final String EXTRA_TITLE = "title";
     private int id;
     private HtmlTextView no;
     private HtmlTextView description;
@@ -82,6 +83,7 @@ public class Detail extends AppCompatActivity
     private long downloadID;
     private String path;
     private String filename;
+    private String title;
 
     private HashMap<String, DownloadHolder> fileMapper = new HashMap<>();
     private HashMap<String, Runnable> mPendingPermissionRequests = new HashMap<>();
@@ -137,6 +139,7 @@ public class Detail extends AppCompatActivity
         setContentView(R.layout.activity_detail);
         final Intent intent = getIntent();
         this.id = intent.getIntExtra(Detail.EXTRA_ID, -1);
+        this.title = intent.hasExtra(Detail.EXTRA_TITLE) ? intent.getStringExtra(Detail.EXTRA_TITLE) : getResources().getString(R.string.activity_detail_toolbar_logo_title);
 
         this.setToolbar();
         this.setProperty();
@@ -178,6 +181,8 @@ public class Detail extends AppCompatActivity
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
+        TextView tvTitle = (TextView) toolbar.findViewById(R.id.tv_toolbar_title);
+        tvTitle.setText(title);
         super.setSupportActionBar(toolbar);
         final ActionBar actionBar = super.getSupportActionBar();
         if(actionBar != null)
