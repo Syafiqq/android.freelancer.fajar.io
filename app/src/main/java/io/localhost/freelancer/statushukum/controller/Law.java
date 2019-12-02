@@ -149,6 +149,7 @@ public class Law extends Fragment
             protected void onPostExecute(Void aVoid)
             {
                 yearAdapter.notifyDataSetChanged();
+                yearAdapter.setTitle(title);
                 setLoading(false);
                 super.onPostExecute(aVoid);
             }

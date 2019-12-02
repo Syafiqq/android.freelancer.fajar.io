@@ -38,6 +38,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context context;
     private int category;
+    private String title;
 
     public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
     {
@@ -89,6 +90,10 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         this.category = category;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
     {
         public static final String CLASS_NAME = "ViewHolder";
@@ -120,6 +125,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
                 final Intent intent = new Intent(context, Year.class);
                 intent.putExtra(Year.EXTRA_YEAR, _year);
                 intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
+                intent.putExtra(Year.EXTRA_TITLE, String.format("%s %s", title, year.getText()));
                 context.startActivity(intent);
             }
             else

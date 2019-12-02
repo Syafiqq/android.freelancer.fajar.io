@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -33,10 +34,12 @@ public class Year extends AppCompatActivity
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Year";
     public static final String EXTRA_YEAR = "year";
     public static final String EXTRA_CATEGORY = "count";
+    public static final String EXTRA_TITLE = "title";
     private int year;
     private YearListAdapter yearListAdapter;
     private List<MDM_Data.YearMetadata> entryList;
     private int category;
+    private String title;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,6 +51,7 @@ public class Year extends AppCompatActivity
         Intent intent = getIntent();
         this.year = intent.getIntExtra(Year.EXTRA_YEAR, -1);
         this.category = intent.getIntExtra(Year.EXTRA_CATEGORY, 1);
+        this.title = intent.hasExtra(Year.EXTRA_TITLE) ? intent.getStringExtra(Year.EXTRA_TITLE) : getResources().getString(R.string.activity_year_toolbar_logo_title);
 
         this.setToolbar();
         this.setProperty();
@@ -76,6 +80,8 @@ public class Year extends AppCompatActivity
         Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_year_toolbar);
+        TextView toolbarTitle = (TextView) toolbar.findViewById(R.id.tv_toolbar_title);
+        toolbarTitle.setText(title);
         super.setSupportActionBar(toolbar);
         super.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final ActionBar actionBar = super.getSupportActionBar();
