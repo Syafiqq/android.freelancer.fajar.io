@@ -125,7 +125,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
                 final Intent intent = new Intent(context, Year.class);
                 intent.putExtra(Year.EXTRA_YEAR, _year);
                 intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
-                intent.putExtra(Year.EXTRA_TITLE, String.format("%s %s", title, year.getText()));
+                intent.putExtra(Year.EXTRA_TITLE, String.format("%s", year.getText()));
                 context.startActivity(intent);
             }
             else
