@@ -42,6 +42,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="@string/activity_year_toolbar_logo_title"
                     android:textColor="@color/white"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     android:textSize="20sp"/>
             </LinearLayout>
         </androidx.appcompat.widget.Toolbar>
