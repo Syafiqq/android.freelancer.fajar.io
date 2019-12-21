@@ -88,6 +88,7 @@ public class Setting extends AppCompatActivity
                         }
                     };
                     AsyncTask<Void, Object, AirtableDataFetcher> task = io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                            Setting.this,
                             null,
                             null,
                             () -> {

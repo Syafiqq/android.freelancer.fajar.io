@@ -289,6 +289,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                     }
                 };
                 AsyncTask<Void, Object, AirtableDataFetcher> task = Setting.doSync(
+                        this,
                         () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
                         () -> Dashboard.this.progressBar.dismiss(),
