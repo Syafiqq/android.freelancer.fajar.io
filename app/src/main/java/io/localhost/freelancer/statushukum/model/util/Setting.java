@@ -134,7 +134,7 @@ public class Setting
 
                 subject = PublishSubject.create();
 
-                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
+                reactive =subject.throttleFirst(1000L, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(integer -> {
@@ -259,7 +259,7 @@ public class Setting
             int is = data.length();
             for (int i = -1; ++i < is; ) {
                 try {
-                    subject.delegate((int) 75 + ((i * 100.0 / is) * 0.25));
+                    subject.delegate((int) (75 + ((i * 100.0 / is) * 0.25)));
                     final JSONObject entry = data.getJSONObject(i);
                     dataModel.insert(
                             entry.getInt("id"),
@@ -300,35 +300,29 @@ public class Setting
                                 String text = null;
                                 if(tmp.exists())
                                     text = getStringFromFile(tmp.getAbsolutePath());
-                                if(text == null)
-                                    return SYNC_FAILED;
-                                return new JSONObject(text);
-                            } catch (JSONException | IOException ignored) {
-                                Log.e(CLASS_NAME, "JSONException", ignored);
-                            }
-                            tmp.delete();
-                            return SYNC_FAILED;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Object o) {
-                            if(o instanceof Integer) {
-                                delegatable.delegate((Integer) o);
-                            } else if (o instanceof JSONObject) {
-                                JSONObject response = (JSONObject) o;
+                                if(text == null) {
+                                    delegatable.delegate(SYNC_FAILED);
+                                    return null;
+                                }
+                                JSONObject response = new JSONObject(text);
                                 if (response.has("data")) {
                                     try {
                                         response = response.getJSONObject("data");
                                         if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
                                             delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                                            tmp.delete();
+                                            return null;
                                         }
                                     } catch (JSONException ignored) {
                                         Log.e(CLASS_NAME, "JSONException", ignored);
                                     }
                                 }
-                            } else {
-                                delegatable.delegate(SYNC_FAILED);
+                            } catch (JSONException | IOException ignored) {
+                                Log.e(CLASS_NAME, "JSONException", ignored);
                             }
+                            tmp.delete();
+                            delegatable.delegate(SYNC_FAILED);
+                            return null;
                         }
                     }.execute();
                 })
