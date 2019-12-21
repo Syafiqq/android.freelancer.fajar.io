@@ -2,9 +2,6 @@ package io.localhost.freelancer.statushukum.model.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
@@ -25,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
 
@@ -308,11 +307,18 @@ public class Setting
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
-        final long BUFFER = 10 * 1024 * 1024;
-        islandRef.getBytes(BUFFER)
-                .addOnSuccessListener(bytes -> {
+        islandRef.getStream()
+                .addOnSuccessListener(stream -> {
                     try {
-                        JSONObject response = new JSONObject(new String(bytes));
+                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                        int nRead;
+                        byte[] data = new byte[1024];
+                        while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
+                            buffer.write(data, 0, nRead);
+                        }
+                        buffer.flush();
+                        JSONObject response = new JSONObject(new String(buffer.toByteArray()));
+                        buffer.close();
                         if(response.has("data"))
                         {
                             try
@@ -329,7 +335,7 @@ public class Setting
                                 Log.e(CLASS_NAME, "JSONException", ignored);
                             }
                         }
-                    } catch (JSONException ignored) {
+                    } catch (JSONException | IOException ignored) {
                         Log.e(CLASS_NAME, "JSONException", ignored);
                     }
                     delegatable.delegate(SYNC_FAILED);
