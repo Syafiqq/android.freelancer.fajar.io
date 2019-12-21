@@ -88,93 +88,131 @@ public class Setting
         return Setting.ourInstance;
     }
 
-    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Context context, final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
+    public static synchronized AsyncTask<Void, Object, Void> doSync(final Context context, final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
-        Disposable reactive;
-        PublishSubject<Integer> subject;
-        SyncMessage syncMessage = new SyncMessage();
-        Observer callback;
+        return new AsyncTask<Void, Object, Void>() {
+            Disposable reactive;
+            PublishSubject<Integer> subject;
+            SyncMessage syncMessage = new SyncMessage();
+            Observer callback;
 
-        callback = (observable, o) -> activity.runOnUiThread(() -> {
-            switch ((Integer) o) {
-                case Setting.SYNC_FAILED: {
-                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                    if (onFailed != null)
-                        onFailed.run();
-                }
-                break;
-                case Setting.SYNC_SUCCESS: {
-                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                    if (onSuccess != null)
-                        onSuccess.run();
-                }
-                break;
-                case Setting.SYNC_EQUAL: {
-                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                }
-                break;
-                case Setting.SYNC_CANCELLED: {
-                    Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            if (onComplete != null)
-                onComplete.run();
-        });
-
-        subject = PublishSubject.create();
-
-        reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(integer -> {
-                    try {
-                        if(syncMessage == null) return;
-                        syncMessage.setCurrent(integer);
-                        publishProgress(onUpdate, callback, syncMessage);
-                    } catch (Exception ignored) {
-
+            @Override
+            protected void onPreExecute() {
+                callback = (observable, o) -> activity.runOnUiThread(() -> {
+                    switch ((Integer) o) {
+                        case Setting.SYNC_FAILED: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                            if (onFailed != null)
+                                onFailed.run();
+                        }
+                        break;
+                        case Setting.SYNC_SUCCESS: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                            if (onSuccess != null)
+                                onSuccess.run();
+                        }
+                        break;
+                        case Setting.SYNC_EQUAL: {
+                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                        case Setting.SYNC_CANCELLED: {
+                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
                     }
+                    if (onComplete != null)
+                        onComplete.run();
                 });
-        disposable.add(reactive);
 
-        syncMessage.setIndeterminate(true);
-        syncMessage.setMessage("Check Version");
-        publishProgress(onUpdate, callback, syncMessage);
+                subject = PublishSubject.create();
 
-        getServerVersion(onUpdate, callback, (_onUpdate1, _onCallback1, versions) -> {
-            if(versions.length > 0 && versions[0] instanceof VersionEntity)
-            {
-                getDBVersion(context, (VersionEntity) versions[0], _onUpdate1, _onCallback1, (_onUpdate2, _onCallback2, _versions) -> {
-                    if(versions.length > 1 && _versions[0] instanceof VersionEntity && _versions[1] instanceof LocalDateTime)
+                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
+                        .subscribeOn(Schedulers.computation())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(integer -> {
+                            try {
+                                if(syncMessage == null) return;
+                                syncMessage.setCurrent(integer);
+                                publishProgress(syncMessage);
+                            } catch (Exception ignored) {
+
+                            }
+                        });
+                disposable.add(reactive);
+            }
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                syncMessage.setIndeterminate(true);
+                syncMessage.setMessage("Check Version");
+                publishProgress(onUpdate, callback, syncMessage);
+
+                getServerVersion(versions -> {
+                    if(versions.length > 0)
                     {
-                        LocalDateTime _serverVersion = LocalDateTime.parse(((VersionEntity) _versions[0]).timestamp, timeStampFormat);
-                        if(_serverVersion.isEqual((LocalDateTime) _versions[1]))
+                        if(versions[0] instanceof VersionEntity)
                         {
-                            publishProgress(_onUpdate2, _onCallback2, SYNC_EQUAL);
+                            getDBVersion(context, (VersionEntity) versions[0], (_versions) -> {
+                                if(_versions.length > 1 && _versions[0] instanceof VersionEntity && _versions[1] instanceof LocalDateTime)
+                                {
+                                    LocalDateTime _serverVersion = LocalDateTime.parse(((VersionEntity) _versions[0]).timestamp, timeStampFormat);
+                                    if(_serverVersion.isEqual((LocalDateTime) _versions[1]))
+                                    {
+                                        publishProgress(SYNC_EQUAL);
+                                    }
+                                    else
+                                    {
+                                        syncMessage.setIndeterminate(true);
+                                        syncMessage.setMessage("Downloading data");
+                                        publishProgress(syncMessage);
+
+                                        new Handler().postDelayed(() -> {
+                                            publishProgress(SYNC_SUCCESS);
+                                        }, 2000);
+                                    }
+                                }
+                                else if(_versions.length > 0 && _versions[0] instanceof Integer)
+                                {
+                                    publishProgress(_versions[0]);
+                                }
+                                else
+                                {
+                                    publishProgress(SYNC_FAILED);
+                                }
+                            });
+                        }
+                        else if(versions[0] instanceof Integer)
+                        {
+                            publishProgress(versions[0]);
                         }
                         else
                         {
-                            syncMessage.setIndeterminate(true);
-                            syncMessage.setMessage("Downloading data");
-                            publishProgress(_onUpdate2, _onCallback2, syncMessage);
-
-                            new Handler().postDelayed(() -> {
-                                publishProgress(_onUpdate2, _onCallback2, SYNC_SUCCESS);
-                            }, 2000);
+                            publishProgress(SYNC_FAILED);
                         }
                     }
                     else
                     {
-                        publishProgress(_onUpdate2, _onCallback2, SYNC_FAILED);
+                        publishProgress(SYNC_FAILED);
                     }
                 });
+                return null;
             }
-            else
-            {
-                publishProgress(_onUpdate1, _onCallback1, SYNC_FAILED);
+
+            @Override
+            protected void onProgressUpdate(Object... values) {
+                if(values == null || values.length <= 0) return;
+                else if(values[0] instanceof SyncMessage) {
+                    onUpdate.update(null, values[0]);
+                }
+                else if(values[0] instanceof Integer) {
+                    callback.update(null, values[0]);
+                }
             }
-        });
+        };
+
+
+
 
         /*Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
 
@@ -241,17 +279,7 @@ public class Setting
         };*/
     }
 
-    private static void publishProgress(Observer onUpdate, Observer callback, Object ...values) {
-        if(values == null || values.length <= 0) return;
-        else if(values[0] instanceof SyncMessage) {
-            onUpdate.update(null, values[0]);
-        }
-        else if(values[0] instanceof Integer) {
-            callback.update(null, values[0]);
-        }
-    }
-
-    private synchronized void getStreamData(final VersionEntity serverVersion, Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    private synchronized void getStreamData(final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
@@ -267,7 +295,7 @@ public class Setting
                         response = response.getJSONObject("data");
                         if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
                         {
-                            delegatable.delegate(onUpdate, callback, response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
                             return;
                         }
                     }
@@ -278,18 +306,18 @@ public class Setting
                 }
             } catch (JSONException ignored) {
             }
-            publishProgress(onUpdate, callback, SYNC_FAILED);
+            delegatable.delegate(SYNC_FAILED);
         }).addOnFailureListener(exception -> {
-            publishProgress(onUpdate, callback, SYNC_FAILED);
+            delegatable.delegate(SYNC_FAILED);
         });
     }
 
-    private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
         if(serverVersion == null)
         {
-            publishProgress(onUpdate, callback, SYNC_FAILED);
+            delegatable.delegate(SYNC_FAILED);
         }
         else
         {
@@ -300,11 +328,11 @@ public class Setting
             {
                 defaultTimeStamp = latestData;
             }
-            delegatable.delegate(onUpdate, callback, serverVersion, defaultTimeStamp);
+            delegatable.delegate(serverVersion, defaultTimeStamp);
         }
     }
 
-    private static synchronized void getServerVersion(Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    private static synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
 
@@ -316,26 +344,26 @@ public class Setting
                     VersionEntity serverVersion = dataSnapshot.getChildren().iterator().next().getValue(VersionEntity.class);
                     if(serverVersion != null)
                     {
-                        delegatable.delegate(onUpdate, callback, serverVersion);
+                        delegatable.delegate(serverVersion);
                         return;
                     }
-                    publishProgress(onUpdate, callback, SYNC_FAILED);
+                    delegatable.delegate(SYNC_FAILED);
                 }
                 else {
-                    publishProgress(onUpdate, callback, SYNC_FAILED);
+                    delegatable.delegate(SYNC_FAILED);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.i(CLASS_NAME, "onErrorResponse");
-                publishProgress(onUpdate, callback, SYNC_FAILED);
+                delegatable.delegate(SYNC_FAILED);
             }
         });
     }
 
     private interface TaskDelegatable
     {
-        void delegate(Observer onUpdate, Observer callback, Object... data);
+        void delegate(Object... data);
     }
 }
