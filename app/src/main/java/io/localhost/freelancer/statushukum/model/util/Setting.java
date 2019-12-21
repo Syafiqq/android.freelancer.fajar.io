@@ -243,6 +243,39 @@ public class Setting
         }
     }
 
+    private synchronized void getStreamData(final VersionEntity serverVersion, Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
+        StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
+
+        final long ONE_MEGABYTE = 10 * 1024 * 1024;
+        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+            try {
+                JSONObject response = new JSONObject(new String(bytes));
+                if(response.has("data"))
+                {
+                    try
+                    {
+                        response = response.getJSONObject("data");
+                        if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
+                        {
+                            delegatable.delegate(onUpdate, callback, response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                            return;
+                        }
+                    }
+                    catch(JSONException ignored)
+                    {
+                        Log.i(CLASS_NAME, "JSONException");
+                    }
+                }
+            } catch (JSONException ignored) {
+            }
+            publishProgress(onUpdate, callback, SYNC_FAILED);
+        }).addOnFailureListener(exception -> {
+            publishProgress(onUpdate, callback, SYNC_FAILED);
+        });
+    }
+
     private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
