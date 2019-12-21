@@ -188,13 +188,17 @@ public class Setting
                                                     && _data[2] instanceof JSONArray
                                                     && _data[3] instanceof JSONArray)
                                             {
-                                                syncMessage.setIndeterminate(true);
                                                 syncMessage.setMessage("Process data");
                                                 publishProgress(syncMessage);
-
-                                                new Handler().postDelayed(() -> {
-                                                    publishProgress(SYNC_SUCCESS);
-                                                }, 3000);
+                                                parseData(context, _next1 -> {
+                                                    if (_next1.length > 0 && _next1[0] instanceof Integer) {
+                                                        subject.onNext((Integer) _next1[0]);
+                                                    }
+                                                }, (JSONArray) _data[0], (JSONArray) _data[1], (JSONArray) _data[2], (JSONArray) _data[3], _finalizing -> {
+                                                    if (_finalizing.length > 0 && _finalizing[0] instanceof Integer) {
+                                                        publishProgress((Integer) _finalizing[0]);
+                                                    }
+                                                });
                                             }
                                             else if(_data.length > 0 && _data[0] instanceof Integer)
                                             {
@@ -245,69 +249,40 @@ public class Setting
                 }
             }
         };
+    }
 
-
-
-
-        /*Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
-
-        return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
-
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-
-
-            }
-
-            @Override
-            protected AirtableDataFetcher doInBackground(Void... voids) {
-
-                AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
-                if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
-                    if (this.isCancelled())
-                        publishProgress(SYNC_CANCELLED);
-                    else
-                        publishProgress(SYNC_FAILED);
-                } else {
-                    MDM_Data dataModel = MDM_Data.getInstance(activity);
-                    dataModel.deleteAll();
-
-                    JSONArray data = airtableDataFetcher.getData();
-
-
-
-                    for (int i = -1, is = data.length(); ++i < is; ) {
-                        try {
-                            subject.onNext(i + 1);
-                            final JSONObject entry = data.getJSONObject(i);
-                            dataModel.insert(
-                                    entry.getInt("id"),
-                                    entry.getInt("year"),
-                                    entry.getString("no"),
-                                    entry.getString("description"),
-                                    entry.getString("status"),
-                                    entry.getInt("category"),
-                                    entry.getString("reference"));
-                        } catch (JSONException ignored) {
-                            Log.i(CLASS_NAME, "JSONException");
-                        }
-                    }
-
-                    MDM_Tag tagModel = MDM_Tag.getInstance(activity);
-                    tagModel.deleteAll();
-                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
-                    dataTagModel.deleteAll();
-                    publishProgress(SYNC_SUCCESS);
-                    reactive.dispose();
+    private static synchronized void parseData(final Context context, final TaskDelegatable subject, JSONArray data, JSONArray tag, JSONArray dataTag, JSONArray version, final TaskDelegatable delegatable) {
+        try
+        {
+            MDM_Data dataModel = MDM_Data.getInstance(context);
+            dataModel.deleteAll();
+            int is = data.length();
+            for (int i = -1; ++i < is; ) {
+                try {
+                    subject.delegate((int) 75 + ((i * 100.0 / is) * 0.25));
+                    final JSONObject entry = data.getJSONObject(i);
+                    dataModel.insert(
+                            entry.getInt("id"),
+                            entry.getInt("year"),
+                            entry.getString("no"),
+                            entry.getString("description"),
+                            entry.getString("status"),
+                            entry.getInt("category"),
+                            entry.getString("reference"));
+                } catch (JSONException ignored) {
+                    Log.i(CLASS_NAME, "JSONException");
                 }
-                return airtableDataFetcher;
             }
-
-            @Override
-
-        };*/
+            insertTag(context, tag);
+            insertDataTag(context, dataTag);
+            insertVersion(context, version);
+            delegatable.delegate(SYNC_SUCCESS);
+        }
+        catch (Exception e)
+        {
+            Log.e(CLASS_NAME, "Error", e);
+            delegatable.delegate(SYNC_FAILED);
+        }
     }
 
     private static synchronized void getStreamData(final Context context, final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
@@ -316,8 +291,6 @@ public class Setting
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
         File tmp = new File(context.getFilesDir(), "updates.json");
-        if(tmp.exists() && tmp.delete()) {
-        }
         islandRef.getFile(tmp)
                 .addOnSuccessListener(stream -> {
                     new AsyncTask<Void, Void, Object>() {
@@ -333,6 +306,7 @@ public class Setting
                             } catch (JSONException | IOException ignored) {
                                 Log.e(CLASS_NAME, "JSONException", ignored);
                             }
+                            tmp.delete();
                             return SYNC_FAILED;
                         }
 
@@ -444,6 +418,71 @@ public class Setting
         //Make sure you close all streams.
         fin.close();
         return ret;
+    }
+
+    private static synchronized void insertVersion(Context context, JSONArray version)
+    {
+        MDM_Version versionTag = MDM_Version.getInstance(context);
+        versionTag.deleteAll();
+        for(int i = -1, is = version.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = version.getJSONObject(i);
+                versionTag.insert(
+                        entry.getInt("id"),
+                        entry.getString("timestamp"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
+    }
+
+    private static  synchronized void insertTag(Context context, JSONArray tag)
+    {
+        MDM_Tag dataTag = MDM_Tag.getInstance(context);
+        dataTag.deleteAll();
+        for(int i = -1, is = tag.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = tag.getJSONObject(i);
+                dataTag.insert(
+                        entry.getInt("id"),
+                        entry.getString("name"),
+                        entry.getString("description"),
+                        entry.getString("color"),
+                        entry.getString("colortext"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
+    }
+
+    private static  synchronized void insertDataTag(Context context, JSONArray datatag)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
+        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(context);
+        dataTagModel.deleteAll();
+        for(int i = -1, is = datatag.length(); ++i < is; )
+        {
+            try
+            {
+                final JSONObject entry = datatag.getJSONObject(i);
+                dataTagModel.insert(
+                        entry.getInt("data"),
+                        entry.getInt("tag"));
+            }
+            catch(JSONException ignored)
+            {
+                Log.i(CLASS_NAME, "JSONException");
+            }
+        }
     }
 
     private interface TaskDelegatable
