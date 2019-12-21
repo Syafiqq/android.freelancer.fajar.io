@@ -167,9 +167,30 @@ public class Setting
                                         syncMessage.setMessage("Downloading data");
                                         publishProgress(syncMessage);
 
-                                        new Handler().postDelayed(() -> {
-                                            publishProgress(SYNC_SUCCESS);
-                                        }, 2000);
+                                        getStreamData((VersionEntity) _versions[0], _data -> {
+                                            if(_data.length > 3
+                                                    && _data[0] instanceof JSONArray
+                                                    && _data[1] instanceof JSONArray
+                                                    && _data[2] instanceof JSONArray
+                                                    && _data[3] instanceof JSONArray)
+                                            {
+                                                syncMessage.setIndeterminate(true);
+                                                syncMessage.setMessage("Process data");
+                                                publishProgress(syncMessage);
+
+                                                new Handler().postDelayed(() -> {
+                                                    publishProgress(SYNC_SUCCESS);
+                                                }, 3000);
+                                            }
+                                            else if(_data.length > 0 && _data[0] instanceof Integer)
+                                            {
+                                                publishProgress(_versions[0]);
+                                            }
+                                            else
+                                            {
+                                                publishProgress(SYNC_FAILED);
+                                            }
+                                        });
                                     }
                                 }
                                 else if(_versions.length > 0 && _versions[0] instanceof Integer)
@@ -279,7 +300,7 @@ public class Setting
         };*/
     }
 
-    private synchronized void getStreamData(final VersionEntity serverVersion, final TaskDelegatable delegatable)
+    private static synchronized void getStreamData(final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
