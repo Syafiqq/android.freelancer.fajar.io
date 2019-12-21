@@ -67,7 +67,6 @@ public class Setting
 
     private final Context context;
     public Social social;
-    private Observer syncObserve;
 
     private Setting(Context context)
     {
@@ -90,60 +89,75 @@ public class Setting
 
     public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
+        Disposable reactive;
+        PublishSubject<Integer> subject;
+        SyncMessage syncMessage = new SyncMessage();
+        Observer callback;
+
+        callback = (observable, o) -> activity.runOnUiThread(() -> {
+            switch ((Integer) o) {
+                case Setting.SYNC_FAILED: {
+                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
+                    if (onFailed != null)
+                        onFailed.run();
+                }
+                break;
+                case Setting.SYNC_SUCCESS: {
+                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
+                    if (onSuccess != null)
+                        onSuccess.run();
+                }
+                break;
+                case Setting.SYNC_EQUAL: {
+                    Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
+                }
+                break;
+                case Setting.SYNC_CANCELLED: {
+                    Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            if (onComplete != null)
+                onComplete.run();
+        });
+
+        subject = PublishSubject.create();
+
+        reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(integer -> {
+                    try {
+                        if(syncMessage == null) return;
+                        syncMessage.setCurrent(integer);
+                        publishProgress(onUpdate, callback, syncMessage);
+                    } catch (Exception ignored) {
+
+                    }
+                });
+        disposable.add(reactive);
+
+        getServerVersion(onUpdate, callback, (_onUpdate1, _onCallback1, versions) -> {
+            if(versions.length > 0 && versions[0] instanceof VersionEntity)
+            {
+
+            }
+            else
+            {
+                publishProgress(_onUpdate1, _onCallback1, SYNC_FAILED);
+            }
+        });
+
+        /*Log.i(CLASS_NAME, CLASS_PATH + ".doSync");
 
         return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
-            private Disposable reactive;
-            private PublishSubject<Integer> subject;
-            SyncMessage syncMessage = new SyncMessage();
-            private Observer callback;
+
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
 
-                callback = (observable, o) -> activity.runOnUiThread(() -> {
-                    switch ((Integer) o) {
-                        case Setting.SYNC_FAILED: {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_error), Toast.LENGTH_SHORT).show();
-                            if (onFailed != null)
-                                onFailed.run();
-                        }
-                        break;
-                        case Setting.SYNC_SUCCESS: {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_success), Toast.LENGTH_SHORT).show();
-                            if (onSuccess != null)
-                                onSuccess.run();
-                        }
-                        break;
-                        case Setting.SYNC_EQUAL: {
-                            Toast.makeText(activity, activity.getString(R.string.system_setting_server_version_equal), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                        case Setting.SYNC_CANCELLED: {
-                            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    }
-                    if (onComplete != null)
-                        onComplete.run();
-                });
 
-                subject = PublishSubject.create();
-
-                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.computation())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(integer -> {
-                            try {
-                                if(syncMessage == null) return;
-                                syncMessage.setCurrent(integer);
-                                publishProgress(syncMessage);
-                            } catch (Exception ignored) {
-
-                            }
-                        });
-                disposable.add(reactive);
             }
 
             @Override
@@ -198,15 +212,52 @@ public class Setting
             }
 
             @Override
-            protected void onProgressUpdate(Object... values) {
-                if(values == null || values.length <= 0) return;
-                else if(values[0] instanceof SyncMessage) {
-                    onUpdate.update(null, values[0]);
+
+        };*/
+    }
+
+    private static void publishProgress(Observer onUpdate, Observer callback, Object ...values) {
+        if(values == null || values.length <= 0) return;
+        else if(values[0] instanceof SyncMessage) {
+            onUpdate.update(null, values[0]);
+        }
+        else if(values[0] instanceof Integer) {
+            callback.update(null, values[0]);
+        }
+    }
+
+    private static synchronized void getServerVersion(Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
+
+        FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() > 0)
+                {
+                    VersionEntity serverVersion = dataSnapshot.getChildren().iterator().next().getValue(VersionEntity.class);
+                    if(serverVersion != null)
+                    {
+                        delegatable.delegate(onUpdate, callback, serverVersion);
+                        return;
+                    }
+                    publishProgress(onUpdate, callback, SYNC_FAILED);
                 }
-                else if(values[0] instanceof Integer) {
-                    callback.update(null, values[0]);
+                else {
+                    publishProgress(onUpdate, callback, SYNC_FAILED);
                 }
             }
-        };
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(CLASS_NAME, "onErrorResponse");
+                publishProgress(onUpdate, callback, SYNC_FAILED);
+            }
+        });
+    }
+
+    private interface TaskDelegatable
+    {
+        void delegate(Observer onUpdate, Observer callback, Object... data);
     }
 }
