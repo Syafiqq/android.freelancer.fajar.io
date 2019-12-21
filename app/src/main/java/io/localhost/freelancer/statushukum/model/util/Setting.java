@@ -12,10 +12,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StreamDownloadTask;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -24,11 +24,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Observer;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -173,7 +176,7 @@ public class Setting
                                         syncMessage.setCurrent(0);
                                         publishProgress(syncMessage);
 
-                                        getStreamData(_next -> {
+                                        getStreamData(context, _next -> {
                                             if(_next.length > 0 && _next[0] instanceof Integer)
                                             {
                                                 subject.onNext((Integer) _next[0]);
@@ -307,47 +310,62 @@ public class Setting
         };*/
     }
 
-    private static synchronized void getStreamData(final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
+    private static synchronized void getStreamData(final Context context, final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
-        Executor x = Executors.newSingleThreadExecutor();
-        islandRef.getStream()
-                .addOnSuccessListener(x, stream -> {
-                    try {
-                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                        int nRead;
-                        byte[] data = new byte[1024];
-                        while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
-                            buffer.write(data, 0, nRead);
-                        }
-                        buffer.flush();
-                        JSONObject response = new JSONObject(new String(buffer.toByteArray()));
-                        buffer.close();
-                        if (response.has("data")) {
+        File tmp = new File(context.getFilesDir(), "updates.json");
+        if(tmp.exists() && tmp.delete()) {
+        }
+        islandRef.getFile(tmp)
+                .addOnSuccessListener(stream -> {
+                    new AsyncTask<Void, Void, Object>() {
+                        @Override
+                        protected Object doInBackground(Void... voids) {
                             try {
-                                response = response.getJSONObject("data");
-                                if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
-                                    delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                                }
-                            } catch (JSONException ignored) {
+                                String text = null;
+                                if(tmp.exists())
+                                    text = getStringFromFile(tmp.getAbsolutePath());
+                                if(text == null)
+                                    return SYNC_FAILED;
+                                return new JSONObject(text);
+                            } catch (JSONException | IOException ignored) {
                                 Log.e(CLASS_NAME, "JSONException", ignored);
                             }
+                            return SYNC_FAILED;
                         }
-                    } catch (JSONException | IOException ignored) {
-                        Log.e(CLASS_NAME, "JSONException", ignored);
-                    }
-                    delegatable.delegate(SYNC_FAILED);
+
+                        @Override
+                        protected void onPostExecute(Object o) {
+                            if(o instanceof Integer) {
+                                delegatable.delegate((Integer) o);
+                            } else if (o instanceof JSONObject) {
+                                JSONObject response = (JSONObject) o;
+                                if (response.has("data")) {
+                                    try {
+                                        response = response.getJSONObject("data");
+                                        if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
+                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                                        }
+                                    } catch (JSONException ignored) {
+                                        Log.e(CLASS_NAME, "JSONException", ignored);
+                                    }
+                                }
+                            } else {
+                                delegatable.delegate(SYNC_FAILED);
+                            }
+                        }
+                    }.execute();
                 })
                 .addOnFailureListener(exception -> {
                     delegatable.delegate(SYNC_FAILED);
                 })
-                .addOnProgressListener(x, taskSnapshot -> {
+                .addOnProgressListener(taskSnapshot -> {
                     //calculating progress percentage
-                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount() * 0.7;
                     //displaying percentage in progress dialog
-                    Log.d("Uploaded ", ((int) progress) + "%...");
+                    subject.delegate((int) progress);
                 });
     }
 
@@ -399,6 +417,33 @@ public class Setting
                 delegatable.delegate(SYNC_FAILED);
             }
         });
+    }
+
+    public static String convertStreamToString(InputStream is) throws IOException {
+        // http://www.java2s.com/Code/Java/File-Input-Output/ConvertInputStreamtoString.htm
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        Boolean firstLine = true;
+        while ((line = reader.readLine()) != null) {
+            if(firstLine){
+                sb.append(line);
+                firstLine = false;
+            } else {
+                sb.append("\n").append(line);
+            }
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    public static String getStringFromFile(String filePath) throws IOException {
+        File fl = new File(filePath);
+        FileInputStream fin = new FileInputStream(fl);
+        String ret = convertStreamToString(fin);
+        //Make sure you close all streams.
+        fin.close();
+        return ret;
     }
 
     private interface TaskDelegatable
