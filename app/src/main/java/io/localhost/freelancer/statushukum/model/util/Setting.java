@@ -13,7 +13,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StreamDownloadTask;
 
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -25,6 +27,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Observer;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -308,52 +312,42 @@ public class Setting
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
+        Executor x = Executors.newSingleThreadExecutor();
         islandRef.getStream()
-                .addOnSuccessListener(stream -> {
-                        new AsyncTask<Void, Void, Object>() {
-                            @Override
-                            protected Object doInBackground(Void... voids) {
-                                try {
-                                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                                    int nRead;
-                                    byte[] data = new byte[1024];
-                                    while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
-                                        buffer.write(data, 0, nRead);
-                                    }
-                                    buffer.flush();
-                                    JSONObject response = new JSONObject(new String(buffer.toByteArray()));
-                                    buffer.close();
-                                    return response;
-                                } catch (JSONException | IOException ignored) {
-                                    Log.e(CLASS_NAME, "JSONException", ignored);
+                .addOnSuccessListener(x, stream -> {
+                    try {
+                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                        int nRead;
+                        byte[] data = new byte[1024];
+                        while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
+                            buffer.write(data, 0, nRead);
+                        }
+                        buffer.flush();
+                        JSONObject response = new JSONObject(new String(buffer.toByteArray()));
+                        buffer.close();
+                        if (response.has("data")) {
+                            try {
+                                response = response.getJSONObject("data");
+                                if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
+                                    delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
                                 }
-                                return SYNC_FAILED;
+                            } catch (JSONException ignored) {
+                                Log.e(CLASS_NAME, "JSONException", ignored);
                             }
-
-                            @Override
-                            protected void onPostExecute(Object o) {
-                                if(o instanceof Integer) {
-                                    delegatable.delegate((Integer) o);
-                                } else if (o instanceof JSONObject) {
-                                    JSONObject response = (JSONObject) o;
-                                    if (response.has("data")) {
-                                        try {
-                                            response = response.getJSONObject("data");
-                                            if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
-                                                delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                                            }
-                                        } catch (JSONException ignored) {
-                                            Log.e(CLASS_NAME, "JSONException", ignored);
-                                        }
-                                    }
-                                } else {
-                                    delegatable.delegate(SYNC_FAILED);
-                                }
-                            }
-                        }.execute();
+                        }
+                    } catch (JSONException | IOException ignored) {
+                        Log.e(CLASS_NAME, "JSONException", ignored);
+                    }
+                    delegatable.delegate(SYNC_FAILED);
                 })
                 .addOnFailureListener(exception -> {
                     delegatable.delegate(SYNC_FAILED);
+                })
+                .addOnProgressListener(x, taskSnapshot -> {
+                    //calculating progress percentage
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    //displaying percentage in progress dialog
+                    Log.d("Uploaded ", ((int) progress) + "%...");
                 });
     }
 
