@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Observer;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.localhost.freelancer.statushukum.R;
@@ -309,36 +310,47 @@ public class Setting
 
         islandRef.getStream()
                 .addOnSuccessListener(stream -> {
-                    try {
-                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                        int nRead;
-                        byte[] data = new byte[1024];
-                        while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
-                            buffer.write(data, 0, nRead);
-                        }
-                        buffer.flush();
-                        JSONObject response = new JSONObject(new String(buffer.toByteArray()));
-                        buffer.close();
-                        if(response.has("data"))
-                        {
-                            try
-                            {
-                                response = response.getJSONObject("data");
-                                if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
-                                {
-                                    delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                                    return;
+                        new AsyncTask<Void, Void, Object>() {
+                            @Override
+                            protected Object doInBackground(Void... voids) {
+                                try {
+                                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                                    int nRead;
+                                    byte[] data = new byte[1024];
+                                    while ((nRead = stream.getStream().read(data, 0, data.length)) != -1) {
+                                        buffer.write(data, 0, nRead);
+                                    }
+                                    buffer.flush();
+                                    JSONObject response = new JSONObject(new String(buffer.toByteArray()));
+                                    buffer.close();
+                                    return response;
+                                } catch (JSONException | IOException ignored) {
+                                    Log.e(CLASS_NAME, "JSONException", ignored);
+                                }
+                                return SYNC_FAILED;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Object o) {
+                                if(o instanceof Integer) {
+                                    delegatable.delegate((Integer) o);
+                                } else if (o instanceof JSONObject) {
+                                    JSONObject response = (JSONObject) o;
+                                    if (response.has("data")) {
+                                        try {
+                                            response = response.getJSONObject("data");
+                                            if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
+                                                delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                                            }
+                                        } catch (JSONException ignored) {
+                                            Log.e(CLASS_NAME, "JSONException", ignored);
+                                        }
+                                    }
+                                } else {
+                                    delegatable.delegate(SYNC_FAILED);
                                 }
                             }
-                            catch(JSONException ignored)
-                            {
-                                Log.e(CLASS_NAME, "JSONException", ignored);
-                            }
-                        }
-                    } catch (JSONException | IOException ignored) {
-                        Log.e(CLASS_NAME, "JSONException", ignored);
-                    }
-                    delegatable.delegate(SYNC_FAILED);
+                        }.execute();
                 })
                 .addOnFailureListener(exception -> {
                     delegatable.delegate(SYNC_FAILED);
