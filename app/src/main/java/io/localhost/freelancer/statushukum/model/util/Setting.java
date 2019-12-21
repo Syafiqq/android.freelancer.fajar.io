@@ -301,10 +301,11 @@ public class Setting
                     }
                     catch(JSONException ignored)
                     {
-                        Log.i(CLASS_NAME, "JSONException");
+                        Log.e(CLASS_NAME, "JSONException", ignored);
                     }
                 }
             } catch (JSONException ignored) {
+                Log.e(CLASS_NAME, "JSONException", ignored);
             }
             delegatable.delegate(SYNC_FAILED);
         }).addOnFailureListener(exception -> {
