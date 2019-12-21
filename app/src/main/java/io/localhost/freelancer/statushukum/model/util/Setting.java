@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -137,6 +138,10 @@ public class Setting
                 });
         disposable.add(reactive);
 
+        syncMessage.setIndeterminate(true);
+        syncMessage.setMessage("Check Version");
+        publishProgress(onUpdate, callback, syncMessage);
+
         getServerVersion(onUpdate, callback, (_onUpdate1, _onCallback1, versions) -> {
             if(versions.length > 0 && versions[0] instanceof VersionEntity)
             {
@@ -150,7 +155,13 @@ public class Setting
                         }
                         else
                         {
+                            syncMessage.setIndeterminate(true);
+                            syncMessage.setMessage("Downloading data");
+                            publishProgress(_onUpdate2, _onCallback2, syncMessage);
 
+                            new Handler().postDelayed(() -> {
+                                publishProgress(_onUpdate2, _onCallback2, SYNC_SUCCESS);
+                            }, 2000);
                         }
                     }
                     else
@@ -179,9 +190,6 @@ public class Setting
 
             @Override
             protected AirtableDataFetcher doInBackground(Void... voids) {
-                syncMessage.setIndeterminate(true);
-                syncMessage.setMessage("Download Data");
-                publishProgress(syncMessage);
 
                 AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
                 if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
