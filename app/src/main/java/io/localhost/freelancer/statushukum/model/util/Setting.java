@@ -146,7 +146,7 @@ public class Setting
             protected Void doInBackground(Void... voids) {
                 syncMessage.setIndeterminate(true);
                 syncMessage.setMessage("Check Version");
-                publishProgress(onUpdate, callback, syncMessage);
+                publishProgress(syncMessage);
 
                 getServerVersion(versions -> {
                     if(versions.length > 0)
