@@ -87,7 +87,7 @@ public class Setting
         return Setting.ourInstance;
     }
 
-    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
+    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Context context, final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
         Disposable reactive;
         PublishSubject<Integer> subject;
@@ -140,7 +140,24 @@ public class Setting
         getServerVersion(onUpdate, callback, (_onUpdate1, _onCallback1, versions) -> {
             if(versions.length > 0 && versions[0] instanceof VersionEntity)
             {
+                getDBVersion(context, (VersionEntity) versions[0], _onUpdate1, _onCallback1, (_onUpdate2, _onCallback2, _versions) -> {
+                    if(versions.length > 1 && _versions[0] instanceof VersionEntity && _versions[1] instanceof LocalDateTime)
+                    {
+                        LocalDateTime _serverVersion = LocalDateTime.parse(((VersionEntity) _versions[0]).timestamp, timeStampFormat);
+                        if(_serverVersion.isEqual((LocalDateTime) _versions[1]))
+                        {
+                            publishProgress(_onUpdate2, _onCallback2, SYNC_EQUAL);
+                        }
+                        else
+                        {
 
+                        }
+                    }
+                    else
+                    {
+                        publishProgress(_onUpdate2, _onCallback2, SYNC_FAILED);
+                    }
+                });
             }
             else
             {
@@ -223,6 +240,26 @@ public class Setting
         }
         else if(values[0] instanceof Integer) {
             callback.update(null, values[0]);
+        }
+    }
+
+    private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, Observer onUpdate, Observer callback, final TaskDelegatable delegatable)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
+        if(serverVersion == null)
+        {
+            publishProgress(onUpdate, callback, SYNC_FAILED);
+        }
+        else
+        {
+            final MDM_Version versionData = MDM_Version.getInstance(context);
+            LocalDateTime defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
+            final LocalDateTime latestData = versionData.getVersion();
+            if((latestData != null) && defaultTimeStamp.isBefore(latestData))
+            {
+                defaultTimeStamp = latestData;
+            }
+            delegatable.delegate(onUpdate, callback, serverVersion, defaultTimeStamp);
         }
     }
 
