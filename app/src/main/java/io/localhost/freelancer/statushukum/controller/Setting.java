@@ -87,7 +87,7 @@ public class Setting extends AppCompatActivity
                             progressMessage.setText(syncMessage.getMessage());
                         }
                     };
-                    AsyncTask<Void, Object, AirtableDataFetcher> task = io.localhost.freelancer.statushukum.model.util.Setting.doSync(
+                    AsyncTask<Void, Object, Void> task = io.localhost.freelancer.statushukum.model.util.Setting.doSync(
                             Setting.this,
                             null,
                             null,

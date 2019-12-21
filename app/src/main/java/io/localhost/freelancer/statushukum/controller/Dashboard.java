@@ -288,7 +288,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         progressBar.setMessage(syncMessage.getMessage());
                     }
                 };
-                AsyncTask<Void, Object, AirtableDataFetcher> task = Setting.doSync(
+                AsyncTask<Void, Object, Void> task = Setting.doSync(
                         this,
                         () -> new Handler().postDelayed(this::updateContent, 500),
                         null,
