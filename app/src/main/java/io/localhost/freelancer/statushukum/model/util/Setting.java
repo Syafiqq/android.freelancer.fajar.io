@@ -163,11 +163,18 @@ public class Setting
                                     }
                                     else
                                     {
-                                        syncMessage.setIndeterminate(true);
+                                        syncMessage.setIndeterminate(false);
                                         syncMessage.setMessage("Downloading data");
+                                        syncMessage.setMax(100);
+                                        syncMessage.setCurrent(0);
                                         publishProgress(syncMessage);
 
-                                        getStreamData((VersionEntity) _versions[0], _data -> {
+                                        getStreamData(_next -> {
+                                            if(_next.length > 0 && _next[0] instanceof Integer)
+                                            {
+                                                subject.onNext((Integer) _next[0]);
+                                            }
+                                        }, (VersionEntity) _versions[0], _data -> {
                                             if(_data.length > 3
                                                     && _data[0] instanceof JSONArray
                                                     && _data[1] instanceof JSONArray
@@ -262,11 +269,7 @@ public class Setting
 
                     JSONArray data = airtableDataFetcher.getData();
 
-                    syncMessage.setIndeterminate(false);
-                    syncMessage.setMessage("Update Data");
-                    syncMessage.setMax(data.length());
-                    syncMessage.setCurrent(0);
-                    publishProgress(syncMessage);
+
 
                     for (int i = -1, is = data.length(); ++i < is; ) {
                         try {
@@ -300,38 +303,40 @@ public class Setting
         };*/
     }
 
-    private static synchronized void getStreamData(final VersionEntity serverVersion, final TaskDelegatable delegatable)
+    private static synchronized void getStreamData(final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
-        final long ONE_MEGABYTE = 10 * 1024 * 1024;
-        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
-            try {
-                JSONObject response = new JSONObject(new String(bytes));
-                if(response.has("data"))
-                {
-                    try
-                    {
-                        response = response.getJSONObject("data");
-                        if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
+        final long BUFFER = 10 * 1024 * 1024;
+        islandRef.getBytes(BUFFER)
+                .addOnSuccessListener(bytes -> {
+                    try {
+                        JSONObject response = new JSONObject(new String(bytes));
+                        if(response.has("data"))
                         {
-                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                            return;
+                            try
+                            {
+                                response = response.getJSONObject("data");
+                                if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
+                                {
+                                    delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                                    return;
+                                }
+                            }
+                            catch(JSONException ignored)
+                            {
+                                Log.e(CLASS_NAME, "JSONException", ignored);
+                            }
                         }
-                    }
-                    catch(JSONException ignored)
-                    {
+                    } catch (JSONException ignored) {
                         Log.e(CLASS_NAME, "JSONException", ignored);
                     }
-                }
-            } catch (JSONException ignored) {
-                Log.e(CLASS_NAME, "JSONException", ignored);
-            }
-            delegatable.delegate(SYNC_FAILED);
-        }).addOnFailureListener(exception -> {
-            delegatable.delegate(SYNC_FAILED);
-        });
+                    delegatable.delegate(SYNC_FAILED);
+                })
+                .addOnFailureListener(exception -> {
+                    delegatable.delegate(SYNC_FAILED);
+                });
     }
 
     private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, final TaskDelegatable delegatable)
