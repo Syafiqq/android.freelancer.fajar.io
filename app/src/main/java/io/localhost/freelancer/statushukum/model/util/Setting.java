@@ -2,10 +2,8 @@ package io.localhost.freelancer.statushukum.model.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,7 +12,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 
 import org.joda.time.LocalDateTime;
@@ -24,7 +24,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Observer;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.localhost.freelancer.statushukum.R;
@@ -67,11 +75,10 @@ public class Setting
 
     private final Context context;
     public Social social;
-    private Observer syncObserve;
 
     private Setting(Context context)
     {
-
+        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
         this.context = context;
         this.social = new Social();
@@ -79,7 +86,7 @@ public class Setting
 
     public static Setting getInstance(final Context context)
     {
-
+        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
 
         if(Setting.ourInstance == null)
         {
@@ -88,30 +95,16 @@ public class Setting
         return Setting.ourInstance;
     }
 
-    public static void sendFeedback(Context context)
+    public static synchronized AsyncTask<Void, Object, Void> doSync(final Context context, final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
     {
-        final Resources resources = context.getResources();
-        final Intent mailto = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:"));
-        mailto.putExtra(Intent.EXTRA_EMAIL, new String[] {resources.getString(R.string.activity_setting_mailto_receipt)});
-        mailto.putExtra(Intent.EXTRA_SUBJECT, resources.getString(R.string.activity_setting_mailto_subject));
-        mailto.putExtra(Intent.EXTRA_TEXT, resources.getString(R.string.activity_setting_mailto_content));
-        context.startActivity(Intent.createChooser(mailto, "Send Feedback:"));
-    }
-
-    public static synchronized AsyncTask<Void, Object, AirtableDataFetcher> doSync(final Runnable onSuccess, final Runnable onFailed, final Runnable onComplete, Observer onUpdate, final Activity activity, CompositeDisposable disposable)
-    {
-
-
-        return new AirtableDataFetcherTask(NetworkRequestQueue.getInstance(activity).getRequestQueue()) {
-            private Disposable reactive;
-            private PublishSubject<Integer> subject;
+        return new AsyncTask<Void, Object, Void>() {
+            Disposable reactive;
+            PublishSubject<Integer> subject;
             SyncMessage syncMessage = new SyncMessage();
-            private Observer callback;
+            Observer callback;
 
             @Override
             protected void onPreExecute() {
-                super.onPreExecute();
-
                 callback = (observable, o) -> activity.runOnUiThread(() -> {
                     switch ((Integer) o) {
                         case Setting.SYNC_FAILED: {
@@ -141,7 +134,7 @@ public class Setting
 
                 subject = PublishSubject.create();
 
-                reactive =subject.throttleFirst(100L, TimeUnit.MILLISECONDS)
+                reactive =subject.throttleFirst(1000L, TimeUnit.MILLISECONDS)
                         .subscribeOn(Schedulers.computation())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(integer -> {
@@ -157,54 +150,92 @@ public class Setting
             }
 
             @Override
-            protected AirtableDataFetcher doInBackground(Void... voids) {
+            protected Void doInBackground(Void... voids) {
                 syncMessage.setIndeterminate(true);
-                syncMessage.setMessage("Download Data");
+                syncMessage.setMessage("Check Version");
                 publishProgress(syncMessage);
 
-                AirtableDataFetcher airtableDataFetcher =  super.doInBackground(voids);
-                if (airtableDataFetcher == null || airtableDataFetcher.ex != null) {
-                    if (this.isCancelled())
-                        publishProgress(SYNC_CANCELLED);
-                    else
-                        publishProgress(SYNC_FAILED);
-                } else {
-                    MDM_Data dataModel = MDM_Data.getInstance(activity);
-                    dataModel.deleteAll();
+                getServerVersion(versions -> {
+                    if(versions.length > 0)
+                    {
+                        if(versions[0] instanceof VersionEntity)
+                        {
+                            getDBVersion(context, (VersionEntity) versions[0], (_versions) -> {
+                                if(_versions.length > 1 && _versions[0] instanceof VersionEntity && _versions[1] instanceof LocalDateTime)
+                                {
+                                    LocalDateTime _serverVersion = LocalDateTime.parse(((VersionEntity) _versions[0]).timestamp, timeStampFormat);
+                                    if(_serverVersion.isEqual((LocalDateTime) _versions[1]))
+                                    {
+                                        publishProgress(SYNC_EQUAL);
+                                    }
+                                    else
+                                    {
+                                        syncMessage.setIndeterminate(false);
+                                        syncMessage.setMessage("Downloading data");
+                                        syncMessage.setMax(100);
+                                        syncMessage.setCurrent(0);
+                                        publishProgress(syncMessage);
 
-                    JSONArray data = airtableDataFetcher.getData();
-
-                    syncMessage.setIndeterminate(false);
-                    syncMessage.setMessage("Update Data");
-                    syncMessage.setMax(data.length());
-                    syncMessage.setCurrent(0);
-                    publishProgress(syncMessage);
-
-                    for (int i = -1, is = data.length(); ++i < is; ) {
-                        try {
-                            subject.onNext(i + 1);
-                            final JSONObject entry = data.getJSONObject(i);
-                            dataModel.insert(
-                                    entry.getInt("id"),
-                                    entry.getInt("year"),
-                                    entry.getString("no"),
-                                    entry.getString("description"),
-                                    entry.getString("status"),
-                                    entry.getInt("category"),
-                                    entry.getString("reference"));
-                        } catch (JSONException ignored) {
-
+                                        getStreamData(context, _next -> {
+                                            if(_next.length > 0 && _next[0] instanceof Integer)
+                                            {
+                                                subject.onNext((Integer) _next[0]);
+                                            }
+                                        }, (VersionEntity) _versions[0], _data -> {
+                                            if(_data.length > 3
+                                                    && _data[0] instanceof JSONArray
+                                                    && _data[1] instanceof JSONArray
+                                                    && _data[2] instanceof JSONArray
+                                                    && _data[3] instanceof JSONArray)
+                                            {
+                                                syncMessage.setMessage("Process data");
+                                                publishProgress(syncMessage);
+                                                parseData(context, _next1 -> {
+                                                    if (_next1.length > 0 && _next1[0] instanceof Integer) {
+                                                        subject.onNext((Integer) _next1[0]);
+                                                    }
+                                                }, (JSONArray) _data[0], (JSONArray) _data[1], (JSONArray) _data[2], (JSONArray) _data[3], _finalizing -> {
+                                                    if (_finalizing.length > 0 && _finalizing[0] instanceof Integer) {
+                                                        publishProgress((Integer) _finalizing[0]);
+                                                    }
+                                                });
+                                            }
+                                            else if(_data.length > 0 && _data[0] instanceof Integer)
+                                            {
+                                                publishProgress(_versions[0]);
+                                            }
+                                            else
+                                            {
+                                                publishProgress(SYNC_FAILED);
+                                            }
+                                        });
+                                    }
+                                }
+                                else if(_versions.length > 0 && _versions[0] instanceof Integer)
+                                {
+                                    publishProgress(_versions[0]);
+                                }
+                                else
+                                {
+                                    publishProgress(SYNC_FAILED);
+                                }
+                            });
+                        }
+                        else if(versions[0] instanceof Integer)
+                        {
+                            publishProgress(versions[0]);
+                        }
+                        else
+                        {
+                            publishProgress(SYNC_FAILED);
                         }
                     }
-
-                    MDM_Tag tagModel = MDM_Tag.getInstance(activity);
-                    tagModel.deleteAll();
-                    MDM_DataTag dataTagModel = MDM_DataTag.getInstance(activity);
-                    dataTagModel.deleteAll();
-                    publishProgress(SYNC_SUCCESS);
-                    reactive.dispose();
-                }
-                return airtableDataFetcher;
+                    else
+                    {
+                        publishProgress(SYNC_FAILED);
+                    }
+                });
+                return null;
             }
 
             @Override
@@ -220,14 +251,173 @@ public class Setting
         };
     }
 
-    public synchronized void doSync(Observer message, Observer onUpdate)
-    {
-
+    private static synchronized void parseData(final Context context, final TaskDelegatable subject, JSONArray data, JSONArray tag, JSONArray dataTag, JSONArray version, final TaskDelegatable delegatable) {
+        try
+        {
+            MDM_Data dataModel = MDM_Data.getInstance(context);
+            dataModel.deleteAll();
+            int is = data.length();
+            for (int i = -1; ++i < is; ) {
+                try {
+                    subject.delegate((int) (75 + ((i * 100.0 / is) * 0.25)));
+                    final JSONObject entry = data.getJSONObject(i);
+                    dataModel.insert(
+                            entry.getInt("id"),
+                            entry.getInt("year"),
+                            entry.getString("no"),
+                            entry.getString("description"),
+                            entry.getString("status"),
+                            entry.getInt("category"),
+                            entry.getString("reference"));
+                } catch (JSONException ignored) {
+                    Log.i(CLASS_NAME, "JSONException");
+                }
+            }
+            insertTag(context, tag);
+            insertDataTag(context, dataTag);
+            insertVersion(context, version);
+            delegatable.delegate(SYNC_SUCCESS);
+        }
+        catch (Exception e)
+        {
+            Log.e(CLASS_NAME, "Error", e);
+            delegatable.delegate(SYNC_FAILED);
+        }
     }
 
-    private void insertVersion(JSONArray version)
+    private static synchronized void getStreamData(final Context context, final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
-        MDM_Version versionTag = MDM_Version.getInstance(this.context);
+        Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
+        StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
+
+        File tmp = new File(context.getFilesDir(), "updates.json");
+        islandRef.getFile(tmp)
+                .addOnSuccessListener(stream -> {
+                    new AsyncTask<Void, Void, Object>() {
+                        @Override
+                        protected Object doInBackground(Void... voids) {
+                            try {
+                                String text = null;
+                                if(tmp.exists())
+                                    text = getStringFromFile(tmp.getAbsolutePath());
+                                if(text == null) {
+                                    delegatable.delegate(SYNC_FAILED);
+                                    return null;
+                                }
+                                JSONObject response = new JSONObject(text);
+                                if (response.has("data")) {
+                                    try {
+                                        response = response.getJSONObject("data");
+                                        if (response.has("data") && response.has("tag") && response.has("datatag") && response.has("version")) {
+                                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
+                                            tmp.delete();
+                                            return null;
+                                        }
+                                    } catch (JSONException ignored) {
+                                        Log.e(CLASS_NAME, "JSONException", ignored);
+                                    }
+                                }
+                            } catch (JSONException | IOException ignored) {
+                                Log.e(CLASS_NAME, "JSONException", ignored);
+                            }
+                            tmp.delete();
+                            delegatable.delegate(SYNC_FAILED);
+                            return null;
+                        }
+                    }.execute();
+                })
+                .addOnFailureListener(exception -> {
+                    delegatable.delegate(SYNC_FAILED);
+                })
+                .addOnProgressListener(taskSnapshot -> {
+                    //calculating progress percentage
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount() * 0.7;
+                    //displaying percentage in progress dialog
+                    subject.delegate((int) progress);
+                });
+    }
+
+    private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, final TaskDelegatable delegatable)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
+        if(serverVersion == null)
+        {
+            delegatable.delegate(SYNC_FAILED);
+        }
+        else
+        {
+            final MDM_Version versionData = MDM_Version.getInstance(context);
+            LocalDateTime defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
+            final LocalDateTime latestData = versionData.getVersion();
+            if((latestData != null) && defaultTimeStamp.isBefore(latestData))
+            {
+                defaultTimeStamp = latestData;
+            }
+            delegatable.delegate(serverVersion, defaultTimeStamp);
+        }
+    }
+
+    private static synchronized void getServerVersion(final TaskDelegatable delegatable)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
+
+        FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getChildrenCount() > 0)
+                {
+                    VersionEntity serverVersion = dataSnapshot.getChildren().iterator().next().getValue(VersionEntity.class);
+                    if(serverVersion != null)
+                    {
+                        delegatable.delegate(serverVersion);
+                        return;
+                    }
+                    delegatable.delegate(SYNC_FAILED);
+                }
+                else {
+                    delegatable.delegate(SYNC_FAILED);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.i(CLASS_NAME, "onErrorResponse");
+                delegatable.delegate(SYNC_FAILED);
+            }
+        });
+    }
+
+    public static String convertStreamToString(InputStream is) throws IOException {
+        // http://www.java2s.com/Code/Java/File-Input-Output/ConvertInputStreamtoString.htm
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line = null;
+        Boolean firstLine = true;
+        while ((line = reader.readLine()) != null) {
+            if(firstLine){
+                sb.append(line);
+                firstLine = false;
+            } else {
+                sb.append("\n").append(line);
+            }
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    public static String getStringFromFile(String filePath) throws IOException {
+        File fl = new File(filePath);
+        FileInputStream fin = new FileInputStream(fl);
+        String ret = convertStreamToString(fin);
+        //Make sure you close all streams.
+        fin.close();
+        return ret;
+    }
+
+    private static synchronized void insertVersion(Context context, JSONArray version)
+    {
+        MDM_Version versionTag = MDM_Version.getInstance(context);
+        versionTag.deleteAll();
         for(int i = -1, is = version.length(); ++i < is; )
         {
             try
@@ -239,14 +429,15 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                Log.i(CLASS_NAME, "JSONException");
             }
         }
     }
 
-    private synchronized void insertTag(JSONArray tag)
+    private static  synchronized void insertTag(Context context, JSONArray tag)
     {
-        MDM_Tag dataTag = MDM_Tag.getInstance(this.context);
+        MDM_Tag dataTag = MDM_Tag.getInstance(context);
+        dataTag.deleteAll();
         for(int i = -1, is = tag.length(); ++i < is; )
         {
             try
@@ -261,16 +452,17 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                Log.i(CLASS_NAME, "JSONException");
             }
         }
     }
 
-    private synchronized void insertDataTag(JSONArray datatag)
+    private static  synchronized void insertDataTag(Context context, JSONArray datatag)
     {
+        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
 
-
-        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(this.context);
+        MDM_DataTag dataTagModel = MDM_DataTag.getInstance(context);
+        dataTagModel.deleteAll();
         for(int i = -1, is = datatag.length(); ++i < is; )
         {
             try
@@ -282,123 +474,9 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                Log.i(CLASS_NAME, "JSONException");
             }
         }
-    }
-
-    private synchronized void insertData(JSONArray data)
-    {
-        MDM_Data dataModel = MDM_Data.getInstance(this.context);
-        for(int i = -1, is = data.length(); ++i < is; )
-        {
-            try
-            {
-                final JSONObject entry = data.getJSONObject(i);
-                dataModel.insert(
-                        entry.getInt("id"),
-                        entry.getInt("year"),
-                        entry.getString("no"),
-                        entry.getString("description"),
-                        entry.getString("status"),
-                        entry.getInt("category"),
-                        entry.getString("reference"));
-            }
-            catch(JSONException ignored)
-            {
-
-            }
-        }
-    }
-
-    private synchronized void getStreamData(final VersionEntity serverVersion, final LocalDateTime dbVersion, final TaskDelegatable delegatable)
-    {
-
-        LocalDateTime _serverVersion = LocalDateTime.parse(serverVersion.timestamp, timeStampFormat);
-        if(_serverVersion.isEqual(dbVersion))
-        {
-            Setting.this.syncObserve.update(null, SYNC_EQUAL);
-            return;
-        }
-        StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
-
-        final long ONE_MEGABYTE = 10 * 1024 * 1024;
-        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
-            try {
-                JSONObject response = new JSONObject(new String(bytes));
-                if(response.has("data"))
-                {
-                    try
-                    {
-                        response = response.getJSONObject("data");
-                        if(response.has("data") && response.has("tag") && response.has("datatag") && response.has("version"))
-                        {
-                            delegatable.delegate(response.getJSONArray("data"), response.getJSONArray("tag"), response.getJSONArray("datatag"), response.getJSONArray("version"));
-                            return;
-                        }
-                    }
-                    catch(JSONException ignored)
-                    {
-
-                    }
-                }
-            } catch (JSONException ignored) {
-            }
-            Setting.this.syncObserve.update(null, SYNC_FAILED);
-        }).addOnFailureListener(exception -> {
-            Setting.this.syncObserve.update(null, SYNC_FAILED);
-        });
-    }
-
-    private synchronized void getDBVersion(VersionEntity serverVersion, TaskDelegatable delegatable)
-    {
-
-        if(serverVersion == null)
-        {
-            this.syncObserve.update(null, SYNC_FAILED);
-            return;
-        }
-        else
-        {
-            final MDM_Version versionData = MDM_Version.getInstance(this.context);
-            LocalDateTime defaultTimeStamp = LocalDateTime.parse("2000-01-01 00:00:00", timeStampFormat);
-            final LocalDateTime latestData = versionData.getVersion();
-            if((latestData != null) && defaultTimeStamp.isBefore(latestData))
-            {
-                defaultTimeStamp = latestData;
-            }
-            delegatable.delegate(serverVersion, defaultTimeStamp);
-        }
-    }
-
-    private synchronized void getServerVersion(final TaskDelegatable delegatable)
-    {
-
-
-        FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getChildrenCount() > 0)
-                {
-                    VersionEntity serverVersion = dataSnapshot.getChildren().iterator().next().getValue(VersionEntity.class);
-                    if(serverVersion != null)
-                    {
-                        delegatable.delegate(serverVersion);
-                        return;
-                    }
-                    Setting.this.syncObserve.update(null, SYNC_FAILED);
-                }
-                else {
-                    Setting.this.syncObserve.update(null, SYNC_FAILED);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Setting.this.syncObserve.update(null, SYNC_FAILED);
-            }
-        });
     }
 
     private interface TaskDelegatable
