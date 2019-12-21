@@ -50,6 +50,7 @@ public class Setting extends AppCompatActivity
         final ProgressBar progress = (ProgressBar) super.findViewById(R.id.content_setting_pb_progress);
         final TextView progressMessage = (TextView) super.findViewById(R.id.progress_message);
         final TextView percent = (TextView) super.findViewById(R.id.tv_precent);
+        percent.setVisibility(View.GONE);
         final TextView count = (TextView) super.findViewById(R.id.tv_count);
         final View holderProgress = super.findViewById(R.id.progress_holder);
         final View holderPercent = super.findViewById(R.id.percent_holder);

@@ -174,6 +174,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         this.progressBar = new ProgressDialog(Dashboard.this);
         progressBar.setMessage(super.getResources().getString(R.string.content_setting_s_sync_label_desc));
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setProgressPercentFormat(null);
         progressBar.setIndeterminate(true);
         progressBar.setCancelable(false);
     }
@@ -270,6 +271,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         if(isIndeterminate == null || isIndeterminate != syncMessage.isIndeterminate()) {
                             progressBar.dismiss();
                             progressBar = new ProgressDialog(Dashboard.this);
+                            progressBar.setProgressPercentFormat(null);
                             isIndeterminate = syncMessage.isIndeterminate();
                             if(isIndeterminate) {
                                 progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
