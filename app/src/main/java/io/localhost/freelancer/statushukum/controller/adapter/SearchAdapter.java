@@ -5,7 +5,6 @@ import android.content.Intent;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +55,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     public SearchAdapter(final List<MDM_Data.MetadataSearchable> yearList, final Context context, int dataCategory)
     {
         super();
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
 
         this.yearList = yearList;
         this.context = context;
@@ -65,7 +63,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
 
     public void update(final List<MDM_Data.MetadataSearchable> MetadataSearchable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".update");
 
         this.yearList.clear();
         this.yearList.addAll(MetadataSearchable);
@@ -120,7 +117,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
             @Override
             public void onClick(View view)
             {
-                Log.i(CLASS_NAME, CLASS_PATH + ".onClick");
 
                 final Context context = SearchAdapter.this.context;
                 final int id = tmpMetadata.getId();

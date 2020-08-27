@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -81,10 +80,6 @@ public class Social
                 final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
                 if(!resolveInfoList.isEmpty())
                 {
-                    for(final ResolveInfo resolveInfo : resolveInfoList)
-                    {
-                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                    }
                     for(ResolveInfo resolveInfo : resolveInfoList)
                     {
                         if(resolveInfo.activityInfo.packageName.contains("facebook"))
@@ -112,10 +107,6 @@ public class Social
             final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
             if(!resolveInfoList.isEmpty())
             {
-                for(final ResolveInfo resolveInfo : resolveInfoList)
-                {
-                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                }
                 for(ResolveInfo resolveInfo : resolveInfoList)
                 {
                     if(!resolveInfo.activityInfo.packageName.contains("facebook"))
@@ -173,10 +164,6 @@ public class Social
                 final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
                 if(!resolveInfoList.isEmpty())
                 {
-                    for(final ResolveInfo resolveInfo : resolveInfoList)
-                    {
-                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                    }
                     for(ResolveInfo resolveInfo : resolveInfoList)
                     {
                         if(resolveInfo.activityInfo.packageName.contains("twitter"))
@@ -204,10 +191,6 @@ public class Social
             final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
             if(!resolveInfoList.isEmpty())
             {
-                for(final ResolveInfo resolveInfo : resolveInfoList)
-                {
-                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                }
                 for(ResolveInfo resolveInfo : resolveInfoList)
                 {
                     if(!resolveInfo.activityInfo.packageName.contains("twitter"))
@@ -267,10 +250,6 @@ public class Social
                 final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
                 if(!resolveInfoList.isEmpty())
                 {
-                    for(final ResolveInfo resolveInfo : resolveInfoList)
-                    {
-                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                    }
                     for(ResolveInfo resolveInfo : resolveInfoList)
                     {
                         if(resolveInfo.activityInfo.packageName.contains("instagram"))
@@ -298,10 +277,6 @@ public class Social
             final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
             if(!resolveInfoList.isEmpty())
             {
-                for(final ResolveInfo resolveInfo : resolveInfoList)
-                {
-                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                }
                 for(ResolveInfo resolveInfo : resolveInfoList)
                 {
                     if(!resolveInfo.activityInfo.packageName.contains("instagram"))
@@ -360,10 +335,6 @@ public class Social
                 final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
                 if(!resolveInfoList.isEmpty())
                 {
-                    for(final ResolveInfo resolveInfo : resolveInfoList)
-                    {
-                        Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                    }
                     for(ResolveInfo resolveInfo : resolveInfoList)
                     {
                         if(resolveInfo.activityInfo.packageName.contains("plus"))
@@ -391,10 +362,6 @@ public class Social
             final List<ResolveInfo> resolveInfoList = context.getPackageManager().queryIntentActivities(intent, 0);
             if(!resolveInfoList.isEmpty())
             {
-                for(final ResolveInfo resolveInfo : resolveInfoList)
-                {
-                    Log.d("match", resolveInfo.activityInfo.packageName.toLowerCase());
-                }
                 for(ResolveInfo resolveInfo : resolveInfoList)
                 {
                     if(!resolveInfo.activityInfo.packageName.contains("plus"))

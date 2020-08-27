@@ -96,7 +96,7 @@ public class SearchFragment extends Fragment
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
+
 
         setSearchListAdapter();
 
@@ -142,7 +142,7 @@ public class SearchFragment extends Fragment
 
     private void setSearchListAdapter()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setSearchListAdapter");
+
 
         if(searchList == null)
         {
@@ -163,7 +163,7 @@ public class SearchFragment extends Fragment
 
     private void doSearch(final String query)
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".doSearch");
+
 
         new AsyncTask<Void, Void, Void>()
         {

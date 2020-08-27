@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,7 +86,7 @@ public class Law extends Fragment
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
+
 
         setLoading(true);
         setYearListAdapter();
@@ -121,7 +120,7 @@ public class Law extends Fragment
     @SuppressWarnings("ConstantConditions")
     private synchronized void setYearList()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setYearList");
+
 
         new AsyncTask<Void, Void, Void>()
         {

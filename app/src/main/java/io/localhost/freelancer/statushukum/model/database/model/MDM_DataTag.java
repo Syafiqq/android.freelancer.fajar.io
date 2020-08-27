@@ -3,7 +3,6 @@ package io.localhost.freelancer.statushukum.model.database.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -31,18 +30,18 @@ public class MDM_DataTag extends DatabaseModel
     private MDM_DataTag(final Context context)
     {
         super(context);
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
     }
 
     public static MDM_DataTag getInstance(final Context ctx)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
+
          */
         if(MDM_DataTag.mInstance == null)
         {
@@ -53,7 +52,7 @@ public class MDM_DataTag extends DatabaseModel
 
     public static void insert(final SQLiteDatabase database, int data, int tag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
+
 
         database.execSQL(
                 String.format(Locale.getDefault(), "INSERT INTO %s(`data`, `tag`) VALUES (?, ?)", DataTag.TABLE_NAME),
@@ -62,14 +61,14 @@ public class MDM_DataTag extends DatabaseModel
 
     public static void deleteAll(SQLiteDatabase database)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
 
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", DataTag.TABLE_NAME), new Object[] {});
     }
 
     public void insert(int data, int tag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+
 
         try
         {
@@ -77,7 +76,7 @@ public class MDM_DataTag extends DatabaseModel
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_DataTag.insert(super.database, data, tag);
@@ -91,7 +90,7 @@ public class MDM_DataTag extends DatabaseModel
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_DataTag.deleteAll(super.database);
@@ -99,14 +98,14 @@ public class MDM_DataTag extends DatabaseModel
 
     public List<Integer> getTagFromDataID(int data)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getTagFromDataID");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(

@@ -1,6 +1,5 @@
 package io.localhost.freelancer.statushukum.model.entity;
 
-import android.util.Log;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -17,8 +16,8 @@ public class ME_Data
     public static final String CLASS_NAME = "ME_Data";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.entity.ME_Data";
 
-    private final int    id;
-    private final int    year;
+    private final int id;
+    private final int year;
     private final String no;
     private final String description;
     private final String status;
@@ -27,7 +26,7 @@ public class ME_Data
 
     public ME_Data(int id, int year, String no, String description, String status, int category, String reference)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.id = id;
         this.year = year;

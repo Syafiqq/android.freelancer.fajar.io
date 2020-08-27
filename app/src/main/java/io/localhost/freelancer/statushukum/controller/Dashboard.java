@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -201,7 +200,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
+
 
         switch(item.getItemId())
         {
@@ -309,7 +308,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         this.toolbar = (Toolbar) super.findViewById(R.id.activity_dashboard_toolbar);
         this.toolbarTitle = (TextView) this.toolbar.findViewById(R.id.activity_dashboard_toolbar_title);
@@ -393,7 +392,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
 
         this.onBackPressed();
     }

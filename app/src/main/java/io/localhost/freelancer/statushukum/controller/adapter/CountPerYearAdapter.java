@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +42,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
     public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
     {
         super();
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.category = dataCategory;
         this.countPerYear = countPerYear;
@@ -52,7 +51,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
     public void update(final List<MDM_Data.CountPerYear> countPerYear)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".update");
+
 
         this.countPerYear.clear();
         this.countPerYear.addAll(countPerYear);
@@ -116,7 +115,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         @Override
         public void onClick(View view)
         {
-            Log.i(CLASS_NAME, CLASS_PATH + ".onClick");
+
 
             final Context context = CountPerYearAdapter.this.context;
             final int count = this.count;

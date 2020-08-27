@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,7 +44,7 @@ public class Year extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         setContentView(R.layout.activity_year);
         Intent intent = getIntent();
@@ -61,7 +60,7 @@ public class Year extends AppCompatActivity
 
     private void setProperty()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setProperty");
+
 
         if(this.entryList == null)
         {
@@ -77,7 +76,7 @@ public class Year extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_year_toolbar);
         TextView toolbarTitle = (TextView) toolbar.findViewById(R.id.tv_toolbar_title);
@@ -106,7 +105,7 @@ public class Year extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
+
 
         getMenuInflater().inflate(R.menu.activity_year_menu, menu);
         return true;
@@ -115,7 +114,7 @@ public class Year extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onOptionsItemSelected");
+
 
         switch(item.getItemId())
         {
@@ -134,7 +133,7 @@ public class Year extends AppCompatActivity
 
     private void onBackButtonPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackButtonPressed");
+
 
         this.onBackPressed();
     }
@@ -142,14 +141,14 @@ public class Year extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
 
         super.finish();
     }
 
     private void setYearListAdapter()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setYearListAdapter");
+
 
         final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.content_year_recycle_view_container);
         this.yearListAdapter = new YearListAdapter(new ArrayList<MDM_Data.YearMetadata>(0), this);
@@ -162,7 +161,7 @@ public class Year extends AppCompatActivity
     @SuppressWarnings("ConstantConditions")
     private synchronized void setYearList()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".setYearList");
+
 
         new AsyncTask<Void, Void, Void>()
         {
@@ -203,7 +202,7 @@ public class Year extends AppCompatActivity
     @Override
     protected void onPostResume()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onPostResume");
+
         this.setYearList();
 
         super.onPostResume();

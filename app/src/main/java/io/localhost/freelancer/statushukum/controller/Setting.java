@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -31,7 +30,7 @@ public class Setting extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        Log.i(CLASS_NAME, CLASS_PATH + ".onCreate");
+
 
         setContentView(R.layout.activity_setting);
         this.setToolbar();
@@ -107,7 +106,7 @@ public class Setting extends AppCompatActivity
 
     private void setToolbar()
     {
-        Log.d(CLASS_NAME, CLASS_PATH + ".setToolbar");
+
 
         final Toolbar toolbar = (Toolbar) super.findViewById(R.id.activity_setting_toolbar);
         super.setSupportActionBar(toolbar);
@@ -133,7 +132,7 @@ public class Setting extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".onBackPressed");
+
 
         super.finish();
     }

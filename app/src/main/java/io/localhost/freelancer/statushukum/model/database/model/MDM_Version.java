@@ -3,7 +3,6 @@ package io.localhost.freelancer.statushukum.model.database.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import org.joda.time.LocalDateTime;
 
@@ -32,18 +31,18 @@ public class MDM_Version extends DatabaseModel
     private MDM_Version(final Context context)
     {
         super(context);
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
     }
 
     public static MDM_Version getInstance(final Context ctx)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         /**
          * use the application context as suggested by CommonsWare.
          * this will ensure that you dont accidentally leak an Activitys
          * context (see this article for more information:
-         * http://android-developers.blogspot.nl/2009/01/avoiding-memory-leaks.html)
+
          */
         if(MDM_Version.mInstance == null)
         {
@@ -54,7 +53,7 @@ public class MDM_Version extends DatabaseModel
 
     public static void insert(final SQLiteDatabase database, int id, String timestamp)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static insert");
+
 
         database.execSQL(
                 String.format(Locale.getDefault(), "INSERT INTO %s(`%s`, `%s`) VALUES (?, ?)",
@@ -66,21 +65,21 @@ public class MDM_Version extends DatabaseModel
 
     public static void deleteAll(final SQLiteDatabase database)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".static deleteAll");
+
 
         database.execSQL(String.format(Locale.getDefault(), "DELETE FROM `%s`", Version.TABLE_NAME), new Object[] {});
     }
 
     public LocalDateTime getVersion()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getVersion");
+
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         final Cursor cursor = super.database.rawQuery(
@@ -108,14 +107,14 @@ public class MDM_Version extends DatabaseModel
 
     public void insert(int id, String timestamp)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".insert");
+
         try
         {
             super.openWrite();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_Version.insert(super.database, id, timestamp);
@@ -123,7 +122,7 @@ public class MDM_Version extends DatabaseModel
 
     public void deleteAll()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ". deleteAll");
+
 
         try
         {
@@ -131,7 +130,7 @@ public class MDM_Version extends DatabaseModel
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         MDM_Version.deleteAll(super.database);

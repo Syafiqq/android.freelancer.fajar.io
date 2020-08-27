@@ -78,7 +78,7 @@ public class Setting
 
     private Setting(Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.context = context;
         this.social = new Social();
@@ -86,7 +86,7 @@ public class Setting
 
     public static Setting getInstance(final Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getInstance");
+
 
         if(Setting.ourInstance == null)
         {
@@ -270,7 +270,7 @@ public class Setting
                             entry.getInt("category"),
                             entry.getString("reference"));
                 } catch (JSONException ignored) {
-                    Log.i(CLASS_NAME, "JSONException");
+
                 }
             }
             insertTag(context, tag);
@@ -280,14 +280,14 @@ public class Setting
         }
         catch (Exception e)
         {
-            Log.e(CLASS_NAME, "Error", e);
+
             delegatable.delegate(SYNC_FAILED);
         }
     }
 
     private static synchronized void getStreamData(final Context context, final TaskDelegatable subject, final VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getStreamData");
+
         StorageReference islandRef = FirebaseStorage.getInstance().getReference("stream/"+serverVersion.milis+".json");
 
         File tmp = new File(context.getFilesDir(), "updates.json");
@@ -314,11 +314,11 @@ public class Setting
                                             return null;
                                         }
                                     } catch (JSONException ignored) {
-                                        Log.e(CLASS_NAME, "JSONException", ignored);
+
                                     }
                                 }
                             } catch (JSONException | IOException ignored) {
-                                Log.e(CLASS_NAME, "JSONException", ignored);
+
                             }
                             tmp.delete();
                             delegatable.delegate(SYNC_FAILED);
@@ -339,7 +339,7 @@ public class Setting
 
     private static synchronized void getDBVersion(Context context, VersionEntity serverVersion, final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getDBVersion");
+
         if(serverVersion == null)
         {
             delegatable.delegate(SYNC_FAILED);
@@ -359,7 +359,7 @@ public class Setting
 
     private static synchronized void getServerVersion(final TaskDelegatable delegatable)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
+
 
         FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -381,7 +381,7 @@ public class Setting
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.i(CLASS_NAME, "onErrorResponse");
+
                 delegatable.delegate(SYNC_FAILED);
             }
         });
@@ -429,7 +429,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
@@ -452,14 +452,14 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }
 
     private static  synchronized void insertDataTag(Context context, JSONArray datatag)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".populateDataTagTable");
+
 
         MDM_DataTag dataTagModel = MDM_DataTag.getInstance(context);
         dataTagModel.deleteAll();
@@ -474,7 +474,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+
             }
         }
     }

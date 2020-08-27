@@ -18,8 +18,8 @@ public class NetworkConstants
 
     static
     {
-        NetworkConstants.API_BASE_URL = "http://freelancer.fajar.io";
-        NetworkConstants.API_SITE_URL = "http://freelancer.fajar.io";
+        NetworkConstants.API_BASE_URL = "http://status-hukum.esy.es/";
+        NetworkConstants.API_SITE_URL = "http://status-hukum.esy.es/";
     }
 
     public static String getURL(@NonNull String domain, @NonNull String path, @Nullable String data)

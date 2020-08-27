@@ -2,7 +2,6 @@ package io.localhost.freelancer.statushukum.model.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.sql.SQLException;
 
@@ -19,13 +18,13 @@ public class DatabaseModel
     public static final String CLASS_NAME = "DatabaseModel";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseModel";
 
-    protected final Context        context;
-    protected       DatabaseHelper dbHelper;
-    protected       SQLiteDatabase database;
+    protected final Context context;
+    protected DatabaseHelper dbHelper;
+    protected SQLiteDatabase database;
 
     public DatabaseModel(final Context context)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
+
 
         this.context = context;
         this.dbHelper = DatabaseHelper.getInstance(context);
@@ -33,7 +32,7 @@ public class DatabaseModel
 
     public void openWrite() throws SQLException
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".openWrite");
+
 
         if(!this.isDatabaseReady())
         {
@@ -43,7 +42,7 @@ public class DatabaseModel
 
     public void openRead() throws SQLException
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".openRead");
+
 
         if(!this.isDatabaseReady())
         {
@@ -53,14 +52,14 @@ public class DatabaseModel
 
     public void close()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".close");
+
 
         this.dbHelper.close();
     }
 
     public boolean isDatabaseReady()
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".isDatabaseReady");
+
 
         return this.database != null && this.database.isOpen();
     }
