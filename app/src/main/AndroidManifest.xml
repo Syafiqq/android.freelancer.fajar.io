@@ -31,7 +31,10 @@
 
 
 
-        <activity android:name=".controller.SplashScreen">
+        <activity
+            android:name=".controller.SplashScreen"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
