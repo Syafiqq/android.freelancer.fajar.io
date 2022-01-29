@@ -31,7 +31,10 @@
 
 
 
-        <activity android:name=".controller.SplashScreen">
+        <activity
+            android:name=".controller.SplashScreen"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -72,15 +75,6 @@
             android:name=".controller.Dashboard"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar">
-        </activity>
-        <activity
-            android:name=".controller.PDFViewer"
-            android:label="@string/title_activity_pdfviewer"
-            android:parentActivityName=".controller.Detail"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.Detail"/>
         </activity>
     </application>
 
