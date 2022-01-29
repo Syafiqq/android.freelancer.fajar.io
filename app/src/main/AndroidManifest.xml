@@ -73,15 +73,6 @@
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity
-            android:name=".controller.PDFViewer"
-            android:label="@string/title_activity_pdfviewer"
-            android:parentActivityName=".controller.Detail"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="io.localhost.freelancer.statushukum.controller.Detail"/>
-        </activity>
     </application>
 
 </manifest>
