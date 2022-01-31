@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -143,7 +145,7 @@ public class Setting
                                 syncMessage.setCurrent(integer);
                                 publishProgress(syncMessage);
                             } catch (Exception ignored) {
-
+                                FirebaseCrashlytics.getInstance().recordException(ignored);
                             }
                         });
                 disposable.add(reactive);
@@ -270,7 +272,7 @@ public class Setting
                             entry.getInt("category"),
                             entry.getString("reference"));
                 } catch (JSONException ignored) {
-
+                    FirebaseCrashlytics.getInstance().recordException(ignored);
                 }
             }
             insertTag(context, tag);
@@ -282,6 +284,7 @@ public class Setting
         {
 
             delegatable.delegate(SYNC_FAILED);
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
     }
 
@@ -314,11 +317,11 @@ public class Setting
                                             return null;
                                         }
                                     } catch (JSONException ignored) {
-
+                                        FirebaseCrashlytics.getInstance().recordException(ignored);
                                     }
                                 }
                             } catch (JSONException | IOException ignored) {
-
+                                FirebaseCrashlytics.getInstance().recordException(ignored);
                             }
                             tmp.delete();
                             delegatable.delegate(SYNC_FAILED);
@@ -429,7 +432,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                FirebaseCrashlytics.getInstance().recordException(ignored);
             }
         }
     }
@@ -452,7 +455,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                FirebaseCrashlytics.getInstance().recordException(ignored);
             }
         }
     }
@@ -474,7 +477,7 @@ public class Setting
             }
             catch(JSONException ignored)
             {
-
+                FirebaseCrashlytics.getInstance().recordException(ignored);
             }
         }
     }

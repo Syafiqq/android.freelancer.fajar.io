@@ -19,6 +19,9 @@
         android:requestLegacyExternalStorage="true"
         android:fullBackupContent="@xml/backup_descriptor"
         tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="io.localhost.freelancer.statushukum.provider"
