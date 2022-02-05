@@ -73,42 +73,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     protected void onStart()
     {
-        final View socialFacebook = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_facebook);
-        final View socialTwitter = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_twitter);
-        final View socialInstagram = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_instagram);
-        final View socialGPlus = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_google_plus);
-        socialFacebook.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onFacebookSocialPressed(v);
-            }
-        });
-        socialTwitter.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onTwitterSocialPressed(v);
-            }
-        });
-        socialInstagram.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onInstagramSocialPressed(v);
-            }
-        });
-        socialGPlus.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onGPlusSocialPressed(v);
-            }
-        });
         super.onStart();
     }
 
