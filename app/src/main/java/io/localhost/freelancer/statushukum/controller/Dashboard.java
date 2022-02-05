@@ -2,6 +2,8 @@ package io.localhost.freelancer.statushukum.controller;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -269,6 +271,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 task.execute();
                 return true;
             }
+            case R.id.nav_menu_dashboard_about:
+            {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hukumpro.com/about"));
+                startActivity(browserIntent);
+            }
+            break;
         }
 
         this.onBackPressed();

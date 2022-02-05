@@ -47,4 +47,5 @@
     <string name="global_content_follow_label">Follow us on:</string>
     <string name="request">Request</string>
     <string name="content_setting_s_search">Pencarian</string>
+    <string name="content_setting_s_about">Tentang</string>
 </resources>

@@ -10,6 +10,12 @@
             android:id="@+id/nav_menu_dashboard_sync"
             android:icon="@drawable/ic_sync_black_24"
             android:title="@string/content_setting_s_sync_label"/>
+
+        <item
+            android:id="@+id/nav_menu_dashboard_about"
+            android:icon="@drawable/ic_user_alt_solid_24"
+            android:iconTint="@color/black"
+            android:title="@string/content_setting_s_about"/>
     </group>
 
     <item android:title="@string/nav_header_dashboard_drawer_group_rule">
