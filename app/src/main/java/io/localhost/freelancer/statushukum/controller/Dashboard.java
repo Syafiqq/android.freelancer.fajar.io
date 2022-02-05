@@ -30,6 +30,8 @@ import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
+import io.localhost.freelancer.statushukum.model.MenuModel;
+import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 import io.reactivex.disposables.CompositeDisposable;
@@ -380,22 +382,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         NavigationView navigationView = drawer.findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
         Menu navigationMenu = navigationView.getMenu();
 
-        ArrayList<Integer> lawMenuIds = new ArrayList<Integer>();
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_uu);
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_tap_mpr);
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_uu_darurat);
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_perpu);
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_pp);
-        lawMenuIds.add(R.id.nav_menu_dashboard_rule_perpres);
-
-        ArrayList<Integer> lawMenuIdsWhitelist = new ArrayList<Integer>();
-        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_uu);
-        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_uu_darurat);
-        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_perpu);
-
-        for (Integer lawMenuId : lawMenuIds) {
-            navigationMenu.findItem(lawMenuId).setVisible(
-                    lawMenuIdsWhitelist.contains(lawMenuId)
+        for (MenuModelType lawMenuId : MenuModel.lawMenus) {
+            navigationMenu.findItem(MenuModel.getMenuResourceId(lawMenuId)).setVisible(
+                    MenuModel.lawMenusWhitelist.contains(lawMenuId)
             );
         }
     }
