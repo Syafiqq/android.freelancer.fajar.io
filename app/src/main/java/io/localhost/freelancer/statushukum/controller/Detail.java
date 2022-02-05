@@ -208,7 +208,6 @@ public class Detail extends AppCompatActivity
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
 
-        getMenuInflater().inflate(R.menu.activity_detail_menu, menu);
         return true;
     }
 
