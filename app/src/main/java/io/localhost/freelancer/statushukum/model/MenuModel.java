@@ -16,6 +16,7 @@ public class MenuModel {
         lawMenus.add(MenuModelType.UU_DARURAT);
         lawMenus.add(MenuModelType.PERPU);
         lawMenus.add(MenuModelType.PP);
+        lawMenus.add(MenuModelType.PERPRES);
         lawMenusWhitelist.add(MenuModelType.UU);
         lawMenusWhitelist.add(MenuModelType.UU_DARURAT);
         lawMenusWhitelist.add(MenuModelType.PERPU);
