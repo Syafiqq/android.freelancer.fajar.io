@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -56,6 +57,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProgressView();
+        this.updateLawMenuVisibility();
 
         if(savedInstanceState == null)
         {
@@ -371,5 +373,30 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     public String getTitle(int title) {
         return super.getResources().getString(title);
+    }
+
+    private void updateLawMenuVisibility() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        NavigationView navigationView = drawer.findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
+        Menu navigationMenu = navigationView.getMenu();
+
+        ArrayList<Integer> lawMenuIds = new ArrayList<Integer>();
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_uu);
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_tap_mpr);
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_uu_darurat);
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_perpu);
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_pp);
+        lawMenuIds.add(R.id.nav_menu_dashboard_rule_perpres);
+
+        ArrayList<Integer> lawMenuIdsWhitelist = new ArrayList<Integer>();
+        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_uu);
+        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_uu_darurat);
+        lawMenuIdsWhitelist.add(R.id.nav_menu_dashboard_rule_perpu);
+
+        for (Integer lawMenuId : lawMenuIds) {
+            navigationMenu.findItem(lawMenuId).setVisible(
+                    lawMenuIdsWhitelist.contains(lawMenuId)
+            );
+        }
     }
 }
