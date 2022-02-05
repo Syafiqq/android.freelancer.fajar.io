@@ -3,13 +3,17 @@ package io.localhost.freelancer.statushukum.model.database.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import io.localhost.freelancer.statushukum.model.MenuModel;
+import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
@@ -329,10 +333,22 @@ public class MDM_Data extends DatabaseModel
         {
         }
 
+        ArrayList<String> categoryWhitelist = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
+        ArrayList<String> categoryWhitelistArgument = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
+        for (MenuModelType lawMenuId : MenuModel.lawMenusWhitelist) {
+            categoryWhitelist.add(String.format("%s", MenuModel.getDatabaseCategory(lawMenuId)));
+            categoryWhitelistArgument.add("?");
+        }
+        String[] arguments = Arrays.copyOf(
+                new String[] { String.valueOf("%" + query + "%") },
+                1 + categoryWhitelist.size()
+        );
+        System.arraycopy(categoryWhitelist.toArray(), 0, arguments, 1, categoryWhitelist.size());
+
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` IN (" + TextUtils.join(",", categoryWhitelistArgument) + ") GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
@@ -344,10 +360,12 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
                         Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf("%" + query + "%")});
+                arguments
+        );
 
         final List<MetadataSearchable> records = new ArrayList<>();
         if(cursor.moveToFirst())

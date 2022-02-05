@@ -105,9 +105,6 @@ public class Year extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-
-
-        getMenuInflater().inflate(R.menu.activity_year_menu, menu);
         return true;
     }
 

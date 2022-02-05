@@ -207,7 +207,6 @@ public class Detail extends AppCompatActivity
     {
 
 
-        getMenuInflater().inflate(R.menu.activity_detail_menu, menu);
         return true;
     }
 

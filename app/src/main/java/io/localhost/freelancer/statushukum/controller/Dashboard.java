@@ -2,6 +2,8 @@ package io.localhost.freelancer.statushukum.controller;
 
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -23,11 +25,14 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
+import io.localhost.freelancer.statushukum.model.MenuModel;
+import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 import io.reactivex.disposables.CompositeDisposable;
@@ -55,6 +60,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         this.setToolbar();
         this.setNavigationSwipe();
         this.setProgressView();
+        this.updateLawMenuVisibility();
 
         if(savedInstanceState == null)
         {
@@ -72,42 +78,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     protected void onStart()
     {
-        final View socialFacebook = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_facebook);
-        final View socialTwitter = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_twitter);
-        final View socialInstagram = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_instagram);
-        final View socialGPlus = super.findViewById(R.id.activity_dashboard_wrapper_imagebutton_social_google_plus);
-        socialFacebook.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onFacebookSocialPressed(v);
-            }
-        });
-        socialTwitter.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onTwitterSocialPressed(v);
-            }
-        });
-        socialInstagram.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onInstagramSocialPressed(v);
-            }
-        });
-        socialGPlus.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Dashboard.this.onGPlusSocialPressed(v);
-            }
-        });
         super.onStart();
     }
 
@@ -300,6 +270,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 task.execute();
                 return true;
             }
+            case R.id.nav_menu_dashboard_about:
+            {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.hukumpro.com/about"));
+                startActivity(browserIntent);
+            }
+            break;
         }
 
         this.onBackPressed();
@@ -406,5 +382,17 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     @Override
     public String getTitle(int title) {
         return super.getResources().getString(title);
+    }
+
+    private void updateLawMenuVisibility() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
+        NavigationView navigationView = drawer.findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
+        Menu navigationMenu = navigationView.getMenu();
+
+        for (MenuModelType lawMenuId : MenuModel.lawMenus) {
+            navigationMenu.findItem(MenuModel.getMenuResourceId(lawMenuId)).setVisible(
+                    MenuModel.lawMenusWhitelist.contains(lawMenuId)
+            );
+        }
     }
 }
