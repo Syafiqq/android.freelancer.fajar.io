@@ -16,8 +16,8 @@
     <string name="content_detail_tv_description_label">Tentang</string>
     <string name="content_detail_tv_tag_label">Label Pendukung</string>
     <string name="content_detail_tv_status_label">Status</string>
-    <string name="content_setting_s_sync_label_desc">Menyinkronkan data dari server</string>
-    <string name="content_setting_s_sync_label">Update</string>
+    <string name="content_setting_s_sync_label_desc">Memperbarui data dari server</string>
+    <string name="content_setting_s_sync_label">Pembaruan</string>
     <string name="system_setting_server_version_error">Tidak dapat mengambil data dari server</string>
     <string name="system_setting_server_version_success">Update Berhasil</string>
     <string name="system_setting_server_version_equal">Versi data sudah sama</string>
