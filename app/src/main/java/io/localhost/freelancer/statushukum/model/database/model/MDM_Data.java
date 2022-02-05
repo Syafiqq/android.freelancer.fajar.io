@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -336,14 +337,21 @@ public class MDM_Data extends DatabaseModel
         }
 
         ArrayList<String> categoryWhitelist = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
+        ArrayList<String> categoryWhitelistArgument = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
         for (MenuModelType lawMenuId : MenuModel.lawMenusWhitelist) {
-            categoryWhitelist.add(String.format("'%s'", MenuModel.getDatabaseCategory(lawMenuId)));
+            categoryWhitelist.add(String.format("%s", MenuModel.getDatabaseCategory(lawMenuId)));
+            categoryWhitelistArgument.add("?");
         }
+        String[] arguments = Arrays.copyOf(
+                new String[] { String.valueOf("%" + query + "%") },
+                1 + categoryWhitelist.size()
+        );
+        System.arraycopy(categoryWhitelist.toArray(), 0, arguments, 1, categoryWhitelist.size());
 
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` IN (?) GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` IN (" + TextUtils.join(",", categoryWhitelistArgument) + ") GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
@@ -359,10 +367,8 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {
-                        String.valueOf("%" + query + "%"),
-                        TextUtils.join(",", categoryWhitelist)
-                });
+                arguments
+        );
 
         final List<MetadataSearchable> records = new ArrayList<>();
         if(cursor.moveToFirst())
