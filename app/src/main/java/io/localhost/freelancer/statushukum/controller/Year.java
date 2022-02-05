@@ -107,8 +107,6 @@ public class Year extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".onCreateOptionsMenu");
-
-        getMenuInflater().inflate(R.menu.activity_year_menu, menu);
         return true;
     }
 
