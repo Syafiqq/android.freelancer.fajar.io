@@ -5,6 +5,11 @@
             android:id="@+id/nav_menu_dashboard_search"
             android:icon="@drawable/ic_search"
             android:title="@string/content_setting_s_search"/>
+
+        <item
+            android:id="@+id/nav_menu_dashboard_sync"
+            android:icon="@drawable/ic_sync_black_24"
+            android:title="@string/content_setting_s_sync_label"/>
     </group>
 
     <item android:title="@string/nav_header_dashboard_drawer_group_rule">
@@ -35,12 +40,5 @@
                 android:title="@string/nav_header_dashboard_drawer_rule_perpres"/>
         </menu>
     </item>
-
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_menu_dashboard_sync"
-            android:icon="@drawable/ic_sync_black_24"
-            android:title="@string/content_setting_s_sync_label"/>
-    </group>
 
 </menu>
