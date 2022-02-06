@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
 apply from: "$project.rootDir/script-git-version.gradle"
 
+println("Log: gitVersionCode $gitVersionCode")
+println("Log: gitVersionName $gitVersionName")
+
 android {
     signingConfigs {
         release {
