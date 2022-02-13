@@ -123,17 +123,7 @@ public class MDM_Data extends DatabaseModel
 
     public List<CountPerYear> getCountPerYear(int category)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
+        return getCountPerYear(
                 String.format(
                         Locale.getDefault(),
                         "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` WHERE `%s` = ? GROUP BY `%s` ORDER BY `%s` ASC",
@@ -144,7 +134,39 @@ public class MDM_Data extends DatabaseModel
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_YEAR
                 ),
-                new String[] {String.valueOf(category)});
+                new String[] {String.valueOf(category)}
+        );
+    }
+
+    public List<CountPerYear> getCountPerYear()
+    {
+        return getCountPerYear(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` GROUP BY `%s` ORDER BY `%s` ASC",
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_YEAR
+                ),
+                new String[] {}
+        );
+    }
+
+    private List<CountPerYear> getCountPerYear(String sql, String[] selectionArgs)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(sql, selectionArgs);
 
         List<CountPerYear> records = new LinkedList<>();
         if(cursor.moveToFirst())
