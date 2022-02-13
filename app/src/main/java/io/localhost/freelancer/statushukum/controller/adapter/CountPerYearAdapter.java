@@ -37,10 +37,10 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context context;
-    private int category;
+    private Integer category;
     private String title;
 
-    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
+    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, Integer dataCategory)
     {
         super();
         Log.i(CLASS_NAME, CLASS_PATH + ".Constructor");
@@ -86,7 +86,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         return this.countPerYear.size();
     }
 
-    public void setCategory(int category) {
+    public void setCategory(Integer category) {
         this.category = category;
     }
 

@@ -62,7 +62,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Law fragment = Law.newInstance(-1, R.string.title_application_name);
+            Law fragment = Law.newInstance(null, R.string.title_application_name);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager

@@ -31,7 +31,7 @@ public class Law extends Fragment
 {
     public static final String CLASS_NAME = "Law";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.controller.Law";
-    public int CATEGORY = -1;
+    public Integer CATEGORY = -1;
 
     private CountPerYearAdapter yearAdapter;
     private List<MDM_Data.CountPerYear> yearList;
@@ -49,11 +49,13 @@ public class Law extends Fragment
         // Required empty public constructor
     }
 
-    public static Law newInstance(int category, int title)
+    public static Law newInstance(Integer category, int title)
     {
         Law fragment = new Law();
         Bundle args = new Bundle();
-        args.putInt("category", category);
+        if (category != null) {
+            args.putInt("category", category);
+        }
         args.putInt("title", title);
         fragment.setArguments(args);
         return fragment;
@@ -80,7 +82,16 @@ public class Law extends Fragment
         setProperty();
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            new Handler().postDelayed(() -> updateCategory(bundle.getInt("category", -1), bundle.getInt("title", R.string.activity_dashboard_toolbar_logo_title)), 250);
+            Integer category = null;
+            if (bundle.containsKey("category")) {
+                category = bundle.getInt("category", -1);
+            }
+
+            Integer finalCategory = category;
+            new Handler().postDelayed(() -> updateCategory(
+                    finalCategory,
+                    bundle.getInt("title", R.string.activity_dashboard_toolbar_logo_title)
+            ), 250);
         }
         super.onViewCreated(view, savedInstanceState);
     }
@@ -138,7 +149,7 @@ public class Law extends Fragment
                 } catch (InterruptedException e) {
                 }
                 final MDM_Data modelData = MDM_Data.getInstance(getContext());
-                final List<MDM_Data.CountPerYear> dbResult = modelData.getCountPerYear(CATEGORY);
+                final List<MDM_Data.CountPerYear> dbResult = CATEGORY == null ? modelData.getCountPerYear() : modelData.getCountPerYear((int) CATEGORY);
                 yearList.clear();
                 yearList.addAll(dbResult);
                 yearAdapter.update(dbResult);
@@ -162,15 +173,15 @@ public class Law extends Fragment
         super.onResume();
     }
 
-    public synchronized void updateCategoryAndTitle(int category, int title) {
-        if(CATEGORY == category) return;
+    public synchronized void updateCategoryAndTitle(Integer category, int title) {
+        if(CATEGORY.equals(category)) return;
         CATEGORY = category;
         yearAdapter.setCategory(CATEGORY);
         this.title = listener.getTitle(title);
         listener.onFragmentChangeForTitle(this.title);
     }
 
-    public synchronized void updateCategory(int category, int title) {
+    public synchronized void updateCategory(Integer category, int title) {
         updateCategoryAndTitle(category, title);
         updateCategory();
     }
