@@ -190,11 +190,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
-            case R.id.nav_menu_dashboard_search:
-            {
-                updateSearchContent();
-            }
-            break;
             case R.id.nav_menu_dashboard_sync:
             {
                 this.onBackPressed();
