@@ -374,7 +374,7 @@ public class MDM_Data extends DatabaseModel
         return exist;
     }
 
-    public List<MetadataSearchable> getSearchableList(String query, int category)
+    public List<MetadataSearchable> getSearchableList(String query)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
         try
