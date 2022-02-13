@@ -36,7 +36,7 @@ import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        Law.OnFragmentInteractionListener,
+        LawAndSearch.OnFragmentInteractionListener,
         SearchFragment.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
@@ -62,12 +62,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Law fragment = Law.newInstance(null, R.string.title_application_name);
+            LawAndSearch fragment = LawAndSearch.newInstance(R.string.title_application_name);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
+                    .replace(R.id.content_dashboard_root, fragment, LawAndSearch.CLASS_PATH)
                     .addToBackStack(null)
                     .commit();
         }
@@ -267,8 +267,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private void updateContent() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
-        if(fragment instanceof Law)
-            ((Law) fragment).updateCategory();
+        if(fragment instanceof LawAndSearch)
+            ((LawAndSearch) fragment).updateCategory();
         else if(fragment instanceof SearchFragment)
             ((SearchFragment) fragment).updateContent();
     }
