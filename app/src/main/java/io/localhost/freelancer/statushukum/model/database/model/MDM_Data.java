@@ -183,17 +183,7 @@ public class MDM_Data extends DatabaseModel
 
     public List<YearMetadata> getYearList(final int year, int category)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
+        return getYearList(
                 String.format(
                         Locale.getDefault(),
                         "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? AND `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
@@ -210,7 +200,48 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf(year), String.valueOf(category)});
+                new String[] {String.valueOf(year), String.valueOf(category)}
+        );
+    }
+
+    public List<YearMetadata> getYearList(final int year)
+    {
+        return getYearList(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_NO,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_TAG,
+                        Data.TABLE_NAME,
+                        DataTag.TABLE_NAME,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf(year)}
+        );
+    }
+
+    public List<YearMetadata> getYearList(String sql, String[] selectionArgs)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                sql,
+                selectionArgs
+        );
 
         final List<YearMetadata> records = new ArrayList<>();
         if(cursor.moveToFirst())
