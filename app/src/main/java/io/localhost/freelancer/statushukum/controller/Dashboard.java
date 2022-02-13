@@ -26,13 +26,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
-import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
-import io.localhost.freelancer.statushukum.model.MenuModel;
 import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
@@ -198,36 +195,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 updateSearchContent();
             }
             break;
-            case R.id.nav_menu_dashboard_rule_uu:
-            {
-                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_uu);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_tap_mpr:
-            {
-                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_uu_darurat:
-            {
-                updateLawContent(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_perpu:
-            {
-                updateLawContent(4, R.string.nav_header_dashboard_drawer_rule_perpu);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_pp:
-            {
-                updateLawContent(5, R.string.nav_header_dashboard_drawer_rule_pp);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_perpres:
-            {
-                updateLawContent(6, R.string.nav_header_dashboard_drawer_rule_perpres);
-            }
-            break;
             case R.id.nav_menu_dashboard_sync:
             {
                 this.onBackPressed();
@@ -306,27 +273,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             ((SearchFragment) fragment).updateContent();
     }
 
-    private void updateLawContent(int category, int title) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
-        if(!(fragment instanceof Law)) {
-            fragment = getSupportFragmentManager().findFragmentByTag(Law.CLASS_PATH);
-            if(fragment == null) {
-                fragment = Law.newInstance(category, title);
-            } else {
-                ((Law) fragment).updateCategory(category, title);
-            }
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        else {
-            ((Law) fragment).updateCategory(category, title);
-        }
-    }
-
     private void updateSearchContent() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
         if(!(fragment instanceof SearchFragment)) {
@@ -386,14 +332,5 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     private void updateLawMenuVisibility() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
-        NavigationView navigationView = drawer.findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
-        Menu navigationMenu = navigationView.getMenu();
-
-        for (MenuModelType lawMenuId : MenuModel.lawMenus) {
-            navigationMenu.findItem(MenuModel.getMenuResourceId(lawMenuId)).setVisible(
-                    MenuModel.lawMenusWhitelist.contains(lawMenuId)
-            );
-        }
     }
 }
