@@ -177,7 +177,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         catch(JSONException e)
         {
-            Log.i(CLASS_NAME, "JSONException");
+            Log.i(CLASS_NAME, "prePopulateDatabase + JSONException");
+            e.printStackTrace();
         }
     }
 
@@ -198,7 +199,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateVersionTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -225,7 +227,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateDataTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -251,7 +254,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateTagTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -274,7 +278,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateDataTagTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
