@@ -279,6 +279,7 @@ public class Setting
             insertTag(context, tag);
             insertDataTag(context, dataTag);
             insertVersion(context, version);
+            dataModel.rebuildFts();
             delegatable.delegate(SYNC_SUCCESS);
         }
         catch (Exception e)

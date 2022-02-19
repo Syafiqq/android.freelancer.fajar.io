@@ -32,6 +32,12 @@ public class MDM_Data extends DatabaseModel
     public static final String CLASS_NAME = "MDM_Data";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.model.MDM_Data";
 
+    public static final String REBUILD_DATA_FTS = String.format(
+            "INSERT INTO %s(%s) VALUES('rebuild');",
+            Data.TABLE_NAME_FTS,
+            Data.TABLE_NAME_FTS
+    );
+
     private static MDM_Data mInstance = null;
 
     private MDM_Data(final Context context)
@@ -427,6 +433,10 @@ public class MDM_Data extends DatabaseModel
         }
         cursor.close();
         return records;
+    }
+
+    public void rebuildFts() {
+        super.database.execSQL(REBUILD_DATA_FTS);
     }
 
     public static class CountPerYear
