@@ -435,6 +435,52 @@ public class MDM_Data extends DatabaseModel
         return records;
     }
 
+    public List<MetadataSearchable> getSearchableListOnly(String query)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        String[] arguments = Arrays.copyOf(
+                new String[] {
+                        String.valueOf("*" + query + "*"),
+                        String.valueOf("*" + query + "*")
+                },
+                2
+        );
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT *" +
+                                " FROM %s" +
+                                " WHERE %s MATCH ? OR %s MATCH ?",
+                        Data.TABLE_NAME_FTS,
+                        Data.COLUMN_NAME_NO,
+                        Data.COLUMN_NAME_DESCRIPTION
+                ),
+                arguments
+        );
+
+        final List<MetadataSearchable> records = new ArrayList<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.add(new MetadataSearchable(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), 0, cursor.getString(3)));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
+    }
+
     public void rebuildFts() {
         super.database.execSQL(REBUILD_DATA_FTS);
     }
