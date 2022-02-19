@@ -23,6 +23,7 @@
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/content_constitution_search_filter"
+            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
