@@ -68,7 +68,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.content_dashboard_root, fragment, LawAndSearch.CLASS_PATH)
-                    .addToBackStack(null)
                     .commit();
         }
     }
