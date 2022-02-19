@@ -19,10 +19,13 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jakewharton.rxrelay2.PublishRelay;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.localhost.freelancer.statushukum.R;
 import io.localhost.freelancer.statushukum.controller.adapter.CountPerYearAdapter;
@@ -32,6 +35,11 @@ import io.localhost.freelancer.statushukum.model.database.model.MDM_Data;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_DataTag;
 import io.localhost.freelancer.statushukum.model.database.model.MDM_Tag;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 @SuppressLint("StaticFieldLeak")
 public class LawAndSearch extends Fragment
@@ -46,10 +54,11 @@ public class LawAndSearch extends Fragment
     private View root;
 
     private SearchView search;
-    private String latestQuery;
     private RecyclerView searchListView;
     private SearchAdapter searchAdapter;
     private List<MDM_Data.MetadataSearchable> searchList;
+    PublishRelay<Boolean> searchTextProducer = PublishRelay.create();
+    private Disposable searchTextDisposable;
 
     private OnFragmentInteractionListener listener;
     private View progress;
@@ -104,6 +113,23 @@ public class LawAndSearch extends Fragment
                     bundle.getInt("title", R.string.activity_dashboard_toolbar_logo_title)
             ), 250);
         }
+
+        // Search consumer
+        if (searchTextDisposable != null) {
+            searchTextDisposable.dispose();
+        }
+        searchTextDisposable = searchTextProducer.subscribeOn(Schedulers.io())
+                .debounce(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) throws Exception {
+                        String textToSearch = LawAndSearch.this.search.getQuery().toString();
+                        if((textToSearch.trim().length() > 0)) {
+                            LawAndSearch.this.doSearch(textToSearch);
+                        }
+                    }
+                });
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -117,24 +143,18 @@ public class LawAndSearch extends Fragment
         setYearListAdapter();
 
         // Search Property
-        latestQuery = search.getQuery().toString();
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
-                if((query.trim().length() > 0) && (!latestQuery.contentEquals(query)))
-                {
-                    latestQuery = query;
-                    doSearch(query);
-                }
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText)
             {
-                searchAdapter.getFilter().filter(newText);
+                searchTextProducer.accept(true);
                 return false;
             }
         });
