@@ -279,6 +279,7 @@ public class Setting
             insertTag(context, tag);
             insertDataTag(context, dataTag);
             insertVersion(context, version);
+            dataModel.rebuildFts();
             delegatable.delegate(SYNC_SUCCESS);
         }
         catch (Exception e)
@@ -367,7 +368,7 @@ public class Setting
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getServerVersion");
 
-        FirebaseDatabase.getInstance().getReference("versions").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("versions_new/v2").orderByKey().limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.getChildrenCount() > 0)

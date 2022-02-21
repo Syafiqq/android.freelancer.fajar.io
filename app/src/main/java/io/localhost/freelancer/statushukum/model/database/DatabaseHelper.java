@@ -38,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.DatabaseHelper";
     public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss";
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 13;
+    private static final int DATABASE_VERSION = 15;
     private static final String DATABASE_NAME = "status_hukum.mcrypt";
     private static final char COMMA_SEPARATOR = ',';
     private static final char WHITESPACE = ' ';
@@ -60,6 +60,30 @@ public class DatabaseHelper extends SQLiteOpenHelper
             Data.COLUMN_NAME_CATEGORY + WHITESPACE + TYPE_INTEGER + COMMA_SEPARATOR + WHITESPACE +
             Data.COLUMN_NAME_REFERENCE + WHITESPACE + TYPE_TEXT + WHITESPACE +
             " );";
+
+    private static final String SQL_CREATE_DATA_FTS_ENTRIES = String.format(
+            "CREATE VIRTUAL TABLE %s USING fts4(" + // table name
+                    " %s UNINDEXED," +       // no
+                    " %s UNINDEXED," +       // year
+                    " %s," +                 // no
+                    " %s," +                 // desc
+                    " %s UNINDEXED," +       // status
+                    " %s UNINDEXED," +       // category
+                    " %s UNINDEXED," +       // reference
+                    " content='%s'" +        // table name
+                    " )",
+            Data.TABLE_NAME_FTS,
+            Data.COLUMN_NAME_ID,
+            Data.COLUMN_NAME_YEAR,
+            Data.COLUMN_NAME_NO,
+            Data.COLUMN_NAME_DESCRIPTION,
+            Data.COLUMN_NAME_STATUS,
+            Data.COLUMN_NAME_CATEGORY,
+            Data.COLUMN_NAME_REFERENCE,
+            Data.TABLE_NAME
+    );
+
+    private static final String REBUILD_DATA_FTS = MDM_Data.REBUILD_DATA_FTS;
 
     private static final String SQL_CREATE_TAG_ENTRIES = "" +
             "CREATE TABLE IF NOT EXISTS" + WHITESPACE + Tag.TABLE_NAME + WHITESPACE +
@@ -134,7 +158,9 @@ public class DatabaseHelper extends SQLiteOpenHelper
         sqLiteDatabase.execSQL(SQL_CREATE_TAG_ENTRIES);
         sqLiteDatabase.execSQL(SQL_CREATE_DATATAG_ENTRIES);
         sqLiteDatabase.execSQL(SQL_CREATE_VERSION_ENTRIES);
+        sqLiteDatabase.execSQL(SQL_CREATE_DATA_FTS_ENTRIES);
         this.prePopulateDatabase(sqLiteDatabase);
+        sqLiteDatabase.execSQL(REBUILD_DATA_FTS);
     }
 
     @Override
@@ -177,7 +203,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
         }
         catch(JSONException e)
         {
-            Log.i(CLASS_NAME, "JSONException");
+            Log.i(CLASS_NAME, "prePopulateDatabase + JSONException");
+            e.printStackTrace();
         }
     }
 
@@ -198,7 +225,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateVersionTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -225,7 +253,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateDataTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -251,7 +280,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateTagTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }
@@ -274,7 +304,8 @@ public class DatabaseHelper extends SQLiteOpenHelper
             }
             catch(JSONException ignored)
             {
-                Log.i(CLASS_NAME, "JSONException");
+                Log.i(CLASS_NAME, "populateDataTagTable + JSONException");
+                ignored.printStackTrace();
             }
         }
     }

@@ -3,7 +3,6 @@ package io.localhost.freelancer.statushukum.model.database.model;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -13,8 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import io.localhost.freelancer.statushukum.model.MenuModel;
-import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.database.DatabaseModel;
 import io.localhost.freelancer.statushukum.model.entity.ME_Data;
 import io.localhost.freelancer.statushukum.model.entity.ME_Tag;
@@ -34,6 +31,12 @@ public class MDM_Data extends DatabaseModel
 {
     public static final String CLASS_NAME = "MDM_Data";
     public static final String CLASS_PATH = "io.localhost.freelancer.statushukum.model.database.model.MDM_Data";
+
+    public static final String REBUILD_DATA_FTS = String.format(
+            "INSERT INTO %s(%s) VALUES('rebuild');",
+            Data.TABLE_NAME_FTS,
+            Data.TABLE_NAME_FTS
+    );
 
     private static MDM_Data mInstance = null;
 
@@ -126,17 +129,7 @@ public class MDM_Data extends DatabaseModel
 
     public List<CountPerYear> getCountPerYear(int category)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
+        return getCountPerYear(
                 String.format(
                         Locale.getDefault(),
                         "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` WHERE `%s` = ? GROUP BY `%s` ORDER BY `%s` ASC",
@@ -147,7 +140,39 @@ public class MDM_Data extends DatabaseModel
                         Data.COLUMN_NAME_YEAR,
                         Data.COLUMN_NAME_YEAR
                 ),
-                new String[] {String.valueOf(category)});
+                new String[] {String.valueOf(category)}
+        );
+    }
+
+    public List<CountPerYear> getCountPerYear()
+    {
+        return getCountPerYear(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`, count(`%s`) AS 'count' FROM `%s` GROUP BY `%s` ORDER BY `%s` ASC",
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME,
+                        Data.COLUMN_NAME_YEAR,
+                        Data.COLUMN_NAME_YEAR
+                ),
+                new String[] {}
+        );
+    }
+
+    private List<CountPerYear> getCountPerYear(String sql, String[] selectionArgs)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getCountPerYear");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(sql, selectionArgs);
 
         List<CountPerYear> records = new LinkedList<>();
         if(cursor.moveToFirst())
@@ -164,17 +189,7 @@ public class MDM_Data extends DatabaseModel
 
     public List<YearMetadata> getYearList(final int year, int category)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
-        try
-        {
-            super.openRead();
-        }
-        catch(SQLException ignored)
-        {
-            Log.i(CLASS_NAME, "SQLException");
-        }
-
-        final Cursor cursor = super.database.rawQuery(
+        return getYearList(
                 String.format(
                         Locale.getDefault(),
                         "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? AND `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
@@ -191,7 +206,48 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
-                new String[] {String.valueOf(year), String.valueOf(category)});
+                new String[] {String.valueOf(year), String.valueOf(category)}
+        );
+    }
+
+    public List<YearMetadata> getYearList(final int year)
+    {
+        return getYearList(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` = ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_NO,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_TAG,
+                        Data.TABLE_NAME,
+                        DataTag.TABLE_NAME,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_ID
+                ),
+                new String[] {String.valueOf(year)}
+        );
+    }
+
+    public List<YearMetadata> getYearList(String sql, String[] selectionArgs)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        final Cursor cursor = super.database.rawQuery(
+                sql,
+                selectionArgs
+        );
 
         final List<YearMetadata> records = new ArrayList<>();
         if(cursor.moveToFirst())
@@ -324,7 +380,7 @@ public class MDM_Data extends DatabaseModel
         return exist;
     }
 
-    public List<MetadataSearchable> getSearchableList(String query, int category)
+    public List<MetadataSearchable> getSearchableList(String query)
     {
         Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
         try
@@ -336,22 +392,18 @@ public class MDM_Data extends DatabaseModel
             Log.i(CLASS_NAME, "SQLException");
         }
 
-        ArrayList<String> categoryWhitelist = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
-        ArrayList<String> categoryWhitelistArgument = new ArrayList<String>(MenuModel.lawMenusWhitelist.size());
-        for (MenuModelType lawMenuId : MenuModel.lawMenusWhitelist) {
-            categoryWhitelist.add(String.format("%s", MenuModel.getDatabaseCategory(lawMenuId)));
-            categoryWhitelistArgument.add("?");
-        }
         String[] arguments = Arrays.copyOf(
-                new String[] { String.valueOf("%" + query + "%") },
-                1 + categoryWhitelist.size()
+                new String[] {
+                        String.valueOf("%" + query + "%"),
+                        String.valueOf("%" + query + "%"),
+                },
+                2
         );
-        System.arraycopy(categoryWhitelist.toArray(), 0, arguments, 1, categoryWhitelist.size());
 
         final Cursor cursor = super.database.rawQuery(
                 String.format(
                         Locale.getDefault(),
-                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? AND `%s`.`%s` IN (" + TextUtils.join(",", categoryWhitelistArgument) + ") GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
+                        "SELECT `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, `%s`.`%s`, count(`%s`.`%s`) AS 'tag' FROM `%s` LEFT OUTER JOIN `%s` ON `%s`.`%s` = `%s`.`%s`  WHERE `%s`.`%s` LIKE ? OR `%s`.`%s` LIKE ? GROUP BY `%s`.`%s` ORDER BY `%s`.`%s` ASC",
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_YEAR,
                         Data.TABLE_NAME, Data.COLUMN_NAME_NO,
@@ -363,7 +415,7 @@ public class MDM_Data extends DatabaseModel
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         DataTag.TABLE_NAME, DataTag.COLUMN_NAME_DATA,
                         Data.TABLE_NAME, Data.COLUMN_NAME_DESCRIPTION,
-                        Data.TABLE_NAME, Data.COLUMN_NAME_CATEGORY,
+                        Data.TABLE_NAME, Data.COLUMN_NAME_NO,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID,
                         Data.TABLE_NAME, Data.COLUMN_NAME_ID
                 ),
@@ -381,6 +433,56 @@ public class MDM_Data extends DatabaseModel
         }
         cursor.close();
         return records;
+    }
+
+    public List<MetadataSearchable> getSearchableListOnly(String query)
+    {
+        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
+        try
+        {
+            super.openRead();
+        }
+        catch(SQLException ignored)
+        {
+            Log.i(CLASS_NAME, "SQLException");
+        }
+
+        String[] arguments = Arrays.copyOf(
+                new String[] {
+                        String.valueOf("*" + query + "*"),
+                        String.valueOf("*" + query + "*")
+                },
+                2
+        );
+
+        final Cursor cursor = super.database.rawQuery(
+                String.format(
+                        Locale.getDefault(),
+                        "SELECT *" +
+                                " FROM %s" +
+                                " WHERE %s MATCH ? OR %s MATCH ?",
+                        Data.TABLE_NAME_FTS,
+                        Data.COLUMN_NAME_NO,
+                        Data.COLUMN_NAME_DESCRIPTION
+                ),
+                arguments
+        );
+
+        final List<MetadataSearchable> records = new ArrayList<>();
+        if(cursor.moveToFirst())
+        {
+            do
+            {
+                records.add(new MetadataSearchable(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), 0, cursor.getString(3)));
+            }
+            while(cursor.moveToNext());
+        }
+        cursor.close();
+        return records;
+    }
+
+    public void rebuildFts() {
+        super.database.execSQL(REBUILD_DATA_FTS);
     }
 
     public static class CountPerYear

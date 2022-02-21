@@ -38,7 +38,7 @@ public class Year extends AppCompatActivity
     private int year;
     private YearListAdapter yearListAdapter;
     private List<MDM_Data.YearMetadata> entryList;
-    private int category;
+    private Integer category;
     private String title;
 
     @Override
@@ -50,7 +50,11 @@ public class Year extends AppCompatActivity
         setContentView(R.layout.activity_year);
         Intent intent = getIntent();
         this.year = intent.getIntExtra(Year.EXTRA_YEAR, -1);
-        this.category = intent.getIntExtra(Year.EXTRA_CATEGORY, 1);
+        if (intent.hasExtra(Year.EXTRA_CATEGORY)) {
+            this.category = intent.getIntExtra(Year.EXTRA_CATEGORY, -1);
+        } else {
+            this.category = null;
+        }
         this.title = intent.hasExtra(Year.EXTRA_TITLE) ? intent.getStringExtra(Year.EXTRA_TITLE) : getResources().getString(R.string.activity_year_toolbar_logo_title);
 
         this.setToolbar();
@@ -170,7 +174,7 @@ public class Year extends AppCompatActivity
                 final MDM_Data modelData = MDM_Data.getInstance(Year.this);
                 final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(Year.this);
                 final MDM_Tag modelTag = MDM_Tag.getInstance(Year.this);
-                final List<MDM_Data.YearMetadata> dbResultData = modelData.getYearList(Year.this.year, Year.this.category);
+                final List<MDM_Data.YearMetadata> dbResultData = Year.this.category == null ? modelData.getYearList(Year.this.year) : modelData.getYearList(Year.this.year, Year.this.category);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.YearMetadata result : dbResultData)
                 {
