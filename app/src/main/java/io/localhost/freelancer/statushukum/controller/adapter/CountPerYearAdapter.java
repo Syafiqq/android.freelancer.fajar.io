@@ -36,10 +36,10 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
 
     private final List<MDM_Data.CountPerYear> countPerYear;
     private final Context context;
-    private int category;
+    private Integer category;
     private String title;
 
-    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, int dataCategory)
+    public CountPerYearAdapter(final List<MDM_Data.CountPerYear> countPerYear, final Context context, Integer dataCategory)
     {
         super();
 
@@ -85,7 +85,7 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
         return this.countPerYear.size();
     }
 
-    public void setCategory(int category) {
+    public void setCategory(Integer category) {
         this.category = category;
     }
 
@@ -123,7 +123,9 @@ public class CountPerYearAdapter extends RecyclerView.Adapter<CountPerYearAdapte
             {
                 final Intent intent = new Intent(context, Year.class);
                 intent.putExtra(Year.EXTRA_YEAR, _year);
-                intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
+                if (CountPerYearAdapter.this.category != null) {
+                    intent.putExtra(Year.EXTRA_CATEGORY, CountPerYearAdapter.this.category);
+                }
                 intent.putExtra(Year.EXTRA_TITLE, String.format("%s", year.getText()));
                 context.startActivity(intent);
             }

@@ -22,6 +22,7 @@ public final class DatabaseContract
     public static class Data implements BaseColumns
     {
         public static final String TABLE_NAME = "data";
+        public static final String TABLE_NAME_FTS = "data_fts";
         public static final String COLUMN_NAME_ID = "id";
         public static final String COLUMN_NAME_YEAR = "year";
         public static final String COLUMN_NAME_NO = "no";

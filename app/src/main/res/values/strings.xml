@@ -38,7 +38,7 @@
     <string name="nav_header_dashboard_drawer_rule_perpres">PERPRES</string>
     <string name="title_activity_dashboard">Dashboard</string>
     <string name="content_detail_button_open">Buka</string>
-    <string name="content_detail_button_download">Download</string>
+    <string name="content_detail_button_download">Unduh</string>
     <string name="title_activity_pdfviewer">PDFViewer</string>
     <string name="activity_pdf_viewer_toolbar_logo_desc">Logo Desc</string>
     <string name="activity_pdf_viewer_toolbar_logo_title">Status Hukum</string>

@@ -179,7 +179,7 @@ public class SearchFragment extends Fragment
                 final MDM_Data modelData = MDM_Data.getInstance(getContext());
                 final MDM_DataTag modelDataTag = MDM_DataTag.getInstance(getContext());
                 final MDM_Tag modelTag = MDM_Tag.getInstance(getContext());
-                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableList(query, CATEGORY);
+                final List<MDM_Data.MetadataSearchable> dbResultData = modelData.getSearchableListOnly(query);
                 final Map<Integer, ME_Tag> dbResultTag = modelTag.getAll();
                 for(final MDM_Data.MetadataSearchable result : dbResultData)
                 {

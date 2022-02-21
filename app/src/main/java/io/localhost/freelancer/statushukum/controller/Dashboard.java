@@ -25,20 +25,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import io.localhost.freelancer.statushukum.R;
-import io.localhost.freelancer.statushukum.model.AirtableDataFetcher;
-import io.localhost.freelancer.statushukum.model.MenuModel;
 import io.localhost.freelancer.statushukum.model.MenuModelType;
 import io.localhost.freelancer.statushukum.model.util.Setting;
 import io.localhost.freelancer.statushukum.model.util.SyncMessage;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        Law.OnFragmentInteractionListener,
+        LawAndSearch.OnFragmentInteractionListener,
         SearchFragment.OnFragmentInteractionListener
 {
     public static final String CLASS_NAME = "Dashboard";
@@ -64,13 +61,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
         if(savedInstanceState == null)
         {
-            Law fragment = Law.newInstance(1, R.string.nav_header_dashboard_drawer_rule_uu);
+            LawAndSearch fragment = LawAndSearch.newInstance(R.string.title_application_name);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager
                     .beginTransaction()
-                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
-                    .addToBackStack(null)
+                    .replace(R.id.content_dashboard_root, fragment, LawAndSearch.CLASS_PATH)
                     .commit();
         }
     }
@@ -81,61 +77,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         super.onStart();
     }
 
-    private void onGPlusSocialPressed(View view)
-    {
-        try
-        {
-            this.onBackPressed();
-            super.startActivity(Setting.getInstance(this).social.gPlus.getGPlusIntent(this));
-        }
-        catch(ActivityNotFoundException | NullPointerException e)
-        {
-            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
-    }
-
-    private void onInstagramSocialPressed(View view)
-    {
-        try
-        {
-            this.onBackPressed();
-            super.startActivity(Setting.getInstance(this).social.instagram.getInstagramIntent(this));
-        }
-        catch(ActivityNotFoundException | NullPointerException e)
-        {
-            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void onTwitterSocialPressed(View view)
-    {
-        try
-        {
-            this.onBackPressed();
-            super.startActivity(Setting.getInstance(this).social.twitter.getTwitterIntent(this));
-        }
-        catch(ActivityNotFoundException | NullPointerException e)
-        {
-            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void onFacebookSocialPressed(View view)
-    {
-        try
-        {
-            this.onBackPressed();
-            super.startActivity(Setting.getInstance(this).social.facebook.getFacebookIntent(this));
-        }
-        catch(ActivityNotFoundException | NullPointerException e)
-        {
-            Toast.makeText(this, "Tidak ada aplikasi yang mendukung perintah ini", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void setProgressView()
@@ -192,41 +136,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         item.setCheckable(false);
         switch(id)
         {
-            case R.id.nav_menu_dashboard_search:
-            {
-                updateSearchContent();
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_uu:
-            {
-                updateLawContent(1, R.string.nav_header_dashboard_drawer_rule_uu);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_tap_mpr:
-            {
-                updateLawContent(2, R.string.nav_header_dashboard_drawer_rule_tap_mpr);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_uu_darurat:
-            {
-                updateLawContent(3, R.string.nav_header_dashboard_drawer_rule_uu_darurat);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_perpu:
-            {
-                updateLawContent(4, R.string.nav_header_dashboard_drawer_rule_perpu);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_pp:
-            {
-                updateLawContent(5, R.string.nav_header_dashboard_drawer_rule_pp);
-            }
-            break;
-            case R.id.nav_menu_dashboard_rule_perpres:
-            {
-                updateLawContent(6, R.string.nav_header_dashboard_drawer_rule_perpres);
-            }
-            break;
             case R.id.nav_menu_dashboard_sync:
             {
                 this.onBackPressed();
@@ -299,31 +208,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private void updateContent() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
-        if(fragment instanceof Law)
-            ((Law) fragment).updateCategory();
+        if(fragment instanceof LawAndSearch)
+            ((LawAndSearch) fragment).updateCategory();
         else if(fragment instanceof SearchFragment)
             ((SearchFragment) fragment).updateContent();
-    }
-
-    private void updateLawContent(int category, int title) {
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_dashboard_root);
-        if(!(fragment instanceof Law)) {
-            fragment = getSupportFragmentManager().findFragmentByTag(Law.CLASS_PATH);
-            if(fragment == null) {
-                fragment = Law.newInstance(category, title);
-            } else {
-                ((Law) fragment).updateCategory(category, title);
-            }
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content_dashboard_root, fragment, Law.CLASS_PATH)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        else {
-            ((Law) fragment).updateCategory(category, title);
-        }
     }
 
     private void updateSearchContent() {
@@ -385,14 +273,5 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     private void updateLawMenuVisibility() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.activity_dashboard_wrapper_drawerlayout_container);
-        NavigationView navigationView = drawer.findViewById(R.id.activity_dashboard_wrapper_navigationview_nav);
-        Menu navigationMenu = navigationView.getMenu();
-
-        for (MenuModelType lawMenuId : MenuModel.lawMenus) {
-            navigationMenu.findItem(MenuModel.getMenuResourceId(lawMenuId)).setVisible(
-                    MenuModel.lawMenusWhitelist.contains(lawMenuId)
-            );
-        }
     }
 }
