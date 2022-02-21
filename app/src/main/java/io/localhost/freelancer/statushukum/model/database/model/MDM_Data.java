@@ -432,14 +432,13 @@ public class MDM_Data extends DatabaseModel
 
     public List<MetadataSearchable> getSearchableListOnly(String query)
     {
-        Log.i(CLASS_NAME, CLASS_PATH + ".getYearList");
         try
         {
             super.openRead();
         }
         catch(SQLException ignored)
         {
-            Log.i(CLASS_NAME, "SQLException");
+
         }
 
         String[] arguments = Arrays.copyOf(
